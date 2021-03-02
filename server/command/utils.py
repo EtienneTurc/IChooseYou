@@ -1,23 +1,24 @@
-import ast
+from server.command.args import Arg
 
 
-def assert_label_is_correct(label):
-    positional_args, named_args = get_args_in_label(label)
-    print(positional_args)
-    print(named_args)
+def find_args_in_text(text):
+    text_list = format_text_to_list(text)
+    first_arg_index = -1
 
-    count = 0
-    for arg in positional_args:
-        value = int(arg[1:])
-        count += value
-        if value < 1:
-            # TODO throw error instead
-            return False
+    named_args = []
+    for index, word in enumerate(text_list):
+        if word[:2] == "--":
+            if first_arg_index == -1:
+                first_arg_index = index
+            named_args.append(Arg(name=word[2:], nargs="+"))
 
-    n = len(positional_args)
-    if count == n * (n + 1) / 2:
-        return True
-    return False
+    positional_args = []
+    if first_arg_index == -1:
+        first_arg_index = len(text_list)
+    for word in text_list[:first_arg_index]:
+        positional_args.append(Arg(name=word))
+
+    return positional_args, named_args
 
 
 def get_args_in_label(label):
@@ -34,7 +35,10 @@ def get_args_in_label(label):
 
 
 def get_as_string(options, name):
-    return (" ").join(options[name])
+    value = options[name]
+    if not value:
+        return ""
+    return (" ").join(value)
 
 
 def get_as_bool(options, name):
@@ -42,4 +46,35 @@ def get_as_bool(options, name):
 
 
 def get_as_list(options, name):
-    return ast.literal_eval(get_as_string(options, name))
+    words_of_chars = options[name]
+    if not words_of_chars:
+        return []
+
+    option_list = []
+    for word_of_char in words_of_chars:
+        word = "".join(word_of_char)
+        option_list.append(word)
+    return option_list
+
+
+def options_to_dict(options, args):
+    args_dict = {arg.name: arg for arg in args}
+    options_dict = {}
+    for option_name in options:
+        func_to_apply = get_as_string
+        arg = args_dict[option_name]
+        if arg.type == bool:
+            func_to_apply = get_as_bool
+        elif arg.type == list:
+            func_to_apply = get_as_list
+
+        options_dict[option_name] = func_to_apply(options, option_name)
+    return options_dict
+
+
+def format_text_to_list(text):
+    text = text.lstrip()
+    text_list = []
+    if text:
+        text_list = text.split(" ")
+    return text_list

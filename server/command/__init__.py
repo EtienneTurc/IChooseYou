@@ -1,5 +1,5 @@
-from .create import CreateCommand
-from .custom import CustomCommand
+from server.command.create import CreateCommand
+from server.command.custom import CustomCommand
 
 KNOWN_COMMANDS = ["create"]
 

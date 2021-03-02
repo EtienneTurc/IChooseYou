@@ -1,3 +1,3 @@
-from .command import Command
+from server.orm.command import Command
 
 __all__ = ["Command"]

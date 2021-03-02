@@ -1,38 +1,34 @@
+import argparse
 from dataclasses import dataclass
+
+ArgError = argparse.ArgumentError
+
+
+class ArgumentParser(argparse.ArgumentParser):
+    def exit(self, status=0, message=None):
+        raise argparse.ArgumentError(None, message)
+
+    def error(self, message):
+        usage = self.format_usage()
+        error_message = f"{usage}{self.prog}: error: {message}"
+        raise argparse.ArgumentError(None, error_message)
 
 
 @dataclass
 class Arg:
     name: str
+    type: any = str
+    action: str = None
     nargs: int = 1
     default: any = None
 
     def add_to_parser(self, parser, prefix="--"):
         arg = dict(self.__dict__)
         del arg["name"]
+        if str(arg["nargs"]).isdigit():
+            arg["required"] = True
+        if arg["action"]:
+            del arg["type"]
+            del arg["nargs"]
         parser.add_argument(f"{prefix}{self.name}", **arg)
         return parser
-
-
-class ArgError(Exception):
-    def __init__(self, message):
-        self.message = message
-
-
-def find_args_in_text(text):
-    text_list = text.split(" ")
-    first_arg_index = -1
-
-    named_args = []
-    for index, word in enumerate(text_list):
-        if word[:2] == "--":
-            if first_arg_index == -1:
-                first_arg_index = index
-            named_args.append(Arg(name=word[2:], nargs="*"))
-
-    positional_args = []
-    if first_arg_index != -1:
-        for word in text_list[:first_arg_index]:
-            positional_args.append(Arg(name=word))
-
-    return positional_args, named_args

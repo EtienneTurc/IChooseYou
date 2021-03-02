@@ -1,8 +1,10 @@
-from dataclasses import dataclass
 import random
-from .args import find_args_in_text
-from .utils import get_args_in_label, get_as_string
-import argparse
+from dataclasses import dataclass
+
+from server.command.args import ArgumentParser
+from server.command.utils import (find_args_in_text, format_text_to_list,
+                                  get_args_in_label, options_to_dict)
+from server.command.validator import assert_named_args, assert_positional_args
 
 
 @dataclass
@@ -15,13 +17,13 @@ class CustomCommand:
     def exec(self, user, args_text):
         pick_list = self.pick_list
         if self.self_exclude:
-            pick_list = [el for el in pick_list if user.id not in el]
+            pick_list = [el for el in pick_list if user["id"] not in el]
 
         selected_element = random.choice(pick_list)
         label = self._create_label(args_text)
-        message = f"Hey ! @{user['name']} choose {selected_element} to {label}"
-
-        print(message)
+        message = (
+            f"Hey ! <@{user['id']}|{user['name']}> choose {selected_element} to {label}"
+        )
 
         return message
 
@@ -29,8 +31,13 @@ class CustomCommand:
         req_positional_args, req_named_args = find_args_in_text(args_text)
         positional_args, named_args = get_args_in_label(self.label)
 
-        # TODO assert args_text is correts
-        # if first_arg_index !=
+        print(req_positional_args)
+        print(req_named_args)
+        print(positional_args)
+        print(named_args)
+
+        assert_positional_args(req_positional_args, positional_args)
+        assert_named_args(req_named_args, named_args)
 
         label = self.label
         # Replace positional args
@@ -39,20 +46,17 @@ class CustomCommand:
 
         # Replace named args
         n = len(req_positional_args)
-        if not n:
-            return label
-
-        parser = argparse.ArgumentParser(prog=self.name, exit_on_error=False)
-
+        parser = ArgumentParser(prog=self.name, exit_on_error=False)
         for arg in req_named_args:
             arg.add_to_parser(parser)
 
-        # TODO try catch options
-        options = parser.parse_args(args_text.split(" ")[n:]).__dict__
+        args_list = format_text_to_list(args_text)[n:]
+        options = parser.parse_args(args_list)
+        options = options_to_dict(options.__dict__, req_named_args)
+
+        print(options)
 
         for option_name in options:
-            label = label.replace(
-                f"${option_name}", get_as_string(options, option_name)
-            )
+            label = label.replace(f"${option_name}", options[option_name])
 
         return label

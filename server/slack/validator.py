@@ -1,7 +1,7 @@
 import os
-from slack_sdk.signature import SignatureVerifier
-from flask import make_response
 
+from flask import make_response
+from slack_sdk.signature import SignatureVerifier
 
 signature_verifier = SignatureVerifier(
     signing_secret=os.environ["SLACK_SIGNING_SECRET"]

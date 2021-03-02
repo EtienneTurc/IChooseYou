@@ -1,30 +1,28 @@
-from .args import Arg
-from ..orm import Command
-from .base_command import BaseCommand
-from .utils import assert_label_is_correct, get_as_string, get_as_bool, get_as_list
+from server.command.args import Arg
+from server.command.base_command import BaseCommand
+from server.command.validator import assert_label_is_correct
+from server.orm import Command
 
 
 class CreateCommand(BaseCommand):
-    name = "create"
-    args = {
-        "command_name": Arg(name="name", nargs=1),
-        "label": Arg(name="label", nargs="+"),
-        "pick_list": Arg(name="pickList", nargs=1),
-        "self_exclude": Arg(name="selfExclude", nargs="?", default=False),
-        "quiet": Arg(name="quiet", nargs="?", default=False),
-    }
+    def __init__(self, text):
+        name = "create"
+        args = [
+            Arg(name="name", nargs=1),
+            Arg(name="label", nargs="+"),
+            Arg(name="pickList", nargs="+", type=list),
+            Arg(name="selfExclude", nargs="?", default=False),
+            Arg(name="quiet", nargs="?", default=False),
+        ]
+        super(CreateCommand, self).__init__(text, name=name, args=args)
 
-    def exec(self, text):
-        options = super().exec(text)
-
-        label = get_as_string(options, "label")
-
-        assert_label_is_correct(label)
+    def exec(self):
+        assert_label_is_correct(self.options["label"])
         Command.create(
-            get_as_string(options, "name"),
-            label,
-            get_as_list(options, "pickList"),
-            get_as_bool(options, "selfExclude"),
+            self.options["name"],
+            self.options["label"],
+            self.options["pickList"],
+            self.options["selfExclude"],
         )
 
         # quiet = options.get("quiet")
