@@ -20,6 +20,7 @@ class Arg:
     type: any = str
     action: str = None
     nargs: int = 1
+    help: str = ""
     default: any = None
 
     def add_to_parser(self, parser, prefix="--"):

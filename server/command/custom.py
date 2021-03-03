@@ -2,8 +2,12 @@ import random
 from dataclasses import dataclass
 
 from server.command.args import ArgumentParser
-from server.command.utils import (find_args_in_text, format_text_to_list,
-                                  get_args_in_label, options_to_dict)
+from server.command.utils import (
+    find_args_in_text,
+    format_text_to_list,
+    get_args_in_label,
+    options_to_dict,
+)
 from server.command.validator import assert_named_args, assert_positional_args
 
 
@@ -31,11 +35,6 @@ class CustomCommand:
         req_positional_args, req_named_args = find_args_in_text(args_text)
         positional_args, named_args = get_args_in_label(self.label)
 
-        print(req_positional_args)
-        print(req_named_args)
-        print(positional_args)
-        print(named_args)
-
         assert_positional_args(req_positional_args, positional_args)
         assert_named_args(req_named_args, named_args)
 
@@ -53,8 +52,6 @@ class CustomCommand:
         args_list = format_text_to_list(args_text)[n:]
         options = parser.parse_args(args_list)
         options = options_to_dict(options.__dict__, req_named_args)
-
-        print(options)
 
         for option_name in options:
             label = label.replace(f"${option_name}", options[option_name])

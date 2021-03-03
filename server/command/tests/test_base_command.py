@@ -4,6 +4,7 @@ from server.command.args import Arg, ArgError
 from server.command.base_command import BaseCommand
 
 name = "test_base_command"
+channel_id = "42"
 first_args = Arg(name="first_args", nargs=1)
 multiple_args = Arg(name="multiple_args", nargs="+")
 list_args = Arg(name="list_args", nargs="+", type=list)
@@ -58,7 +59,7 @@ bool_arg = Arg(
     ],
 )
 def test_base_command_init(text, args, expected_options):
-    options = BaseCommand(text, name, args).options
+    options = BaseCommand(text, name, channel_id, args).options
     for key in expected_options:
         assert options[key] == expected_options[key]
 
@@ -86,4 +87,4 @@ def test_base_command_init(text, args, expected_options):
 )
 def test_base_command_init_raise_error(text, args):
     with pytest.raises(ArgError):
-        BaseCommand(text, name, args)
+        BaseCommand(text, name, channel_id, args)

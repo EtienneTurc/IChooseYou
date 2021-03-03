@@ -3,18 +3,32 @@ from pymodm import MongoModel, fields
 
 # Now let's define some Models.
 class Command(MongoModel):
-    # Use 'email' as the '_id' field in MongoDB.
-    name = fields.CharField(primary_key=True, required=True)
+    name = fields.CharField(required=True)
+    channel_id = fields.CharField(required=True)
     label = fields.CharField()
     pick_list = fields.ListField()
     self_exclude = fields.BooleanField()
 
     @staticmethod
-    def find_one_by_name(name):
-        return Command.objects.get({"_id": name})
+    def find_one_by_name_and_chanel(name, channel_id):
+        return Command.objects.get({"name": name, "channel_id": channel_id})
 
     @staticmethod
-    def create(name, label, pick_list, self_exclude):
-        # alreadyCreated = self.find_one_by_name(name)
-        # if alreadyCreated:
-        Command(name, label, pick_list, self_exclude).save()
+    def find_all_in_chanel(channel_id):
+        return Command.objects.raw({"channel_id": channel_id})
+
+    @staticmethod
+    def create(name, channel_id, label, pick_list, self_exclude):
+        try:
+            Command.find_one_by_name_and_chanel(name, channel_id)
+            raise Exception("Command already exists.")
+        except Command.DoesNotExist:
+            Command(name, channel_id, label, pick_list, self_exclude).save()
+
+    @staticmethod
+    def update(command, new_values):
+        return command.update({"$set": new_values})
+
+    @staticmethod
+    def delete(command):
+        return command.delete()

@@ -3,8 +3,9 @@ from server.command.utils import format_text_to_list, options_to_dict
 
 
 class BaseCommand:
-    def __init__(self, text, name="", args=[]):
+    def __init__(self, text, channel_id, name="", args=[]):
         self.name = name
+        self.channel_id = channel_id
         self.args = args
 
         parser = ArgumentParser(prog=self.name, exit_on_error=False)
