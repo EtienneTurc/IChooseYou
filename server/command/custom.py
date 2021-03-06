@@ -9,6 +9,7 @@ from server.command.utils import (
     options_to_dict,
 )
 from server.command.validator import assert_named_args, assert_positional_args
+from server.slack.message_formatting import format_custom_command_message
 
 
 @dataclass
@@ -25,11 +26,7 @@ class CustomCommand:
 
         selected_element = random.choice(pick_list)
         label = self._create_label(args_text)
-        message = (
-            f"Hey ! <@{user['id']}|{user['name']}> choose {selected_element} to {label}"
-        )
-
-        return message
+        return format_custom_command_message(user, selected_element, label)
 
     def _create_label(self, args_text):
         req_positional_args, req_named_args = find_args_in_text(args_text)

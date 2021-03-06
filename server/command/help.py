@@ -10,13 +10,13 @@ from server.slack.message_formatting import (
 from server.command.create import CreateCommand
 from server.command.update import UpdateCommand
 from server.command.delete import DeleteCommand
+from server.slack.message_status import MessageStatus
 
 KNOWN_COMMANDS = {
     "create": CreateCommand,
     "update": UpdateCommand,
     "delete": DeleteCommand,
 }
-KNOWN_COMMANDS_NAMES = list(KNOWN_COMMANDS.keys()).append("help")
 
 
 class HelpCommand(BaseCommand):
@@ -39,20 +39,21 @@ class HelpCommand(BaseCommand):
             command_name = self.options.get("commandName")
             if command_name in KNOWN_COMMANDS_NAMES:
                 command = KNOWN_COMMANDS[command_name]
-                return format_known_command_help(command())
+                return format_known_command_help(command)
 
             command = Command.find_one_by_name_and_chanel(command_name, self.channel_id)
             return format_custom_command_help(command)
         else:
-            commands = [Command.find_all_in_chanel(self.channel_id)]
-            return self._format_commands_help(self, KNOWN_COMMANDS.values(), commands)
+            commands = Command.find_all_in_chanel(self.channel_id)
+            return self._format_commands_help(KNOWN_COMMANDS.values(), commands)
 
     def _format_commands_help(self, known_commands, custom_commands):
-        message = "Fixed commands:\n"
+        message = ">*Fixed commands:*\n"
         message += format_known_commands_help(known_commands)
-        message += "\n Created commands:\n"
+        message += "\n\n> *Created commands:*\n"
         message += format_custom_commands_help(custom_commands)
-        return message
+        return message, MessageStatus.INFO
 
 
 KNOWN_COMMANDS["help"] = HelpCommand
+KNOWN_COMMANDS_NAMES = KNOWN_COMMANDS.keys()

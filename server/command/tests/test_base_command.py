@@ -11,6 +11,7 @@ list_args = Arg(name="list_args", nargs="+", type=list)
 bool_arg = Arg(
     name="bool_arg", nargs="?", type=bool, action="store_true", default=False
 )
+optional_single_arg = Arg(name="optional_single_arg", nargs="?")
 
 
 @pytest.mark.parametrize(
@@ -56,6 +57,11 @@ bool_arg = Arg(
             [multiple_args],
             {"multiple_args": "hello  "},
         ),
+        (
+            "--optional_single_arg hello",
+            [optional_single_arg],
+            {"optional_single_arg": "hello"},
+        ),
     ],
 )
 def test_base_command_init(text, args, expected_options):
@@ -82,6 +88,10 @@ def test_base_command_init(text, args, expected_options):
         (
             "--multiple_args hello",
             [first_args],
+        ),
+        (
+            "--optional_single_arg hello world",
+            [optional_single_arg],
         ),
     ],
 )

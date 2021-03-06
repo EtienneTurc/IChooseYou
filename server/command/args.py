@@ -19,17 +19,23 @@ class Arg:
     name: str
     type: any = str
     action: str = None
+    const: any = None
     nargs: int = 1
     help: str = ""
+    required: bool = None
     default: any = None
 
     def add_to_parser(self, parser, prefix="--"):
         arg = dict(self.__dict__)
         del arg["name"]
-        if str(arg["nargs"]).isdigit():
+        if str(arg["nargs"]).isdigit() and arg["required"] is None:
             arg["required"] = True
+        if arg["type"] == bool:
+            arg["type"] = str
         if arg["action"]:
             del arg["type"]
             del arg["nargs"]
+            if arg["const"] is None:
+                del arg["const"]
         parser.add_argument(f"{prefix}{self.name}", **arg)
         return parser

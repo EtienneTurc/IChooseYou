@@ -1,4 +1,6 @@
 from flask import make_response
+import traceback
+from server.slack.message_status import MessageStatus
 
 
 def format_slack_request(request):
@@ -15,6 +17,34 @@ def format_slack_request(request):
     return [channel, user, command_name, text, response_url]
 
 
-def error_handler(error, webhook):
-    webhook.send(text=f"{error}")
-    return make_response(f"{error}", 500)
+def error_handler(error, webhook, status_code):
+    webhook_send_message(
+        webhook,
+        f"{error}",
+        MessageStatus.LIGHT_ERROR if status_code == 400 else MessageStatus.ERROR,
+    )
+    print(error)
+    traceback.print_exc()
+    return make_response(f"{error}", status_code)
+
+
+def webhook_send_message(webhook, message, message_status=None):
+    webhook.send(
+        text="",
+        response_type="in_channel",
+        replace_original=True,
+        attachments=[
+            {
+                "color": message_status.value if message_status else MessageStatus.INFO,
+                "blocks": [
+                    {
+                        "type": "section",
+                        "text": {
+                            "type": "mrkdwn",
+                            "text": f"{message}",
+                        },
+                    }
+                ],
+            }
+        ],
+    )

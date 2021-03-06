@@ -4,6 +4,7 @@ from server.orm.command import Command
 from server.slack.message_formatting import (
     format_custom_command_help,
 )
+from server.slack.message_status import MessageStatus
 
 
 class UpdateCommand(BaseCommand):
@@ -33,7 +34,8 @@ class UpdateCommand(BaseCommand):
             Arg(
                 name="selfExclude",
                 nargs="?",
-                default=False,
+                const="True",
+                type=bool,
                 help="Exclude the person using the slash command to be picked.",
             ),
         ]
@@ -42,38 +44,41 @@ class UpdateCommand(BaseCommand):
         )
 
     def exec(self):
-        command_name = self.options.get("commandName")
+        command_name = self.options["commandName"]
         command = Command.find_one_by_name_and_chanel(command_name, self.channel_id)
 
         if not command:
             raise ArgError(None, f"Command {command_name} does not exist.")
 
         new_values = {}
-        if self.options.ge("label"):
-            new_values["label"] = self.options.ge("label")
+        if self.options["label"]:
+            new_values["label"] = self.options["label"]
 
-        if self.options.get("addToPickList"):
-            new_values["pickList"] = list(
-                set(command.pickList) + set(self.options.get("addToPickList"))
+        if self.options["addToPickList"]:
+            new_values["pick_list"] = list(
+                set(command.pick_list) | set(self.options["addToPickList"])
             )
 
-        if self.options.get("removeFromPickList"):
-            pickList = (
-                new_values.get("pickList")
-                if new_values.get("pickList")
-                else command.pickList
+        if self.options["removeFromPickList"]:
+            pick_list = (
+                new_values.get("pick_list")
+                if new_values.get("pick_list")
+                else command.pick_list
             )
-            new_values["pickList"] = list(
-                set(pickList) + set(self.options.get("addToPickList"))
+            new_values["pick_list"] = list(
+                set(pick_list) - set(self.options["removeFromPickList"])
             )
 
-        if self.options.get("pickList"):
-            new_values["pickList"] = self.options.get("pickList")
+        if self.options["pickList"]:
+            new_values["pick_list"] = self.options["pickList"]
 
-        if self.options.get("selfExclude"):
-            new_values["selfExclude"] = self.options.get("selfExclude")
+        if self.options["selfExclude"] is not None:
+            new_values["self_exclude"] = self.options["selfExclude"]
 
-        Command.update(command, new_values)
+        print(self.options)
+        print(bool(self.options["selfExclude"]))
+        print(new_values)
+        Command.update(command.name, command.channel_id, new_values)
 
         updated_command = Command.find_one_by_name_and_chanel(
             command_name, self.channel_id
@@ -81,4 +86,4 @@ class UpdateCommand(BaseCommand):
 
         message = f"Command {updated_command.name} successfully updated.\n"
         message += format_custom_command_help(updated_command)
-        return message
+        return message, MessageStatus.SUCCESS

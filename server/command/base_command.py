@@ -8,10 +8,14 @@ class BaseCommand:
         self.channel_id = channel_id
         self.args = args
 
+        if text is None:
+            return
+
         parser = ArgumentParser(prog=self.name, exit_on_error=False)
         for arg in self.args:
             parser = arg.add_to_parser(parser)
 
         text_list = format_text_to_list(text)
         options = parser.parse_args(text_list)
+        print(options.__dict__)
         self.options = options_to_dict(options.__dict__, self.args)

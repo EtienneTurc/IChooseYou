@@ -34,18 +34,21 @@ def get_args_in_label(label):
     return positional_args, named_args
 
 
-def get_as_string(options, name):
+def get_as_string(options, name, nargs0or1):
     value = options[name]
     if not value:
         return ""
+    if nargs0or1:
+        return value
     return (" ").join(value)
 
 
-def get_as_bool(options, name):
-    return bool(options[name])
+def get_as_bool(options, name, nargs0or1=None):
+    print(options[name])
+    return options[name] is True or str(options[name]).lower() == "true"
 
 
-def get_as_list(options, name):
+def get_as_list(options, name, nargs0or1=None):
     words_of_chars = options[name]
     if not words_of_chars:
         return []
@@ -68,7 +71,9 @@ def options_to_dict(options, args):
         elif arg.type == list:
             func_to_apply = get_as_list
 
-        options_dict[option_name] = func_to_apply(options, option_name)
+        options_dict[option_name] = func_to_apply(
+            options, option_name, arg.nargs == "?"
+        )
     return options_dict
 
 
