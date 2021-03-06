@@ -34,9 +34,9 @@ def format_custom_command_help(custom_command):
     )
 
     message = f"*{custom_command.name}*:"
-    message += f"• Message: {slack_message_from_command}"
-    message += f"• Pick list: {custom_command.pick_list}"
-    message += f"• User using the slash command {self_exclude}excluded."
+    message += f"\n• Message: {slack_message_from_command}"
+    message += f"\n• Pick list: {custom_command.pick_list}"
+    message += f"\n• User using the slash command {self_exclude}excluded."
 
     return message
 
