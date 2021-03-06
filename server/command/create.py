@@ -5,17 +5,17 @@ from server.orm.command import Command
 from server.slack.message_formatting import format_custom_command_help
 from server.slack.message_status import MessageStatus
 
-label_help = "*Text to display using the following format*:"
+label_help = "Text to display using the following format:"
 label_help += "\n>Hey ! <user> choose <element> to <your_label>\n"
-label_help += " Note that you can use parametrize your label with args from the"
+label_help += " Note that you can parametrize your label with args from the"
 label_help += " command line with $1 ... $N for positional arguments"
 label_help += " or with $name_of_my_arg for named arguments.\n"
 label_help += " For instance 'my label with $1 positional argument and"
 label_help += " a named argument named $name' is a valid label with two arguments."
 
 
-pick_list_help = "*List from which to pick from*."
-pick_list_help += " Elements must be separated by *spaces*,"
+pick_list_help = "List from which to pick from."
+pick_list_help += " Elements must be separated by spaces,"
 pick_list_help += " thus an element can't be composed of two words."
 pick_list_help += "\n> If you want to directly notify a user when he is selected,"
 pick_list_help += " you must mention him in the pickList."

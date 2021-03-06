@@ -50,7 +50,7 @@ def slack_app():
             self_exclude=command.self_exclude,
         ).exec(user, text)
         webhook_send_message(webhook, message, MessageStatus.INFO)
-        return make_response(message, 200)
+        return make_response("", 200)
 
     except ArgError as error:
         return error_handler(error, webhook, 400)

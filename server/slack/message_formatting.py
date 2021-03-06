@@ -1,9 +1,9 @@
 def format_known_command_help(known_command):
     command = known_command(None, None)
     message = f"*{command.name}*: {command.description}.\n"
-    message += "Arguments:\n"
+    message += "_Arguments_:\n"
     for arg in command.args:
-        message += f"• _{arg.name}_: {arg.help}\n"
+        message += f"• *{arg.name}*: {arg.help}\n"
     return message
 
 
@@ -34,9 +34,9 @@ def format_custom_command_help(custom_command):
     )
 
     message = f"*{custom_command.name}*:"
-    message += f"\n> Message: {slack_message_from_command}"
-    message += f"\n>• Pick list: {custom_command.pick_list}"
-    message += f"\n>• User using the slash command {self_exclude}excluded."
+    message += f"• Message: {slack_message_from_command}"
+    message += f"• Pick list: {custom_command.pick_list}"
+    message += f"• User using the slash command {self_exclude}excluded."
 
     return message
 
