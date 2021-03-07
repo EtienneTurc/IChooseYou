@@ -1,9 +1,7 @@
-from server.command.base_command import BaseCommand
 from server.command.args import Arg, ArgError
+from server.command.base_command import BaseCommand
 from server.orm.command import Command
-from server.slack.message_formatting import (
-    format_custom_command_help,
-)
+from server.slack.message_formatting import format_custom_command_help
 from server.slack.message_status import MessageStatus
 
 
@@ -45,9 +43,10 @@ class UpdateCommand(BaseCommand):
 
     def exec(self):
         command_name = self.options["commandName"]
-        command = Command.find_one_by_name_and_chanel(command_name, self.channel_id)
 
-        if not command:
+        try:
+            command = Command.find_one_by_name_and_chanel(command_name, self.channel_id)
+        except Command.DoesNotExist:
             raise ArgError(None, f"Command {command_name} does not exist.")
 
         new_values = {}

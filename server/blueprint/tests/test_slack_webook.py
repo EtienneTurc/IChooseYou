@@ -1,14 +1,11 @@
+import io
+from contextlib import redirect_stdout
+
 import pytest
 
-from server.tests.test_app import *  # noqa: F401, F403
-
 import server.blueprint.tests.monkey_patch as monkey_patch  # noqa: F401
-
 from server.orm.command import Command
-
-
-from contextlib import redirect_stdout
-import io
+from server.tests.test_app import *  # noqa: F401, F403
 
 
 def call_webhook(client, text):

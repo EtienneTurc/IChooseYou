@@ -1,5 +1,6 @@
-from server.app import create_app
 import pytest
+
+from server.app import create_app
 
 
 @pytest.fixture()
@@ -12,7 +13,11 @@ def client():
         with flask_app.app_context():
             yield testing_client  # this is where the testing happens!
 
+    clear_db(flask_app.config["DATABASE_URI"])
+
+
+def clear_db(database_uri):
     from pymongo import MongoClient
 
-    mongo_client = MongoClient(flask_app.config["DATABASE_URI"])
-    mongo_client.drop_database(flask_app.config["DATABASE_URI"].split("/")[-1])
+    mongo_client = MongoClient(database_uri)
+    mongo_client.drop_database(database_uri.split("/")[-1])

@@ -1,15 +1,13 @@
-from server.command.base_command import BaseCommand
 from server.command.args import Arg
-from server.orm.command import Command
-from server.slack.message_formatting import (
-    format_known_command_help,
-    format_known_commands_help,
-    format_custom_command_help,
-    format_custom_commands_help,
-)
+from server.command.base_command import BaseCommand
 from server.command.create import CreateCommand
-from server.command.update import UpdateCommand
 from server.command.delete import DeleteCommand
+from server.command.update import UpdateCommand
+from server.orm.command import Command
+from server.slack.message_formatting import (format_custom_command_help,
+                                             format_custom_commands_help,
+                                             format_known_command_help,
+                                             format_known_commands_help)
 from server.slack.message_status import MessageStatus
 
 KNOWN_COMMANDS = {

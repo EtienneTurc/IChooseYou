@@ -2,12 +2,8 @@ import random
 from dataclasses import dataclass
 
 from server.command.args import ArgumentParser
-from server.command.utils import (
-    find_args_in_text,
-    format_text_to_list,
-    get_args_in_label,
-    options_to_dict,
-)
+from server.command.utils import (find_args_in_text, format_text_to_list,
+                                  get_args_in_label, options_to_dict)
 from server.command.validator import assert_named_args, assert_positional_args
 from server.slack.message_formatting import format_custom_command_message
 

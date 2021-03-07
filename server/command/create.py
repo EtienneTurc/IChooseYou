@@ -41,7 +41,7 @@ class CreateCommand(BaseCommand):
                 const="True",
                 default="False",
                 type=bool,
-                help="Exclude the person using the slash command to be picked.",
+                help="Exclude the person using the slash command to be picked. Default value is False.",  # noqa E501
             ),
             Arg(name="quiet", nargs="?", default=False, help="Silence"),
         ]

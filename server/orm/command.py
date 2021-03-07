@@ -1,5 +1,7 @@
 from pymodm import MongoModel, fields
 
+from server.blueprint.back_error import BackError
+
 
 # Now let's define some Models.
 class Command(MongoModel):
@@ -21,7 +23,7 @@ class Command(MongoModel):
     def create(name, channel_id, label, pick_list, self_exclude):
         try:
             Command.find_one_by_name_and_chanel(name, channel_id)
-            raise Exception("Command already exists.")
+            raise BackError("Command already exists.", 400)
         except Command.DoesNotExist:
             Command(name, channel_id, label, pick_list, self_exclude).save()
 

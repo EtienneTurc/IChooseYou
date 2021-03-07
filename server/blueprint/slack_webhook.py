@@ -1,15 +1,14 @@
 from flask import Blueprint, make_response, request
 from slack_sdk.webhook import WebhookClient
 
-from server.command.help import KNOWN_COMMANDS, KNOWN_COMMANDS_NAMES
-from server.command.custom import CustomCommand
-from server.orm.command import Command
-from server.slack.utils import error_handler, format_slack_request, webhook_send_message
+from server.blueprint.back_error import BackError
 from server.command.args import ArgError
-from server.slack.validator import check_incoming_request_is_valid
-
-
+from server.command.custom import CustomCommand
+from server.command.help import KNOWN_COMMANDS, KNOWN_COMMANDS_NAMES
+from server.orm.command import Command
 from server.slack.message_status import MessageStatus
+from server.slack.utils import error_handler, format_slack_request, webhook_send_message
+from server.slack.validator import check_incoming_request_is_valid
 
 slack_webhook = Blueprint("slack_webhook", __name__, url_prefix="/slack_webhook")
 
@@ -54,5 +53,7 @@ def slack_app():
 
     except ArgError as error:
         return error_handler(error, webhook, 400)
+    except BackError as error:
+        return error_handler(error, webhook, error.status)
     except Exception as error:
         return error_handler(error, webhook, 500)

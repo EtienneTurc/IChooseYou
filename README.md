@@ -1,2 +1,3 @@
 # IChooseYou
-Slack bot to select randomly select anything
+
+Slack bot to randomly select anything
