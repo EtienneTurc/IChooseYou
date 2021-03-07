@@ -3,7 +3,7 @@ from flask import Flask
 from server.config import CONFIG
 
 
-def create_app(config_name):
+def create_app(config_name="prod"):
     app = Flask(__name__)
 
     # Configure app

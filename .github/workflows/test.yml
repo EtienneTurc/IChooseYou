@@ -12,6 +12,12 @@ jobs:
       matrix:
         python-version: [3.9]
 
+    services:
+      mongodb:
+        image: mongo
+        ports:
+          - 27017:27017
+
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}

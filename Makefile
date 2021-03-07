@@ -17,11 +17,14 @@ install-dev:
 test:
 	${PYTHON_ALIAS} -m pytest
 
+test-cov:
+	${PYTHON_ALIAS} -m pytest --cov=server/
+
 test-quality: flake8 isort
 
 test-all: test-quality test
 
-.PHONY: test test-quality test-all
+.PHONY: test test-cov test-quality test-all
 
 flake8:
 	${PYTHON_ALIAS} -m flake8 .
