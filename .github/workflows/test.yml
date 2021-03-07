@@ -26,5 +26,7 @@ jobs:
         # Install dependencies
         make install-dev
     - name: Run unit testing, packaging and test code quality
+      env:
+        PYTHON_ALIAS: python
       run: |
         make test-all
