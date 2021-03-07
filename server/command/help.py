@@ -10,7 +10,7 @@ from server.slack.message_formatting import (
     format_known_command_help,
     format_known_commands_help,
 )
-from server.slack.message_status import MessageStatus
+from server.slack.message_status import MessageStatus, MessageVisibility
 
 KNOWN_COMMANDS = {
     "create": CreateCommand,
@@ -39,15 +39,24 @@ class HelpCommand(BaseCommand):
             command_name = self.options.get("commandName")
             if command_name in KNOWN_COMMANDS_NAMES:
                 command = KNOWN_COMMANDS[command_name]
-                return format_known_command_help(command), MessageStatus.INFO
+                return (
+                    format_known_command_help(command),
+                    MessageStatus.INFO,
+                    MessageVisibility.HIDDEN,
+                )
 
             command = Command.find_one_by_name_and_chanel(command_name, self.channel_id)
-            return format_custom_command_help(command), MessageStatus.INFO
+            return (
+                format_custom_command_help(command),
+                MessageStatus.INFO,
+                MessageVisibility.HIDDEN,
+            )
         else:
             commands = Command.find_all_in_chanel(self.channel_id)
             return (
                 self._format_commands_help(KNOWN_COMMANDS.values(), commands),
                 MessageStatus.INFO,
+                MessageVisibility.HIDDEN,
             )
 
     def _format_commands_help(self, known_commands, custom_commands):

@@ -6,3 +6,8 @@ class MessageStatus(Enum):
     SUCCESS = "#2ecc71"
     LIGHT_ERROR = "#e74c3c"
     ERROR = "#c0392b"
+
+
+class MessageVisibility(Enum):
+    HIDDEN = "ephemeral"
+    NORMAL = "in_channel"

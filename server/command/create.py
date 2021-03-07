@@ -3,7 +3,7 @@ from server.command.base_command import BaseCommand
 from server.command.validator import assert_label_is_correct
 from server.orm.command import Command
 from server.slack.message_formatting import format_custom_command_help
-from server.slack.message_status import MessageStatus
+from server.slack.message_status import MessageStatus, MessageVisibility
 
 label_help = "Text to display using the following format:"
 label_help += "\n>Hey ! <user> choose <element> to <your_label>\n"
@@ -43,7 +43,6 @@ class CreateCommand(BaseCommand):
                 type=bool,
                 help="Exclude the person using the slash command to be picked. Default value is False.",  # noqa E501
             ),
-            Arg(name="quiet", nargs="?", default=False, help="Silence"),
         ]
         super(CreateCommand, self).__init__(
             text, name=name, channel_id=channel_id, args=args
@@ -64,4 +63,4 @@ class CreateCommand(BaseCommand):
         )
         message = f"Command {created_command.name} successfully created.\n"
         message += format_custom_command_help(created_command)
-        return message, MessageStatus.SUCCESS
+        return message, MessageStatus.SUCCESS, MessageVisibility.NORMAL

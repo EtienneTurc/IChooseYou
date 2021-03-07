@@ -3,7 +3,7 @@ import pytest
 from server.command.args import ArgError
 from server.command.update import UpdateCommand
 from server.orm.command import Command
-from server.slack.message_status import MessageStatus
+from server.slack.message_status import MessageStatus, MessageVisibility
 from server.tests.test_app import *  # noqa: F401, F403
 
 channel_id = "1234"
@@ -53,9 +53,12 @@ user_id = "4321"
 )
 def test_update(text, expected_message, client):
     Command.create("test_update", channel_id, "label", ["1", "2"], True, user_id)
-    message, message_status = UpdateCommand(text, channel_id).exec(user_id)
+    message, message_status, message_visibility = UpdateCommand(text, channel_id).exec(
+        user_id
+    )
     assert expected_message in message
     assert message_status == MessageStatus.SUCCESS
+    assert message_visibility == MessageVisibility.NORMAL
 
 
 def test_update_fail_if_command_does_not_exist(client):

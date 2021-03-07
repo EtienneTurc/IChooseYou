@@ -2,7 +2,7 @@ import traceback
 
 from flask import make_response
 
-from server.slack.message_status import MessageStatus
+from server.slack.message_status import MessageStatus, MessageVisibility
 
 
 def format_slack_request(request):
@@ -24,16 +24,19 @@ def error_handler(error, webhook, status_code):
         webhook,
         f"{error}",
         MessageStatus.LIGHT_ERROR if status_code == 400 else MessageStatus.ERROR,
+        MessageVisibility.HIDDEN,
     )
     print(error)
     traceback.print_exc()
     return make_response(f"{error}", status_code)
 
 
-def webhook_send_message(webhook, message, message_status=None):
+def webhook_send_message(
+    webhook, message, message_status=None, message_visibility=MessageVisibility.HIDDEN
+):
     webhook.send(
         text="",
-        response_type="in_channel",
+        response_type=message_visibility.value,
         replace_original=True,
         attachments=[
             {

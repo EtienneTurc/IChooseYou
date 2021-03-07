@@ -2,7 +2,7 @@ import pytest
 
 from server.blueprint.back_error import BackError
 from server.command.create import CreateCommand
-from server.slack.message_status import MessageStatus
+from server.slack.message_status import MessageStatus, MessageVisibility
 from server.tests.test_app import *  # noqa: F401, F403
 
 channel_id = "42"
@@ -43,9 +43,12 @@ user_id = "4321"
     ],
 )
 def test_create(text, expected_message, client):
-    message, message_status = CreateCommand(text, channel_id).exec(user_id)
+    message, message_status, message_visibility = CreateCommand(text, channel_id).exec(
+        user_id
+    )
     assert expected_message in message
     assert message_status == MessageStatus.SUCCESS
+    assert message_visibility == MessageVisibility.NORMAL
 
 
 def test_create_fail_if_already_exist(client):

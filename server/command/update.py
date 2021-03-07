@@ -2,7 +2,7 @@ from server.command.args import Arg, ArgError
 from server.command.base_command import BaseCommand
 from server.orm.command import Command
 from server.slack.message_formatting import format_custom_command_help
-from server.slack.message_status import MessageStatus
+from server.slack.message_status import MessageStatus, MessageVisibility
 
 
 class UpdateCommand(BaseCommand):
@@ -82,4 +82,4 @@ class UpdateCommand(BaseCommand):
 
         message = f"Command {updated_command.name} successfully updated.\n"
         message += format_custom_command_help(updated_command)
-        return message, MessageStatus.SUCCESS
+        return message, MessageStatus.SUCCESS, MessageVisibility.NORMAL

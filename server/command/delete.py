@@ -1,7 +1,7 @@
 from server.command.args import Arg, ArgError
 from server.command.base_command import BaseCommand
 from server.orm.command import Command
-from server.slack.message_status import MessageStatus
+from server.slack.message_status import MessageStatus, MessageVisibility
 
 
 class DeleteCommand(BaseCommand):
@@ -30,4 +30,4 @@ class DeleteCommand(BaseCommand):
         Command.delete(command)
 
         message = f"Command {command_name} successfully deleted."
-        return message, MessageStatus.INFO
+        return message, MessageStatus.INFO, MessageVisibility.NORMAL
