@@ -17,5 +17,4 @@ class BaseCommand:
 
         text_list = format_text_to_list(text)
         options = parser.parse_args(text_list)
-        print(options.__dict__)
         self.options = options_to_dict(options.__dict__, self.args)

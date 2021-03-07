@@ -44,7 +44,8 @@ def get_as_string(options, name, nargs0or1):
 
 
 def get_as_bool(options, name, nargs0or1=None):
-    print(options[name])
+    if options[name] is None:
+        return None
     return options[name] is True or str(options[name]).lower() == "true"
 
 

@@ -21,6 +21,7 @@ def call_webhook(client, text):
         )
 
     slack_message = f.getvalue()
+    print(slack_message)
     return response, slack_message
 
 
@@ -95,7 +96,8 @@ def test_slack_webhook_create_fail(text, client):
             "update --commandName test_update --removeFromPickList 1 2 3 4",
             {"pick_list": []},
         ),
-        ("update --commandName test_update", {"self_exclude": False}),
+        ("update --commandName test_update --label My label", {"label": "My label"}),
+        ("update --commandName test_update --label My label", {"self_exclude": True}),
         ("update --commandName test_update --selfExclude", {"self_exclude": True}),
         (
             "update --commandName test_update --selfExclude True",
@@ -108,7 +110,7 @@ def test_slack_webhook_create_fail(text, client):
     ],
 )
 def test_slack_webhook_update(text, expected, client):
-    Command.create("test_update", "1234", "label", ["1", "2"], False)
+    Command.create("test_update", "1234", "label", ["1", "2"], True)
     response, slack_message = call_webhook(client, text)
 
     assert response.status_code == 200

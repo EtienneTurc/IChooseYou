@@ -75,9 +75,6 @@ class UpdateCommand(BaseCommand):
         if self.options["selfExclude"] is not None:
             new_values["self_exclude"] = self.options["selfExclude"]
 
-        print(self.options)
-        print(bool(self.options["selfExclude"]))
-        print(new_values)
         Command.update(command.name, command.channel_id, new_values)
 
         updated_command = Command.find_one_by_name_and_chanel(
