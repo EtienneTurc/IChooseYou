@@ -2,10 +2,16 @@ import random
 from dataclasses import dataclass
 
 from server.command.args import ArgumentParser
-from server.command.utils import (find_args_in_text, format_text_to_list,
-                                  get_args_in_label, options_to_dict)
+from server.command.utils import (
+    find_args_in_text,
+    format_text_to_list,
+    get_args_in_label,
+    options_to_dict,
+)
 from server.command.validator import assert_named_args, assert_positional_args
 from server.slack.message_formatting import format_custom_command_message
+from server.blueprint.back_error import BackError
+from server.command.args import ArgError
 
 
 @dataclass
@@ -19,6 +25,19 @@ class CustomCommand:
         pick_list = self.pick_list
         if self.self_exclude:
             pick_list = [el for el in pick_list if user["id"] not in el]
+
+        if not len(pick_list):
+            if not len(self.pick_list):
+                raise ArgError(None, "Can't pick an element from an empty pick list.")
+
+            if len(self.pick_list) == 1 and user["id"] in self.pick_list[0]:
+                message = "Pick list contains only the user using the command."
+                message += "But the flag selfExclude is set to True."
+                message += "Thus no element can be picked from the pick list."
+                raise ArgError(None, message)
+
+            else:
+                raise BackError("Pick list empty.", 500)
 
         selected_element = random.choice(pick_list)
         label = self._create_label(args_text)
