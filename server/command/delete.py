@@ -19,7 +19,7 @@ class DeleteCommand(BaseCommand):
             text, name=name, channel_id=channel_id, args=args
         )
 
-    def exec(self):
+    def exec(self, *args, **kwargs):
         command_name = self.options.get("commandName")
 
         try:

@@ -10,7 +10,7 @@ channel_id = "1234"
 
 
 def test_delete(client):
-    Command.create("test_delete", channel_id, "label", ["1", "2"], True)
+    Command.create("test_delete", channel_id, "label", ["1", "2"], True, "4321")
     text = "--commandName test_delete"
     message, message_status = DeleteCommand(text, channel_id).exec()
     assert "Command test_delete successfully deleted." == message

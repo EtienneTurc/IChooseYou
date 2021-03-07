@@ -1,17 +1,12 @@
 import random
 from dataclasses import dataclass
 
-from server.command.args import ArgumentParser
-from server.command.utils import (
-    find_args_in_text,
-    format_text_to_list,
-    get_args_in_label,
-    options_to_dict,
-)
+from server.blueprint.back_error import BackError
+from server.command.args import ArgError, ArgumentParser
+from server.command.utils import (find_args_in_text, format_text_to_list,
+                                  get_args_in_label, options_to_dict)
 from server.command.validator import assert_named_args, assert_positional_args
 from server.slack.message_formatting import format_custom_command_message
-from server.blueprint.back_error import BackError
-from server.command.args import ArgError
 
 
 @dataclass
@@ -21,7 +16,7 @@ class CustomCommand:
     pick_list: list
     self_exclude: bool
 
-    def exec(self, user, args_text):
+    def exec(self, user, args_text, **kwargs):
         pick_list = self.pick_list
         if self.self_exclude:
             pick_list = [el for el in pick_list if user["id"] not in el]

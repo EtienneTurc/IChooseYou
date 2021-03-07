@@ -4,10 +4,12 @@ from server.command.create import CreateCommand
 from server.command.delete import DeleteCommand
 from server.command.update import UpdateCommand
 from server.orm.command import Command
-from server.slack.message_formatting import (format_custom_command_help,
-                                             format_custom_commands_help,
-                                             format_known_command_help,
-                                             format_known_commands_help)
+from server.slack.message_formatting import (
+    format_custom_command_help,
+    format_custom_commands_help,
+    format_known_command_help,
+    format_known_commands_help,
+)
 from server.slack.message_status import MessageStatus
 
 KNOWN_COMMANDS = {
@@ -32,7 +34,7 @@ class HelpCommand(BaseCommand):
             text, name=name, channel_id=channel_id, args=args
         )
 
-    def exec(self):
+    def exec(self, *args, **kwargs):
         if self.options.get("commandName"):
             command_name = self.options.get("commandName")
             if command_name in KNOWN_COMMANDS_NAMES:

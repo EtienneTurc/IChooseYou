@@ -25,7 +25,7 @@ def call_webhook(client, text):
 def mock_slack_webhook_data(
     channel_id="1234",
     channel_name="1234",
-    user_id="1234",
+    user_id="4321",
     user_name="1234",
     text="1234",
     response_url="1234",
@@ -107,7 +107,7 @@ def test_slack_webhook_create_fail(text, client):
     ],
 )
 def test_slack_webhook_update(text, expected, client):
-    Command.create("test_update", "1234", "label", ["1", "2"], True)
+    Command.create("test_update", "1234", "label", ["1", "2"], True, "4321")
     response, slack_message = call_webhook(client, text)
 
     assert response.status_code == 200
@@ -125,7 +125,7 @@ def test_slack_webhook_update(text, expected, client):
 
 
 def test_slack_webhook_delete(client):
-    Command.create("test_delete", "1234", "label", ["1", "2"], False)
+    Command.create("test_delete", "1234", "label", ["1", "2"], False, "4321")
     text = "delete --commandName test_delete"
     response, slack_message = call_webhook(client, text)
 
@@ -137,7 +137,7 @@ def test_slack_webhook_delete(client):
 
 
 def test_slack_webhook_delete_fail(client):
-    Command.create("test_delete", "1234", "label", ["1", "2"], False)
+    Command.create("test_delete", "1234", "label", ["1", "2"], False, "4321")
     text = "delete --commandName test_delete_unknown_command"
     response, slack_message = call_webhook(client, text)
 
@@ -149,7 +149,7 @@ def test_slack_webhook_delete_fail(client):
 
 
 def test_slack_webhook_custom(client):
-    Command.create("test_custom", "1234", "label", ["pick_1", "pick_2"], False)
+    Command.create("test_custom", "1234", "label", ["pick_1", "pick_2"], False, "4321")
     text = "test_custom"
     response, slack_message = call_webhook(client, text)
 

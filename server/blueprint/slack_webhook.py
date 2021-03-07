@@ -31,7 +31,7 @@ def slack_app():
         if command_name in KNOWN_COMMANDS_NAMES:
             message, message_status = KNOWN_COMMANDS[command_name](
                 text, channel["id"]
-            ).exec()
+            ).exec(user["id"])
             webhook_send_message(webhook, message, message_status)
             return make_response("", 200)
 

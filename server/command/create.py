@@ -49,7 +49,7 @@ class CreateCommand(BaseCommand):
             text, name=name, channel_id=channel_id, args=args
         )
 
-    def exec(self):
+    def exec(self, user_id, *args, **kwargs):
         assert_label_is_correct(self.options["label"])
         Command.create(
             self.options["commandName"],
@@ -57,6 +57,7 @@ class CreateCommand(BaseCommand):
             self.options["label"],
             self.options["pickList"],
             self.options["selfExclude"],
+            user_id,
         )
         created_command = Command.find_one_by_name_and_chanel(
             self.options["commandName"], self.channel_id

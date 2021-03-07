@@ -41,7 +41,7 @@ class UpdateCommand(BaseCommand):
             text, name=name, channel_id=channel_id, args=args
         )
 
-    def exec(self):
+    def exec(self, user_id, *args, **kwargs):
         command_name = self.options["commandName"]
 
         try:
@@ -74,7 +74,7 @@ class UpdateCommand(BaseCommand):
         if self.options["selfExclude"] is not None:
             new_values["self_exclude"] = self.options["selfExclude"]
 
-        Command.update(command.name, command.channel_id, new_values)
+        Command.update(command.name, command.channel_id, user_id, new_values)
 
         updated_command = Command.find_one_by_name_and_chanel(
             command_name, self.channel_id
