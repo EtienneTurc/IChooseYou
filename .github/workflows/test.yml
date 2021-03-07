@@ -28,5 +28,6 @@ jobs:
     - name: Run unit testing, packaging and test code quality
       env:
         PYTHON_ALIAS: python
+        SLACK_SIGNING_SECRET: 1234
       run: |
         make test-all
