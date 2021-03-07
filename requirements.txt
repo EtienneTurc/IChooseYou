@@ -1,3 +1,0 @@
-flask
-pymodm
-slack_sdk
