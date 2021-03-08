@@ -3,6 +3,7 @@ from server.command.base_command import BaseCommand
 from server.orm.command import Command
 from server.slack.message_formatting import format_custom_command_help
 from server.slack.message_status import MessageStatus, MessageVisibility
+from server.command.utils import format_pick_list
 
 
 class UpdateCommand(BaseCommand):
@@ -69,7 +70,9 @@ class UpdateCommand(BaseCommand):
             )
 
         if self.options["pickList"]:
-            new_values["pick_list"] = self.options["pickList"]
+            new_values["pick_list"] = format_pick_list(
+                self.options["pickList"], self.channel_id
+            )
 
         if self.options["selfExclude"] is not None:
             new_values["self_exclude"] = self.options["selfExclude"]

@@ -4,6 +4,7 @@ from server.command.validator import assert_label_is_correct
 from server.orm.command import Command
 from server.slack.message_formatting import format_custom_command_help
 from server.slack.message_status import MessageStatus, MessageVisibility
+from server.command.utils import format_pick_list
 
 label_help = "Text to display using the following format:"
 label_help += "\n>Hey ! <user> choose <element> to <your_label>\n"
@@ -50,11 +51,14 @@ class CreateCommand(BaseCommand):
 
     def exec(self, user_id, *args, **kwargs):
         assert_label_is_correct(self.options["label"])
+
+        pick_list = format_pick_list(self.options["pickList"], self.channel_id)
+
         Command.create(
             self.options["commandName"],
             self.channel_id,
             self.options["label"],
-            self.options["pickList"],
+            pick_list,
             self.options["selfExclude"],
             user_id,
         )

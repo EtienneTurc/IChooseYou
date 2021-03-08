@@ -5,6 +5,7 @@ from server.command.update import UpdateCommand
 from server.orm.command import Command
 from server.slack.message_status import MessageStatus, MessageVisibility
 from server.tests.test_app import *  # noqa: F401, F403
+import server.slack.tests.monkey_patch_request as monkey_patch_request  # noqa: F401
 
 channel_id = "1234"
 user_id = "4321"
@@ -24,6 +25,10 @@ user_id = "4321"
         (
             "--commandName test_update --pickList 1 2 3",
             "['1', '2', '3']",
+        ),
+        (
+            "--commandName test_update --pickList all_members",
+            "['<@1234>', '<@2345>', '<@3456>']",
         ),
         (
             "--commandName test_update --addToPickList 3",

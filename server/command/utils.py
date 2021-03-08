@@ -1,4 +1,6 @@
 from server.command.args import Arg
+from server.slack.request import get_users_in_channel
+from server.slack.message_formatting import format_mention_member
 
 
 def find_args_in_text(text):
@@ -84,3 +86,11 @@ def format_text_to_list(text):
     if text:
         text_list = text.split(" ")
     return text_list
+
+
+def format_pick_list(pick_list, channel_id):
+    if pick_list == ["all_members"]:
+        pick_list = []
+        members = get_users_in_channel(channel_id)
+        return [format_mention_member(member) for member in members]
+    return pick_list

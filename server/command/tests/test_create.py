@@ -4,6 +4,8 @@ from server.blueprint.back_error import BackError
 from server.command.create import CreateCommand
 from server.slack.message_status import MessageStatus, MessageVisibility
 from server.tests.test_app import *  # noqa: F401, F403
+import server.slack.tests.monkey_patch_request as monkey_patch_request  # noqa: F401
+
 
 channel_id = "42"
 user_id = "4321"
@@ -39,6 +41,10 @@ user_id = "4321"
         (
             "--commandName test_create --label my label --pickList 1 2 3",
             "User using the slash command not excluded.",
+        ),
+        (
+            "--commandName test_create --label my label --pickList all_members",
+            "['<@1234>', '<@2345>', '<@3456>']",
         ),
     ],
 )

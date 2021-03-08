@@ -87,7 +87,7 @@ def test_custom_command():
     custom_command = CustomCommand(name, "my fancy label", pick_list, False)
     message = custom_command.exec({"id": "4321", "name": "me"}, "")
     assert "Hey ! <@4321|me> choose " in message
-    assert "to my fancy label" in message
+    assert "my fancy label" in message
 
 
 def test_custom_command_self_exclude():
