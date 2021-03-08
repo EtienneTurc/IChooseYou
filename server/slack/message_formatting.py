@@ -60,7 +60,7 @@ def format_custom_commands_help(custom_commands):
 
 
 def format_examples(examples):
-    message = "> Examples:"
+    message = "> Examples:\n"
     for example in examples:
-        message += f">`{message}`\n"
+        message += f"> `{example}`\n"
     return message
