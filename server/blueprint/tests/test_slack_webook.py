@@ -19,7 +19,6 @@ def call_webhook(client, text):
         )
 
     slack_message = f.getvalue()
-    print(slack_message)
     return response, slack_message
 
 
@@ -44,7 +43,6 @@ def mock_slack_webhook_data(
 def test_slack_webhook_no_command(client):
     text = ""
     response, slack_message = call_webhook(client, text)
-    assert response.status_code == 400
     assert "No command found." in slack_message
 
 
@@ -59,7 +57,6 @@ def test_slack_webhook_no_command(client):
 )
 def test_slack_webhook_create(text, client):
     response, slack_message = call_webhook(client, text)
-    assert response.status_code == 200
     assert "Command test_create successfully created." in slack_message
 
 
@@ -75,7 +72,6 @@ def test_slack_webhook_create(text, client):
 )
 def test_slack_webhook_create_fail(text, client):
     response, slack_message = call_webhook(client, text)
-    assert response.status_code in [400, 500]
     assert "create: error: the following arguments are required:" in slack_message
 
 
@@ -111,7 +107,6 @@ def test_slack_webhook_update(text, expected, client):
     Command.create("test_update", "1234", "label", ["1", "2"], True, "4321")
     response, slack_message = call_webhook(client, text)
 
-    assert response.status_code == 200
     assert "Command test_update successfully updated." in slack_message
 
     updated_command = (
@@ -130,7 +125,6 @@ def test_slack_webhook_delete(client):
     text = "delete --commandName test_delete"
     response, slack_message = call_webhook(client, text)
 
-    assert response.status_code == 200
     assert "Command test_delete successfully deleted." in slack_message
 
     with pytest.raises(Command.DoesNotExist):
@@ -142,7 +136,6 @@ def test_slack_webhook_delete_fail(client):
     text = "delete --commandName test_delete_unknown_command"
     response, slack_message = call_webhook(client, text)
 
-    assert response.status_code == 400
     assert "Command test_delete_unknown_command does not exist" in slack_message
 
     command = Command.find_one_by_name_and_chanel("test_delete", "1234")
@@ -154,12 +147,10 @@ def test_slack_webhook_custom(client):
     text = "test_custom"
     response, slack_message = call_webhook(client, text)
 
-    assert response.status_code == 200
     assert "Hey !" in slack_message
 
 
 def test_slack_webhook_no_custom_command(client):
     text = "test_custom"
     response, slack_message = call_webhook(client, text)
-    assert response.status_code == 400
     assert "No command found for test_custom." in slack_message
