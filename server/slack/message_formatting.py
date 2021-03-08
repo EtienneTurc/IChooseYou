@@ -4,6 +4,7 @@ def format_known_command_help(known_command):
     message += "_Arguments_:\n"
     for arg in command.args:
         message += f"• *{arg.name}*: {arg.help}\n"
+    message += f"{format_examples(command.examples)}"
     return message
 
 
@@ -14,6 +15,7 @@ def format_known_commands_help(known_commands):
         args_names = " ".join([f"--{arg.name}" for arg in command.args])
         message += f"*{command.name}*: {command.description}.\n"
         message += f"Arguments: _{args_names}_.\n"
+        message += f"{format_examples(command.examples)}"
     return message
 
 
@@ -54,4 +56,11 @@ def format_custom_commands_help(custom_commands):
             None, "selected_element", custom_command.label
         )
         message += f"• *{custom_command.name}*: {slack_message_from_command}.\n"
+    return message
+
+
+def format_examples(examples):
+    message = "> Examples:"
+    for example in examples:
+        message += f">`{message}`\n"
     return message

@@ -1,6 +1,7 @@
 class Config(object):
     DEBUG = False
     TESTING = False
+    SLASH_COMMAND = "/ichu"
     DATABASE_URI = "mongodb://localhost:27017/ichooseyoudb"
 
 
@@ -17,6 +18,7 @@ class DevelopmentConfig(Config):
 class TestingConfig(Config):
     DEBUG = False
     TESTING = True
+    SLASH_COMMAND = "/slash_command"
     DATABASE_URI = "mongodb://localhost:27017/ichooseyoudb_test"
 
 

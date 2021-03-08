@@ -19,17 +19,25 @@ KNOWN_COMMANDS = {
 
 class HelpCommand(BaseCommand):
     def __init__(self, text, channel_id):
-        self.description = "Command to show commands, args and their values"
         name = "help"
+        description = "Command to show commands, args and their values"
+        examples = [
+            "--commandName command_to_get_info_from",
+        ]
         args = [
             Arg(
                 name="commandName",
                 nargs="?",
-                help="Name of the command to show info from.",
+                help="Name of the command to show info from. (Optional)",
             ),
         ]
         super(HelpCommand, self).__init__(
-            text, name=name, channel_id=channel_id, args=args
+            text,
+            name=name,
+            channel_id=channel_id,
+            description=description,
+            examples=examples,
+            args=args,
         )
 
     def exec(self, *args, **kwargs):
@@ -58,9 +66,9 @@ class HelpCommand(BaseCommand):
             )
 
     def _format_commands_help(self, known_commands, custom_commands):
-        message = ">*Fixed commands:*\n"
+        message = "_*Fixed commands:*_\n"
         message += format_known_commands_help(known_commands)
-        message += "\n\n> *Created commands:*\n"
+        message += "\n\n _*Created commands:*_\n"
         message += format_custom_commands_help(custom_commands)
         return message
 

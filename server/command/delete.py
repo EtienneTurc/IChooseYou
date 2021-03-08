@@ -6,8 +6,11 @@ from server.slack.message_status import MessageStatus, MessageVisibility
 
 class DeleteCommand(BaseCommand):
     def __init__(self, text, channel_id):
-        self.description = "Delete a given command"
         name = "delete"
+        description = "Delete a given command"
+        examples = [
+            "--commandName my_command_to_delete",
+        ]
         args = [
             Arg(
                 name="commandName",
@@ -16,7 +19,12 @@ class DeleteCommand(BaseCommand):
             ),
         ]
         super(DeleteCommand, self).__init__(
-            text, name=name, channel_id=channel_id, args=args
+            text,
+            name=name,
+            channel_id=channel_id,
+            description=description,
+            examples=examples,
+            args=args,
         )
 
     def exec(self, *args, **kwargs):

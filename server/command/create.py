@@ -1,10 +1,10 @@
 from server.command.args import Arg
 from server.command.base_command import BaseCommand
+from server.command.utils import format_pick_list
 from server.command.validator import assert_label_is_correct
 from server.orm.command import Command
 from server.slack.message_formatting import format_custom_command_help
 from server.slack.message_status import MessageStatus, MessageVisibility
-from server.command.utils import format_pick_list
 
 label_help = "Text to display using the following format:"
 label_help += "\n>Hey ! <user> choose <element> to <your_label>\n"
@@ -20,12 +20,19 @@ pick_list_help += " Elements must be separated by spaces,"
 pick_list_help += " thus an element can't be composed of two words."
 pick_list_help += "\n> If you want to directly notify a user when he is selected,"
 pick_list_help += " you must mention him in the pickList."
+pick_list_help += "\n> You can add all members of the channel to pick list with"
+pick_list_help += " `--pickList all_members`."
 
 
 class CreateCommand(BaseCommand):
     def __init__(self, text, channel_id):
-        self.description = "Command to create new slash commands"
         name = "create"
+        description = "Command to create new slash commands"
+        examples = [
+            "--commandName mySuperCommand --pickList first_element second --label my super awesome label",  # noqa E501
+            "--commandName mySuperCommand --pickList all_members --label will replace bash args such as $1 or $my_var_name",  # noqa E501
+        ]
+
         args = [
             Arg(name="commandName", nargs=1, help="Name of the command to create."),
             Arg(name="label", nargs="+", required=True, help=label_help),
@@ -46,7 +53,12 @@ class CreateCommand(BaseCommand):
             ),
         ]
         super(CreateCommand, self).__init__(
-            text, name=name, channel_id=channel_id, args=args
+            text,
+            name=name,
+            description=description,
+            examples=examples,
+            channel_id=channel_id,
+            args=args,
         )
 
     def exec(self, user_id, *args, **kwargs):

@@ -1,11 +1,10 @@
 import pytest
 
+import server.slack.tests.monkey_patch_request as monkey_patch_request  # noqa: F401
 from server.blueprint.back_error import BackError
 from server.command.create import CreateCommand
 from server.slack.message_status import MessageStatus, MessageVisibility
 from server.tests.test_app import *  # noqa: F401, F403
-import server.slack.tests.monkey_patch_request as monkey_patch_request  # noqa: F401
-
 
 channel_id = "42"
 user_id = "4321"

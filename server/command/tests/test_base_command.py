@@ -2,9 +2,12 @@ import pytest
 
 from server.command.args import Arg, ArgError
 from server.command.base_command import BaseCommand
+from server.tests.test_app import *  # noqa: F401, F403
 
 name = "test_base_command"
 channel_id = "42"
+description = "My super description"
+examples = ["whatever"]
 first_args = Arg(name="first_args", nargs=1)
 multiple_args = Arg(name="multiple_args", nargs="+")
 list_args = Arg(name="list_args", nargs="+", type=list)
@@ -64,8 +67,15 @@ optional_single_arg = Arg(name="optional_single_arg", nargs="?")
         ),
     ],
 )
-def test_base_command_init(text, args, expected_options):
-    options = BaseCommand(text, name, channel_id, args).options
+def test_base_command_init(text, args, expected_options, client):
+    options = BaseCommand(
+        text,
+        name=name,
+        description=description,
+        examples=examples,
+        channel_id=channel_id,
+        args=args,
+    ).options
     for key in expected_options:
         assert options[key] == expected_options[key]
 
@@ -95,6 +105,13 @@ def test_base_command_init(text, args, expected_options):
         ),
     ],
 )
-def test_base_command_init_raise_error(text, args):
+def test_base_command_init_raise_error(text, args, client):
     with pytest.raises(ArgError):
-        BaseCommand(text, name, channel_id, args)
+        BaseCommand(
+            text,
+            name=name,
+            description=description,
+            examples=examples,
+            channel_id=channel_id,
+            args=args,
+        )

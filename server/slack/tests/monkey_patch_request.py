@@ -1,5 +1,6 @@
-from server.slack.request import get_users_in_channel
 from slack_sdk import WebClient
+
+from server.slack.request import get_users_in_channel
 
 
 def monkey_patch_WebClient():

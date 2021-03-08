@@ -1,10 +1,16 @@
+from flask import current_app
+
 from server.command.args import ArgumentParser
-from server.command.utils import format_text_to_list, options_to_dict
+from server.command.utils import format_examples, format_text_to_list, options_to_dict
 
 
 class BaseCommand:
-    def __init__(self, text, channel_id, name="", args=[]):
+    def __init__(self, text, *, channel_id, description, examples, name="", args=[]):
         self.name = name
+        self.description = description
+        self.examples = format_examples(
+            current_app.config["SLASH_COMMAND"], name, examples
+        )
         self.channel_id = channel_id
         self.args = args
 

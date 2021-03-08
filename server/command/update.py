@@ -1,15 +1,20 @@
 from server.command.args import Arg, ArgError
 from server.command.base_command import BaseCommand
+from server.command.utils import format_pick_list
 from server.orm.command import Command
 from server.slack.message_formatting import format_custom_command_help
 from server.slack.message_status import MessageStatus, MessageVisibility
-from server.command.utils import format_pick_list
 
 
 class UpdateCommand(BaseCommand):
     def __init__(self, text, channel_id):
-        self.description = "Update a given command"
         name = "update"
+        description = "Update a given command"
+        examples = [
+            "--commandName mySuperCommand --addToPickList my_element_to_add",
+            "--commandName mySuperCommand --pickList my new pick list",
+            "--commandName mySuperCommand --selfExclude",
+        ]
         args = [
             Arg(
                 name="commandName",
@@ -39,7 +44,12 @@ class UpdateCommand(BaseCommand):
             ),
         ]
         super(UpdateCommand, self).__init__(
-            text, name=name, channel_id=channel_id, args=args
+            text,
+            name=name,
+            channel_id=channel_id,
+            description=description,
+            examples=examples,
+            args=args,
         )
 
     def exec(self, user_id, *args, **kwargs):

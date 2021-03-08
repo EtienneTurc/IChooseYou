@@ -4,9 +4,9 @@ from contextlib import redirect_stdout
 import pytest
 
 import server.blueprint.tests.monkey_patch as monkey_patch  # noqa: F401
+import server.slack.tests.monkey_patch_request as monkey_patch_request  # noqa: F401
 from server.orm.command import Command
 from server.tests.test_app import *  # noqa: F401, F403
-import server.slack.tests.monkey_patch_request as monkey_patch_request  # noqa: F401
 
 
 def call_webhook(client, text):
