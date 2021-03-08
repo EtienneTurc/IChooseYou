@@ -28,7 +28,7 @@ def error_handler(error, webhook, status_code):
     )
     print(error)
     traceback.print_exc()
-    return make_response(f"{error}", 200)
+    return make_response("", 200)
 
 
 def webhook_send_message(
