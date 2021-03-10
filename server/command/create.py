@@ -29,12 +29,17 @@ class CreateCommand(BaseCommand):
         name = "create"
         description = "Command to create new slash commands"
         examples = [
-            "--commandName mySuperCommand --pickList first_element second --label my super awesome label",  # noqa E501
-            "--commandName mySuperCommand --pickList all_members --label will replace bash args such as $1 or $my_var_name",  # noqa E501
+            "mySuperCommand --pickList first_element second --label my super awesome label",  # noqa E501
+            "mySuperCommand --pickList all_members --label will replace bash args such as $1 or $my_var_name",  # noqa E501
         ]
 
         args = [
-            Arg(name="commandName", nargs=1, help="Name of the command to create."),
+            Arg(
+                name="commandName",
+                prefix="",
+                nargs=1,
+                help="Name of the command to create.",
+            ),
             Arg(name="label", nargs="+", required=True, help=label_help),
             Arg(
                 name="pickList",

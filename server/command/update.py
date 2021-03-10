@@ -11,13 +11,14 @@ class UpdateCommand(BaseCommand):
         name = "update"
         description = "Update a given command"
         examples = [
-            "--commandName mySuperCommand --addToPickList my_element_to_add",
-            "--commandName mySuperCommand --pickList my new pick list",
-            "--commandName mySuperCommand --selfExclude",
+            "mySuperCommand --addToPickList my_element_to_add",
+            "mySuperCommand --pickList my new pick list",
+            "mySuperCommand --selfExclude",
         ]
         args = [
             Arg(
                 name="commandName",
+                prefix="",
                 nargs=1,
                 help="Name of the command to update.",
             ),

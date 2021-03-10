@@ -4,10 +4,12 @@ from server.command.create import CreateCommand
 from server.command.delete import DeleteCommand
 from server.command.update import UpdateCommand
 from server.orm.command import Command
-from server.slack.message_formatting import (format_custom_command_help,
-                                             format_custom_commands_help,
-                                             format_known_command_help,
-                                             format_known_commands_help)
+from server.slack.message_formatting import (
+    format_custom_command_help,
+    format_custom_commands_help,
+    format_known_command_help,
+    format_known_commands_help,
+)
 from server.slack.message_status import MessageStatus, MessageVisibility
 
 KNOWN_COMMANDS = {
@@ -22,11 +24,12 @@ class HelpCommand(BaseCommand):
         name = "help"
         description = "Command to show commands, args and their values"
         examples = [
-            "--commandName command_to_get_info_from",
+            "command_to_get_info_from",
         ]
         args = [
             Arg(
                 name="commandName",
+                prefix="",
                 nargs="?",
                 help="Name of the command to show info from. (Optional)",
             ),

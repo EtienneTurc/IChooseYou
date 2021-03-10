@@ -49,10 +49,10 @@ def test_slack_webhook_no_command(client):
 @pytest.mark.parametrize(
     "text",
     [
-        "create --commandName test_create --pickList 1 --label test",
-        "create --commandName test_create --pickList 1 2 3 --label test create",
-        "create --commandName test_create --pickList 1 2 3 --label test create --selfExclude",  # noqa: E501
-        "create --commandName test_create --pickList 1 2 3 --label test create --selfExclude True",  # noqa: E501
+        "create test_create --pickList 1 --label test",
+        "create test_create --pickList 1 2 3 --label test create",
+        "create test_create --pickList 1 2 3 --label test create --selfExclude",  # noqa: E501
+        "create test_create --pickList 1 2 3 --label test create --selfExclude True",  # noqa: E501
     ],
 )
 def test_slack_webhook_create(text, client):
@@ -63,11 +63,10 @@ def test_slack_webhook_create(text, client):
 @pytest.mark.parametrize(
     "text",
     [
-        "create --commandName test_create",
-        "create --commandName test_create --pickList 1 2 3",
-        "create --commandName test_create --label 1 2 3",
-        "create --name test_create --pickList 1 2 3 --label 1 2 3",
-        "create test_create --pickList 1 2 3 --label 1 2 3",
+        "create test_create",
+        "create test_create --pickList 1 2 3",
+        "create test_create --label 1 2 3",
+        "create --pickList 1 2 3 --label 1 2 3",
     ],
 )
 def test_slack_webhook_create_fail(text, client):
@@ -76,29 +75,40 @@ def test_slack_webhook_create_fail(text, client):
 
 
 @pytest.mark.parametrize(
+    "text",
+    [
+        "create --commandName test_create --pickList 1 2 3 --label 1 2 3",
+    ],
+)
+def test_slack_webhook_create_fail_unrecognized_element(text, client):
+    response, slack_message = call_webhook(client, text)
+    assert "create: error: unrecognized arguments:" in slack_message
+
+
+@pytest.mark.parametrize(
     "text, expected",
     [
         (
-            "update --commandName test_update --pickList 1 2 3",
+            "update test_update --pickList 1 2 3",
             {"pick_list": ["1", "2", "3"]},
         ),
         (
-            "update --commandName test_update --addToPickList 1 2 3 4",
+            "update test_update --addToPickList 1 2 3 4",
             {"pick_list": ["1", "2", "3", "4"]},
         ),
         (
-            "update --commandName test_update --removeFromPickList 1 2 3 4",
+            "update test_update --removeFromPickList 1 2 3 4",
             {"pick_list": []},
         ),
-        ("update --commandName test_update --label My label", {"label": "My label"}),
-        ("update --commandName test_update --label My label", {"self_exclude": True}),
-        ("update --commandName test_update --selfExclude", {"self_exclude": True}),
+        ("update test_update --label My label", {"label": "My label"}),
+        ("update test_update --label My label", {"self_exclude": True}),
+        ("update test_update --selfExclude", {"self_exclude": True}),
         (
-            "update --commandName test_update --selfExclude True",
+            "update test_update --selfExclude True",
             {"self_exclude": True},
         ),
         (
-            "update --commandName test_update --selfExclude False",
+            "update test_update --selfExclude False",
             {"self_exclude": False},
         ),
     ],
@@ -122,7 +132,7 @@ def test_slack_webhook_update(text, expected, client):
 
 def test_slack_webhook_delete(client):
     Command.create("test_delete", "1234", "label", ["1", "2"], False, "4321")
-    text = "delete --commandName test_delete"
+    text = "delete test_delete"
     response, slack_message = call_webhook(client, text)
 
     assert "Command test_delete successfully deleted." in slack_message
@@ -133,7 +143,7 @@ def test_slack_webhook_delete(client):
 
 def test_slack_webhook_delete_fail(client):
     Command.create("test_delete", "1234", "label", ["1", "2"], False, "4321")
-    text = "delete --commandName test_delete_unknown_command"
+    text = "delete test_delete_unknown_command"
     response, slack_message = call_webhook(client, text)
 
     assert "Command test_delete_unknown_command does not exist" in slack_message

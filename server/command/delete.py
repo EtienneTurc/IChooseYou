@@ -9,11 +9,12 @@ class DeleteCommand(BaseCommand):
         name = "delete"
         description = "Delete a given command"
         examples = [
-            "--commandName my_command_to_delete",
+            "my_command_to_delete",
         ]
         args = [
             Arg(
                 name="commandName",
+                prefix="",
                 nargs=1,
                 help="Name of the command to delete.",
             ),

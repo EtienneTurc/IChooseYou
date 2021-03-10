@@ -15,43 +15,43 @@ user_id = "4321"
     "text, expected_message",
     [
         (
-            "--commandName test_update --label my new label",
+            "test_update --label my new label",
             "Command test_update successfully updated.",
         ),
         (
-            "--commandName test_update --label my new label",
+            "test_update --label my new label",
             "my new label",
         ),
         (
-            "--commandName test_update --pickList 1 2 3",
+            "test_update --pickList 1 2 3",
             "['1', '2', '3']",
         ),
         (
-            "--commandName test_update --pickList all_members",
+            "test_update --pickList all_members",
             "['<@1234>', '<@2345>', '<@3456>']",
         ),
         (
-            "--commandName test_update --addToPickList 3",
+            "test_update --addToPickList 3",
             "'3'",
         ),
         (
-            "--commandName test_update --removeFromPickList 1",
+            "test_update --removeFromPickList 1",
             "['2']",
         ),
         (
-            "--commandName test_update --label my new label",
+            "test_update --label my new label",
             "User using the slash command excluded.",
         ),
         (
-            "--commandName test_update --label my new label --selfExclude",
+            "test_update --label my new label --selfExclude",
             "User using the slash command excluded.",
         ),
         (
-            "--commandName test_update --label my new label --selfExclude True",
+            "test_update --label my new label --selfExclude True",
             "User using the slash command excluded.",
         ),
         (
-            "--commandName test_update --label my new label --selfExclude False",
+            "test_update --label my new label --selfExclude False",
             "User using the slash command not excluded.",
         ),
     ],
@@ -67,7 +67,7 @@ def test_update(text, expected_message, client):
 
 
 def test_update_fail_if_command_does_not_exist(client):
-    text = "--commandName test_update --label my label --pickList 1 2 3 --selfExclude"
+    text = "test_update --label my label --pickList 1 2 3 --selfExclude"
 
     with pytest.raises(ArgError, match="Command test_update does not exist."):
         UpdateCommand(text, channel_id).exec(user_id)

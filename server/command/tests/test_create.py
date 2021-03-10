@@ -14,35 +14,35 @@ user_id = "4321"
     "text, expected_message",
     [
         (
-            "--commandName test_create --label my label --pickList 1 2 3 --selfExclude",
+            "test_create --label my label --pickList 1 2 3 --selfExclude",
             "Command test_create successfully created.",
         ),
         (
-            "--commandName test_create --label my label --pickList 1 2 3 --selfExclude",
+            "test_create --label my label --pickList 1 2 3 --selfExclude",
             "my label",
         ),
         (
-            "--commandName test_create --label my label --pickList 1 2 3 --selfExclude",
+            "test_create --label my label --pickList 1 2 3 --selfExclude",
             "['1', '2', '3']",
         ),
         (
-            "--commandName test_create --label my label --pickList 1 2 3 --selfExclude",
+            "test_create --label my label --pickList 1 2 3 --selfExclude",
             "User using the slash command excluded.",
         ),
         (
-            "--commandName test_create --label my label --pickList 1 2 3 --selfExclude True",  # noqa E501
+            "test_create --label my label --pickList 1 2 3 --selfExclude True",  # noqa E501
             "User using the slash command excluded.",
         ),
         (
-            "--commandName test_create --label my label --pickList 1 2 3 --selfExclude False",  # noqa E501
+            "test_create --label my label --pickList 1 2 3 --selfExclude False",  # noqa E501
             "User using the slash command not excluded.",
         ),
         (
-            "--commandName test_create --label my label --pickList 1 2 3",
+            "test_create --label my label --pickList 1 2 3",
             "User using the slash command not excluded.",
         ),
         (
-            "--commandName test_create --label my label --pickList all_members",
+            "test_create --label my label --pickList all_members",
             "['<@1234>', '<@2345>', '<@3456>']",
         ),
     ],
@@ -57,7 +57,7 @@ def test_create(text, expected_message, client):
 
 
 def test_create_fail_if_already_exist(client):
-    text = "--commandName test_create --label my label --pickList 1 2 3 --selfExclude"
+    text = "test_create --label my label --pickList 1 2 3 --selfExclude"
     CreateCommand(text, channel_id).exec(user_id)
 
     with pytest.raises(BackError, match="Command already exists."):

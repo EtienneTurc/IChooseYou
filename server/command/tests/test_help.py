@@ -29,7 +29,7 @@ def test_help_with_no_commands(client):
 
 
 def test_help_with_given_known_command(client):
-    text = "--commandName create"
+    text = "create"
     message, message_status, message_visibility = HelpCommand(text, channel_id).exec()
 
     expected_texts = [
@@ -46,7 +46,7 @@ def test_help_with_given_known_command(client):
 
 
 def test_help_with_given_custom_command(client):
-    text = "--commandName test_help"
+    text = "test_help"
     Command.create("test_help", channel_id, "my fancy label", ["1", "2"], True, "4321")
     message, message_status, message_visibility = HelpCommand(text, channel_id).exec()
 
