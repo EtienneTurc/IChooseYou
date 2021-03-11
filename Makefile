@@ -11,8 +11,10 @@ install:
 install-dev:
 	${PYTHON_ALIAS} -m pip install -e ".[dev]"
 
+run:
+	${PYTHON_ALIAS} -m flask run --host=0.0.0.0
 
-.PHONY: default clean install install-dev
+.PHONY: default clean install install-dev run
 
 test:
 	${PYTHON_ALIAS} -m pytest
