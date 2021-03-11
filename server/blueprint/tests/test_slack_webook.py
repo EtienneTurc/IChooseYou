@@ -138,7 +138,7 @@ def test_slack_webhook_delete(client):
     assert "Command test_delete successfully deleted." in slack_message
 
     with pytest.raises(Command.DoesNotExist):
-        Command.find_one_by_name_and_chanel("test_delete", "1234")
+        Command.find_one_by_name_and_chanel("test_delete", "1234", catch=False)
 
 
 def test_slack_webhook_delete_fail(client):
@@ -163,4 +163,4 @@ def test_slack_webhook_custom(client):
 def test_slack_webhook_no_custom_command(client):
     text = "test_custom"
     response, slack_message = call_webhook(client, text)
-    assert "No command found for test_custom." in slack_message
+    assert "Command test_custom does not exist." in slack_message

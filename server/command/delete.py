@@ -1,4 +1,4 @@
-from server.command.args import Arg, ArgError
+from server.command.args import Arg
 from server.command.base_command import BaseCommand, addHelp
 from server.orm.command import Command
 from server.slack.message_status import MessageStatus, MessageVisibility
@@ -31,12 +31,7 @@ class DeleteCommand(BaseCommand):
     @addHelp
     def exec(self, *args, **kwargs):
         command_name = self.options.get("commandName")
-
-        try:
-            command = Command.find_one_by_name_and_chanel(command_name, self.channel_id)
-        except Command.DoesNotExist:
-            raise ArgError(None, f"Command {command_name} does not exist.")
-
+        command = Command.find_one_by_name_and_chanel(command_name, self.channel_id)
         Command.delete(command)
 
         message = f"Command {command_name} successfully deleted."

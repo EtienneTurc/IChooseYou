@@ -1,4 +1,4 @@
-from server.command.args import Arg, ArgError
+from server.command.args import Arg
 from server.command.base_command import BaseCommand, addHelp
 from server.command.utils import format_pick_list
 from server.orm.command import Command
@@ -59,11 +59,7 @@ class UpdateCommand(BaseCommand):
     @addHelp
     def exec(self, user_id, *args, **kwargs):
         command_name = self.options["commandName"]
-
-        try:
-            command = Command.find_one_by_name_and_chanel(command_name, self.channel_id)
-        except Command.DoesNotExist:
-            raise ArgError(None, f"Command {command_name} does not exist.")
+        command = Command.find_one_by_name_and_chanel(command_name, self.channel_id)
 
         new_values = {}
         if self.options["label"]:

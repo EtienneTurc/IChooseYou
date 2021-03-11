@@ -1,6 +1,6 @@
 from flask import current_app
 
-from server.command.args import ArgumentParser, Arg
+from server.command.args import Arg, ArgumentParser
 from server.command.utils import format_examples, format_text_to_list, options_to_dict
 
 

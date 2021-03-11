@@ -1,6 +1,7 @@
 from pymodm import MongoModel, fields
 
 from server.blueprint.back_error import BackError
+from server.command.args import ArgError
 
 
 # Now let's define some Models.
@@ -14,8 +15,14 @@ class Command(MongoModel):
     updated_by_user_id = fields.CharField(required=True)
 
     @staticmethod
-    def find_one_by_name_and_chanel(name, channel_id):
-        return Command.objects.get({"name": name, "channel_id": channel_id})
+    def find_one_by_name_and_chanel(name, channel_id, catch=True):
+        if not catch:
+            return Command.objects.get({"name": name, "channel_id": channel_id})
+
+        try:
+            return Command.objects.get({"name": name, "channel_id": channel_id})
+        except Command.DoesNotExist:
+            raise ArgError(None, f"Command {name} does not exist.")
 
     @staticmethod
     def find_all_in_chanel(channel_id):
@@ -24,7 +31,7 @@ class Command(MongoModel):
     @staticmethod
     def create(name, channel_id, label, pick_list, self_exclude, created_by_user_id):
         try:
-            Command.find_one_by_name_and_chanel(name, channel_id)
+            Command.find_one_by_name_and_chanel(name, channel_id, catch=False)
             raise BackError("Command already exists.", 400)
         except Command.DoesNotExist:
             Command(

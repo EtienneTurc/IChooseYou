@@ -1,5 +1,5 @@
-from marshmallow import Schema, fields, validates, ValidationError
 from flask import current_app
+from marshmallow import Schema, ValidationError, fields, validates
 
 
 class SlackEntitySchema(Schema):
