@@ -20,7 +20,7 @@ test:
 	${PYTHON_ALIAS} -m pytest
 
 test-cov:
-	${PYTHON_ALIAS} -m pytest --cov=server/
+	${PYTHON_ALIAS} -m pytest --cov=server/ --cov-report term-missing --cov-report html
 
 test-quality: flake8 isort
 
