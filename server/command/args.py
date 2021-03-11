@@ -17,6 +17,7 @@ class ArgumentParser(argparse.ArgumentParser):
 @dataclass
 class Arg:
     name: str
+    short: str = None
     prefix: str = "--"
     type: any = str
     action: str = None
@@ -29,6 +30,7 @@ class Arg:
     def add_to_parser(self, parser):
         arg = dict(self.__dict__)
         del arg["name"]
+        del arg["short"]
         del arg["prefix"]
         if str(arg["nargs"]).isdigit() and arg["required"] is None:
             arg["required"] = True
@@ -41,5 +43,8 @@ class Arg:
                 del arg["const"]
         if self.prefix == "":
             del arg["required"]
-        parser.add_argument(f"{self.prefix}{self.name}", **arg)
+
+        argument_flags = [f"-{self.short}"] if self.short else []
+        argument_flags.append(f"{self.prefix}{self.name}")
+        parser.add_argument(*argument_flags, **arg)
         return parser

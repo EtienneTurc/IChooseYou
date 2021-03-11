@@ -1,5 +1,5 @@
 from server.command.args import Arg
-from server.command.base_command import BaseCommand
+from server.command.base_command import BaseCommand, addHelp
 from server.command.create import CreateCommand
 from server.command.delete import DeleteCommand
 from server.command.update import UpdateCommand
@@ -43,6 +43,7 @@ class HelpCommand(BaseCommand):
             args=args,
         )
 
+    @addHelp
     def exec(self, *args, **kwargs):
         if self.options.get("commandName"):
             command_name = self.options.get("commandName")

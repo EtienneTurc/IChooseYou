@@ -1,5 +1,5 @@
 from server.command.args import Arg
-from server.command.base_command import BaseCommand
+from server.command.base_command import BaseCommand, addHelp
 from server.command.utils import format_pick_list
 from server.command.validator import assert_label_is_correct
 from server.orm.command import Command
@@ -40,9 +40,10 @@ class CreateCommand(BaseCommand):
                 nargs=1,
                 help="Name of the command to create.",
             ),
-            Arg(name="label", nargs="+", required=True, help=label_help),
+            Arg(name="label", short="l", nargs="+", required=True, help=label_help),
             Arg(
                 name="pickList",
+                short="p",
                 nargs="+",
                 required=True,
                 type=list,
@@ -50,6 +51,7 @@ class CreateCommand(BaseCommand):
             ),
             Arg(
                 name="selfExclude",
+                short="s",
                 nargs="?",
                 const="True",
                 default="False",
@@ -66,6 +68,7 @@ class CreateCommand(BaseCommand):
             args=args,
         )
 
+    @addHelp
     def exec(self, user_id, *args, **kwargs):
         assert_label_is_correct(self.options["label"])
 

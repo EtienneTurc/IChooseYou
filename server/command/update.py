@@ -1,5 +1,5 @@
 from server.command.args import Arg, ArgError
-from server.command.base_command import BaseCommand
+from server.command.base_command import BaseCommand, addHelp
 from server.command.utils import format_pick_list
 from server.orm.command import Command
 from server.slack.message_formatting import format_custom_command_help
@@ -22,22 +22,25 @@ class UpdateCommand(BaseCommand):
                 nargs=1,
                 help="Name of the command to update.",
             ),
-            Arg(name="label", nargs="*", help="New label"),
-            Arg(name="pickList", nargs="*", type=list, help="New pick list"),
+            Arg(name="label", short="l", nargs="*", help="New label"),
+            Arg(name="pickList", short="p", nargs="*", type=list, help="New pick list"),
             Arg(
                 name="addToPickList",
+                short="a",
                 nargs="*",
                 type=list,
                 help="Elements to add to the pick list.",
             ),
             Arg(
                 name="removeFromPickList",
+                short="r",
                 nargs="*",
                 type=list,
                 help="Elements to remove from the pick list.",
             ),
             Arg(
                 name="selfExclude",
+                short="s",
                 nargs="?",
                 const="True",
                 type=bool,
@@ -53,6 +56,7 @@ class UpdateCommand(BaseCommand):
             args=args,
         )
 
+    @addHelp
     def exec(self, user_id, *args, **kwargs):
         command_name = self.options["commandName"]
 

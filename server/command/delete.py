@@ -1,5 +1,5 @@
 from server.command.args import Arg, ArgError
-from server.command.base_command import BaseCommand
+from server.command.base_command import BaseCommand, addHelp
 from server.orm.command import Command
 from server.slack.message_status import MessageStatus, MessageVisibility
 
@@ -28,6 +28,7 @@ class DeleteCommand(BaseCommand):
             args=args,
         )
 
+    @addHelp
     def exec(self, *args, **kwargs):
         command_name = self.options.get("commandName")
 
