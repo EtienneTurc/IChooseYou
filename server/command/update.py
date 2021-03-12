@@ -23,12 +23,20 @@ class UpdateCommand(BaseCommand):
                 help="Name of the command to update.",
             ),
             Arg(name="label", short="l", nargs="*", help="New label"),
-            Arg(name="pickList", short="p", nargs="*", type=list, help="New pick list"),
+            Arg(
+                name="pickList",
+                short="p",
+                nargs="*",
+                type=list,
+                clean_mentions=True,
+                help="New pick list",
+            ),
             Arg(
                 name="addToPickList",
                 short="a",
                 nargs="*",
                 type=list,
+                clean_mentions=True,
                 help="Elements to add to the pick list.",
             ),
             Arg(
@@ -36,6 +44,7 @@ class UpdateCommand(BaseCommand):
                 short="r",
                 nargs="*",
                 type=list,
+                clean_mentions=True,
                 help="Elements to remove from the pick list.",
             ),
             Arg(

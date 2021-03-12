@@ -18,6 +18,14 @@ def test_delete(client):
     assert message_visibility == MessageVisibility.NORMAL
 
 
+@pytest.mark.parametrize("text", ["-h", "--help", "whatever -h"])
+def test_delete_help(text, client):
+    message, message_status, message_visibility = DeleteCommand(text, channel_id).exec()
+    assert "Delete a given command." in message
+    assert message_status == MessageStatus.INFO
+    assert message_visibility == MessageVisibility.HIDDEN
+
+
 def test_delete_fail_if_command_does_not_exist(client):
     text = "test_delete"
     with pytest.raises(ArgError, match="Command test_delete does not exist."):

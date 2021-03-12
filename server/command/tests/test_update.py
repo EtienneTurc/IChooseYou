@@ -19,11 +19,23 @@ user_id = "4321"
             "Command test_update successfully updated.",
         ),
         (
+            "test_update -l my new label",
+            "Command test_update successfully updated.",
+        ),
+        (
             "test_update --label my new label",
             "my new label",
         ),
         (
+            "test_update -l my new label",
+            "my new label",
+        ),
+        (
             "test_update --pickList 1 2 3",
+            "['1', '2', '3']",
+        ),
+        (
+            "test_update -p 1 2 3",
             "['1', '2', '3']",
         ),
         (
@@ -35,7 +47,15 @@ user_id = "4321"
             "'3'",
         ),
         (
+            "test_update -a 3",
+            "'3'",
+        ),
+        (
             "test_update --removeFromPickList 1",
+            "['2']",
+        ),
+        (
+            "test_update -r 1",
             "['2']",
         ),
         (
@@ -64,6 +84,16 @@ def test_update(text, expected_message, client):
     assert expected_message in message
     assert message_status == MessageStatus.SUCCESS
     assert message_visibility == MessageVisibility.NORMAL
+
+
+@pytest.mark.parametrize("text", ["-h", "--help", "whatever -h"])
+def test_create_help(text, client):
+    message, message_status, message_visibility = UpdateCommand(text, channel_id).exec(
+        user_id
+    )
+    assert "Update a given command." in message
+    assert message_status == MessageStatus.INFO
+    assert message_visibility == MessageVisibility.HIDDEN
 
 
 def test_update_fail_if_command_does_not_exist(client):

@@ -18,12 +18,28 @@ user_id = "4321"
             "Command test_create successfully created.",
         ),
         (
+            "test_create -l my label -p 1 2 3 -s",
+            "Command test_create successfully created.",
+        ),
+        (
             "test_create --label my label --pickList 1 2 3 --selfExclude",
+            "my label",
+        ),
+        (
+            "test_create -l my label -p 1 2 3 -s",
             "my label",
         ),
         (
             "test_create --label my label --pickList 1 2 3 --selfExclude",
             "['1', '2', '3']",
+        ),
+        (
+            "test_create -l my label -p 1 2 3 -s",
+            "['1', '2', '3']",
+        ),
+        (
+            "test_create -l my label -p 1 2 3 -s",
+            "User using the slash command excluded.",
         ),
         (
             "test_create --label my label --pickList 1 2 3 --selfExclude",
@@ -54,6 +70,16 @@ def test_create(text, expected_message, client):
     assert expected_message in message
     assert message_status == MessageStatus.SUCCESS
     assert message_visibility == MessageVisibility.NORMAL
+
+
+@pytest.mark.parametrize("text", ["-h", "--help", "whatever -h"])
+def test_create_help(text, client):
+    message, message_status, message_visibility = CreateCommand(text, channel_id).exec(
+        user_id
+    )
+    assert "Command to create new slash commands." in message
+    assert message_status == MessageStatus.INFO
+    assert message_visibility == MessageVisibility.HIDDEN
 
 
 def test_create_fail_if_already_exist(client):

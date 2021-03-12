@@ -46,6 +46,7 @@ class CreateCommand(BaseCommand):
                 short="p",
                 nargs="+",
                 required=True,
+                clean_mentions=True,
                 type=list,
                 help=pick_list_help,
             ),

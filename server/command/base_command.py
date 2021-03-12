@@ -25,25 +25,34 @@ class BaseCommand:
         )
         self.channel_id = channel_id
         self.args = args
-        self.args.append(
-            Arg(
-                name="help",
-                short="h",
-                nargs=None,
-                type=bool,
-                action="store_true",
-                default="==SUPPRESS==",
-                help="Flag to show help.",
-            )
+
+        arg_help = Arg(
+            name="help",
+            short="h",
+            nargs=None,
+            type=bool,
+            action="store_true",
+            help="Flag to show help.",
         )
 
         if text is None:
             return
-
-        parser = ArgumentParser(prog=self.name, exit_on_error=False, add_help=False)
-        for arg in self.args:
-            parser = arg.add_to_parser(parser)
-
         text_list = format_text_to_list(text)
-        options = parser.parse_args(text_list)
-        self.options = options_to_dict(options.__dict__, self.args)
+
+        self._parse_args([arg_help], text_list, True)
+        if self.options.get("help"):
+            return
+
+        self._parse_args(self.args, text_list, False)
+
+    def _parse_args(self, args, text_list, partial=False):
+        parser = ArgumentParser(prog=self.name, exit_on_error=False, add_help=False)
+        for arg in args:
+            arg.add_to_parser(parser)
+
+        if partial:
+            options, _ = parser.parse_known_args(text_list)
+        else:
+            options = parser.parse_args(text_list)
+
+        self.options = options_to_dict(options.__dict__, args)

@@ -86,7 +86,7 @@ def test_create_label_raise_error(label, args_text):
 def test_custom_command():
     custom_command = CustomCommand(name, "my fancy label", pick_list, False)
     message = custom_command.exec({"id": "4321", "name": "me"}, "")
-    assert "Hey ! <@4321|me> choose " in message
+    assert "Hey ! <@4321> choose " in message
     assert "my fancy label" in message
 
 

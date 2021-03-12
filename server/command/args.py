@@ -26,12 +26,14 @@ class Arg:
     help: str = ""
     required: bool = None
     default: any = None
+    clean_mentions: bool = False
 
     def add_to_parser(self, parser):
         arg = dict(self.__dict__)
         del arg["name"]
         del arg["short"]
         del arg["prefix"]
+        del arg["clean_mentions"]
         if str(arg["nargs"]).isdigit() and arg["required"] is None:
             arg["required"] = True
         if arg["type"] == bool:

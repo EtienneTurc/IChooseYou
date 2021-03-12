@@ -12,7 +12,7 @@ def format_known_commands_help(known_commands):
     message = ""
     for command_class in known_commands:
         command = command_class(None, None)
-        args_names = " ".join([f"--{arg.name}" for arg in command.args])
+        args_names = " ".join([f"{arg.prefix}{arg.name}" for arg in command.args])
         message += f"*{command.name}*: {command.description}.\n"
         message += f"Arguments: _{args_names}_.\n"
         message += f"{format_examples(command.examples)}"
@@ -24,15 +24,9 @@ def format_custom_command_message(user, selected_element, label):
 
 
 def format_mention_user(user):
-    if not user or not user.get("id") or not user.get("name"):
+    if not user or not user.get("id"):
         return "<@user>"
-    return f"<@{user['id']}|{user['name']}>"
-
-
-def format_mention_member(member_id):
-    if not member_id:
-        return ""
-    return f"<@{member_id}>"
+    return f"<@{user['id']}>"
 
 
 def format_custom_command_help(custom_command):
