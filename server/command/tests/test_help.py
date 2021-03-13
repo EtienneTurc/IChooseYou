@@ -18,7 +18,7 @@ def test_help_with_no_commands(client):
         "help",
         "_*Fixed commands:*_\n",
         "\n _*Created commands:*_\n",
-        "Arguments",
+        "Usage",
         "test_help",
         "my fancy label",
     ]

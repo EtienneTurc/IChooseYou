@@ -36,7 +36,10 @@ class BaseCommand:
         )
 
         if text is None:
+            parser = self._create_parser([arg_help, *self.args])
+            self.usage = parser.format_usage()
             return
+
         text_list = format_text_to_list(text)
 
         self._parse_args([arg_help], text_list, True)
@@ -45,11 +48,14 @@ class BaseCommand:
 
         self._parse_args(self.args, text_list, False)
 
-    def _parse_args(self, args, text_list, partial=False):
+    def _create_parser(self, args):
         parser = ArgumentParser(prog=self.name, exit_on_error=False, add_help=False)
         for arg in args:
             arg.add_to_parser(parser)
+        return parser
 
+    def _parse_args(self, args, text_list, partial=False):
+        parser = self._create_parser(args)
         if partial:
             options, _ = parser.parse_known_args(text_list)
         else:

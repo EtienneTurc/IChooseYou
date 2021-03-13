@@ -20,8 +20,8 @@ pick_list_help += " Elements must be separated by spaces,"
 pick_list_help += " thus an element can't be composed of two words."
 pick_list_help += "\n> If you want to directly notify a user when he is selected,"
 pick_list_help += " you must mention him in the pickList."
-pick_list_help += "\n> You can add all members of the channel to pick list with"
-pick_list_help += " `--pickList all_members`."
+pick_list_help += "\n> You can add all members of the channel to the pick list"
+pick_list_help += " with the argument `-p all_members` or `--pickList all_members`."
 
 
 class CreateCommand(BaseCommand):

@@ -4,6 +4,7 @@ def format_known_command_help(known_command):
     message += "_Arguments_:\n"
     for arg in command.args:
         message += f"• *{arg.name}*: {arg.help}\n"
+    message += f"_Usage_: {command.usage}"
     message += f"{format_examples(command.examples)}"
     return message
 
@@ -12,9 +13,8 @@ def format_known_commands_help(known_commands):
     message = ""
     for command_class in known_commands:
         command = command_class(None, None)
-        args_names = " ".join([f"{arg.prefix}{arg.name}" for arg in command.args])
         message += f"*{command.name}*: {command.description}.\n"
-        message += f"Arguments: _{args_names}_.\n"
+        message += f"Usage: {command.usage}"
         message += f"{format_examples(command.examples)}"
     return message
 
