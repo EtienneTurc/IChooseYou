@@ -1,5 +1,7 @@
 from slack_sdk.webhook import WebhookClient
 
+from server.slack.utils import slack_signature_valid
+
 
 def monkey_patch_webhook_send(
     self,
@@ -16,3 +18,5 @@ def monkey_patch_webhook_send(
 
 
 WebhookClient.send.__code__ = monkey_patch_webhook_send.__code__
+
+slack_signature_valid.__code__ = (lambda x: True).__code__

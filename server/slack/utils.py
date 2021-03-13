@@ -1,6 +1,5 @@
 import os
 
-from flask import make_response
 from slack_sdk.signature import SignatureVerifier
 
 signature_verifier = SignatureVerifier(
@@ -10,10 +9,9 @@ signature_verifier = SignatureVerifier(
 
 # Verify incoming requests from Slack
 # https://api.slack.com/authentication/verifying-requests-from-slack
-def slack_signature_validation(request):
-    if not signature_verifier.is_valid(
+def slack_signature_valid(request):
+    return signature_verifier.is_valid(
         body=request.get_data(),
         timestamp=request.headers.get("X-Slack-Request-Timestamp"),
         signature=request.headers.get("X-Slack-Signature"),
-    ):
-        return make_response("invalid request", 403)
+    )

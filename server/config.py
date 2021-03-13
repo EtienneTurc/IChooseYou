@@ -3,6 +3,7 @@ class Config(object):
     TESTING = False
     SLASH_COMMAND = "/ichu"
     DATABASE_URI = "mongodb://localhost:27017/ichooseyoudb"
+    WAIT_FOR_THREAD_BEFORE_RETURN = False
 
 
 class ProductionConfig(Config):
@@ -13,6 +14,7 @@ class ProductionConfig(Config):
 class DevelopmentConfig(Config):
     DEBUG = True
     TESTING = False
+    SLASH_COMMAND = "/ichu_dev"
 
 
 class TestingConfig(Config):
@@ -20,6 +22,7 @@ class TestingConfig(Config):
     TESTING = True
     SLASH_COMMAND = "/slash_command"
     DATABASE_URI = "mongodb://localhost:27017/ichooseyoudb_test"
+    WAIT_FOR_THREAD_BEFORE_RETURN = True
 
 
 CONFIG = {"prod": ProductionConfig, "dev": DevelopmentConfig, "test": TestingConfig}

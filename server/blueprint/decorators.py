@@ -7,20 +7,28 @@ from slack_sdk.webhook import WebhookClient
 from server.blueprint.back_error import BackError
 from server.command.args import ArgError
 from server.slack.message_status import MessageStatus, MessageVisibility
-from server.slack.utils import slack_signature_validation
+from server.slack.utils import slack_signature_valid
 
 
-def error_handler(error, error_status):
+def make_context(func):
+    def make_context_wrapper(app, *args, **kwargs):
+        with app.app_context():
+            return func(*args, **kwargs)
+
+    return make_context_wrapper
+
+
+def error_handler(error, error_status, response_url):
     traceback.print_exc()  # Print stacktrace
 
-    def sendError(error, error_status):
+    def sendError(error, error_status, **kwargs):
         return (
             f"{error}",
             MessageStatus.LIGHT_ERROR if error_status == 400 else MessageStatus.ERROR,
             MessageVisibility.HIDDEN,
         )
 
-    return send_return(sendError)(error, error_status)
+    return send_to_channel(sendError)(error, error_status, response_url=response_url)
 
 
 def handle_error(func):
@@ -28,13 +36,13 @@ def handle_error(func):
         try:
             return func(*args, **kwargs)
         except ArgError as error:
-            return error_handler(error, 400)
+            return error_handler(error, 400, kwargs["response_url"])
         except ValidationError as error:
-            return error_handler(error, 400)
+            return error_handler(error, 400, kwargs["response_url"])
         except BackError as error:
-            return error_handler(error, error.status)
+            return error_handler(error, error.status, kwargs["response_url"])
         except Exception as error:
-            return error_handler(error, 500)
+            return error_handler(error, 500, kwargs["response_url"])
 
     return handle_error_wrapper
 
@@ -65,10 +73,18 @@ def format_body(func):
     return format_wrapper
 
 
+def validate_signature(func):
+    def validate_signature_wrapper(*args, **kwargs):
+        if not slack_signature_valid(request):
+            return make_response("invalid request", 403)
+        return func(*args, **kwargs)
+
+    return validate_signature_wrapper
+
+
 def validate(schema):
     def validate_decorator(func):
         def validate_wrapper(*args, **kwargs):
-            slack_signature_validation(request)
             schema().load(kwargs)
             return func(**kwargs)
 
@@ -77,11 +93,11 @@ def validate(schema):
     return validate_decorator
 
 
-def send_return(func):
-    def send_return_wrapper(*args, **kwargs):
+def send_to_channel(func):
+    def send_to_channel_wrapper(*args, **kwargs):
         message, message_status, message_visibility = func(*args, **kwargs)
 
-        webhook = WebhookClient(request.form["response_url"])
+        webhook = WebhookClient(kwargs["response_url"])
         webhook.send(
             text="",
             response_type=message_visibility.value
@@ -105,6 +121,5 @@ def send_return(func):
                 }
             ],
         )
-        return make_response("", 200)
 
-    return send_return_wrapper
+    return send_to_channel_wrapper

@@ -1,5 +1,6 @@
-import re
 import functools
+import re
+
 from server.command.args import Arg
 from server.slack.message_formatting import format_mention_user
 from server.slack.request import get_users_in_channel
