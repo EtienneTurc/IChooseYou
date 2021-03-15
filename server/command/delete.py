@@ -32,7 +32,7 @@ class DeleteCommand(BaseCommand):
     def exec(self, *args, **kwargs):
         command_name = self.options.get("commandName")
         command = Command.find_one_by_name_and_chanel(command_name, self.channel_id)
-        Command.delete(command)
+        Command.delete_command(command)
 
         message = f"Command {command_name} successfully deleted."
         return message, MessageStatus.INFO, MessageVisibility.NORMAL
