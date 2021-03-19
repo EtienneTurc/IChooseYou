@@ -1,10 +1,14 @@
-import os
-
 from slack_sdk import WebClient
 
-client = WebClient(token=os.environ.get("SLACK_BOT_TOKEN"))
+from server.orm.slack_bot_token import SlackBotToken
 
 
-def get_users_in_channel(channel_id):
+def get_web_client(team_id):
+    token = SlackBotToken.find_by_team_id(team_id).access_token
+    return WebClient(token=token)
+
+
+def get_users_in_channel(team_id, channel_id):
+    client = get_web_client(team_id)
     result = client.conversations_members(channel=channel_id)
     return result["members"]

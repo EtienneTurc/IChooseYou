@@ -7,7 +7,8 @@ class SlackEntitySchema(Schema):
     name = fields.Str(required=True)
 
 
-class SlackWebhookSchema(Schema):
+class SlackApiSchema(Schema):
+    team_id = fields.Str(required=True)
     channel = fields.Nested(SlackEntitySchema())
     user = fields.Nested(SlackEntitySchema())
     command_name = fields.Str(required=True)

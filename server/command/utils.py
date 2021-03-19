@@ -96,10 +96,10 @@ def format_text_to_list(text):
     return text_list
 
 
-def format_pick_list(pick_list, channel_id):
+def format_pick_list(pick_list, team_id, channel_id):
     if pick_list == ["all_members"]:
         pick_list = []
-        members = get_users_in_channel(channel_id)
+        members = get_users_in_channel(team_id, channel_id)
         return [format_mention_user({"id": member_id}) for member_id in members]
     return pick_list
 

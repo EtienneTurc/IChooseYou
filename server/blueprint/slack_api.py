@@ -1,23 +1,53 @@
+import os
 import threading
 
 from flask import Blueprint, current_app, make_response, request
+from slack_sdk import WebClient
 
 from server.blueprint.decorators import (format_body, handle_error, make_context,
                                          send_to_channel, validate, validate_signature)
-from server.blueprint.slack_webhook_validator import SlackWebhookSchema
+from server.blueprint.slack_api_validator import SlackApiSchema
 from server.command.custom import CustomCommand
 from server.command.help import KNOWN_COMMANDS, KNOWN_COMMANDS_NAMES
 from server.orm.command import Command
+from server.orm.slack_bot_token import SlackBotToken
 from server.slack.message_status import MessageStatus, MessageVisibility
 
-slack_webhook = Blueprint("slack_webhook", __name__, url_prefix="/slack_webhook")
+slack_api = Blueprint("api", __name__, url_prefix="/api/slack")
+
+client_id = os.environ.get("SLACK_CLIENT_ID")
+client_secret = os.environ.get("SLACK_CLIENT_SECRET")
 
 
-@slack_webhook.route("/", methods=["POST"])
+@slack_api.route("/oauth_redirect", methods=["GET"])
+def post_install():
+    code_param = request.args["code"]
+
+    client = WebClient()
+
+    try:
+        response = client.oauth_v2_access(
+            client_id=client_id, client_secret=client_secret, code=code_param
+        )
+
+        SlackBotToken.create(
+            team_id=response["team"]["id"],
+            team_name=response["team"]["name"],
+            scope=response["scope"],
+            token_type=response["token_type"],
+            access_token=response["access_token"],
+            bot_user_id=response["bot_user_id"],
+        )
+    except Exception as e:
+        return str(e)
+
+    return "I choose you successfully installed!"
+
+
+@slack_api.route("/", methods=["POST"])
 @validate_signature
 @format_body
-def slack_app(*args, **kwargs):
-
+def slash_command(*args, **kwargs):
     thread = threading.Thread(
         target=resolve_command,
         args=(current_app._get_current_object(), *args),
@@ -33,12 +63,14 @@ def slack_app(*args, **kwargs):
 
 @make_context
 @handle_error
-@validate(SlackWebhookSchema)
+@validate(SlackApiSchema)
 @send_to_channel
-def resolve_command(*, channel, user, command_name, text, **kwargs):
+def resolve_command(*, team_id, channel, user, command_name, text, **kwargs):
     # Known commands
     if command_name in KNOWN_COMMANDS_NAMES:
-        return KNOWN_COMMANDS[command_name](text, channel["id"]).exec(user["id"])
+        return KNOWN_COMMANDS[command_name](
+            text=text, team_id=team_id, channel_id=channel["id"]
+        ).exec(user["id"])
 
     # Custom commands
     command = Command.find_one_by_name_and_chanel(command_name, channel["id"])

@@ -7,7 +7,7 @@ from server.slack.message_status import MessageStatus, MessageVisibility
 
 
 class UpdateCommand(BaseCommand):
-    def __init__(self, text, channel_id):
+    def __init__(self, *, text, team_id, channel_id):
         name = "update"
         description = "Update a given command"
         examples = [
@@ -60,6 +60,7 @@ class UpdateCommand(BaseCommand):
             text,
             name=name,
             channel_id=channel_id,
+            team_id=team_id,
             description=description,
             examples=examples,
             args=args,
@@ -91,7 +92,7 @@ class UpdateCommand(BaseCommand):
 
         if self.options["pickList"]:
             new_values["pick_list"] = format_pick_list(
-                self.options["pickList"], self.channel_id
+                self.options["pickList"], self.team_id, self.channel_id
             )
 
         if self.options["selfExclude"] is not None:

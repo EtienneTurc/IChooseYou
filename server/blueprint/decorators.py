@@ -61,6 +61,7 @@ def format_body(func):
         command_name = text.split(" ")[0]
         text = " ".join(text.split(" ")[1:])
         response_url = request.form.get("response_url")
+        team_id = request.form.get("team_id")
 
         return func(
             channel=channel,
@@ -68,6 +69,7 @@ def format_body(func):
             command_name=command_name,
             text=text,
             response_url=response_url,
+            team_id=team_id,
         )
 
     return format_wrapper

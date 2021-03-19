@@ -18,7 +18,7 @@ KNOWN_COMMANDS = {
 
 
 class HelpCommand(BaseCommand):
-    def __init__(self, text, channel_id):
+    def __init__(self, *, text, team_id, channel_id):
         name = "help"
         description = "Command to show commands, args and their values"
         examples = [
@@ -36,6 +36,7 @@ class HelpCommand(BaseCommand):
             text,
             name=name,
             channel_id=channel_id,
+            team_id=team_id,
             description=description,
             examples=examples,
             args=args,

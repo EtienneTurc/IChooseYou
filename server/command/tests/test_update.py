@@ -9,6 +9,7 @@ from server.tests.test_app import *  # noqa: F401, F403
 
 channel_id = "1234"
 user_id = "4321"
+team_id = "1337"
 
 
 @pytest.mark.parametrize(
@@ -78,9 +79,9 @@ user_id = "4321"
 )
 def test_update(text, expected_message, client):
     Command.create("test_update", channel_id, "label", ["1", "2"], True, user_id)
-    message, message_status, message_visibility = UpdateCommand(text, channel_id).exec(
-        user_id
-    )
+    message, message_status, message_visibility = UpdateCommand(
+        text=text, team_id=team_id, channel_id=channel_id
+    ).exec(user_id)
     assert expected_message in message
     assert message_status == MessageStatus.SUCCESS
     assert message_visibility == MessageVisibility.NORMAL
@@ -88,9 +89,9 @@ def test_update(text, expected_message, client):
 
 @pytest.mark.parametrize("text", ["-h", "--help", "whatever -h"])
 def test_create_help(text, client):
-    message, message_status, message_visibility = UpdateCommand(text, channel_id).exec(
-        user_id
-    )
+    message, message_status, message_visibility = UpdateCommand(
+        text=text, team_id=team_id, channel_id=channel_id
+    ).exec(user_id)
     assert "Update a given command." in message
     assert message_status == MessageStatus.INFO
     assert message_visibility == MessageVisibility.HIDDEN
@@ -100,4 +101,4 @@ def test_update_fail_if_command_does_not_exist(client):
     text = "test_update --label my label --pickList 1 2 3 --selfExclude"
 
     with pytest.raises(ArgError, match="Command test_update does not exist."):
-        UpdateCommand(text, channel_id).exec(user_id)
+        UpdateCommand(text=text, team_id=team_id, channel_id=channel_id).exec(user_id)

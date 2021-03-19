@@ -9,7 +9,9 @@ def addHelp(func):
         if self.options.get("help"):
             from server.command.help import HelpCommand
 
-            return HelpCommand(self.name, self.channel_id).exec()
+            return HelpCommand(
+                text=self.name, team_id=self.team_id, channel_id=self.channel_id
+            ).exec()
         else:
             return func(self, *args, **kwargs)
 
@@ -17,13 +19,16 @@ def addHelp(func):
 
 
 class BaseCommand:
-    def __init__(self, text, *, channel_id, description, examples, name="", args=[]):
+    def __init__(
+        self, text, *, team_id, channel_id, description, examples, name="", args=[]
+    ):
         self.name = name
         self.description = description
         self.examples = format_examples(
             current_app.config["SLASH_COMMAND"], name, examples
         )
         self.channel_id = channel_id
+        self.team_id = team_id
         self.args = args
 
         arg_help = Arg(

@@ -4,12 +4,15 @@ from server.slack.message_status import MessageStatus, MessageVisibility
 from server.tests.test_app import *  # noqa: F401, F403
 
 channel_id = "1234"
+team_id = "1337"
 
 
 def test_help_with_no_commands(client):
     text = ""
     Command.create("test_help", channel_id, "my fancy label", ["1", "2"], True, "4321")
-    message, message_status, message_visibility = HelpCommand(text, channel_id).exec()
+    message, message_status, message_visibility = HelpCommand(
+        text=text, team_id=team_id, channel_id=channel_id
+    ).exec()
 
     expected_texts = [
         "create",
@@ -30,7 +33,9 @@ def test_help_with_no_commands(client):
 
 def test_help_with_given_known_command(client):
     text = "create"
-    message, message_status, message_visibility = HelpCommand(text, channel_id).exec()
+    message, message_status, message_visibility = HelpCommand(
+        text=text, team_id=team_id, channel_id=channel_id
+    ).exec()
 
     expected_texts = [
         "*create*",
@@ -48,7 +53,9 @@ def test_help_with_given_known_command(client):
 def test_help_with_given_custom_command(client):
     text = "test_help"
     Command.create("test_help", channel_id, "my fancy label", ["1", "2"], True, "4321")
-    message, message_status, message_visibility = HelpCommand(text, channel_id).exec()
+    message, message_status, message_visibility = HelpCommand(
+        text=text, team_id=team_id, channel_id=channel_id
+    ).exec()
 
     expected_texts = [
         "test_help",

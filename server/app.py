@@ -15,8 +15,8 @@ def create_app(config_name="prod"):
     connect(app.config["DATABASE_URI"])
 
     # Add blueprints
-    from server.blueprint.slack_webhook import slack_webhook
+    from server.blueprint.slack_api import slack_api
 
-    app.register_blueprint(slack_webhook)
+    app.register_blueprint(slack_api)
 
     return app

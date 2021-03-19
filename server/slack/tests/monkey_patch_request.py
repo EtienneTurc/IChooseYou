@@ -7,7 +7,7 @@ def monkey_patch_WebClient():
     return
 
 
-def monkey_patch_get_users_in_channel(channel_id):
+def monkey_patch_get_users_in_channel(team_id, channel_id):
     return ["1234", "2345", "3456"]
 
 

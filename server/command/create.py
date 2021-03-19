@@ -25,7 +25,7 @@ pick_list_help += " with the argument `-p all_members` or `--pickList all_member
 
 
 class CreateCommand(BaseCommand):
-    def __init__(self, text, channel_id):
+    def __init__(self, *, text, team_id, channel_id):
         name = "create"
         description = "Command to create new slash commands"
         examples = [
@@ -66,6 +66,7 @@ class CreateCommand(BaseCommand):
             description=description,
             examples=examples,
             channel_id=channel_id,
+            team_id=team_id,
             args=args,
         )
 
@@ -73,7 +74,9 @@ class CreateCommand(BaseCommand):
     def exec(self, user_id, *args, **kwargs):
         assert_label_is_correct(self.options["label"])
 
-        pick_list = format_pick_list(self.options["pickList"], self.channel_id)
+        pick_list = format_pick_list(
+            self.options["pickList"], self.team_id, self.channel_id
+        )
 
         Command.create(
             self.options["commandName"],

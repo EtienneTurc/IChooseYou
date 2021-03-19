@@ -1,5 +1,5 @@
 def format_known_command_help(known_command):
-    command = known_command(None, None)
+    command = known_command(text=None, team_id=None, channel_id=None)
     message = f"*{command.name}*: {command.description}.\n"
     message += "_Arguments_:\n"
     for arg in command.args:
@@ -12,7 +12,7 @@ def format_known_command_help(known_command):
 def format_known_commands_help(known_commands):
     message = ""
     for command_class in known_commands:
-        command = command_class(None, None)
+        command = command_class(text=None, team_id=None, channel_id=None)
         message += f"*{command.name}*: {command.description}.\n"
         message += f"Usage: {command.usage}"
         message += f"{format_examples(command.examples)}"

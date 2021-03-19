@@ -5,6 +5,7 @@ from server.command.base_command import BaseCommand
 from server.tests.test_app import *  # noqa: F401, F403
 
 name = "test_base_command"
+team_id = "1337"
 channel_id = "42"
 description = "My super description"
 examples = ["whatever"]
@@ -74,6 +75,7 @@ def test_base_command_init(text, args, expected_options, client):
         description=description,
         examples=examples,
         channel_id=channel_id,
+        team_id=team_id,
         args=args,
     ).options
     for key in expected_options:
@@ -113,5 +115,6 @@ def test_base_command_init_raise_error(text, args, client):
             description=description,
             examples=examples,
             channel_id=channel_id,
+            team_id=team_id,
             args=args,
         )

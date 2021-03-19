@@ -13,8 +13,8 @@ def call_webhook(client, text):
     f = io.StringIO()
     with redirect_stdout(f):
         response = client.post(
-            "/slack_webhook",
-            data=mock_slack_webhook_data(text=text),
+            "/api/slack",
+            data=mock_slack_api_data(text=text),
             follow_redirects=True,
         )
 
@@ -22,7 +22,8 @@ def call_webhook(client, text):
     return response, slack_message
 
 
-def mock_slack_webhook_data(
+def mock_slack_api_data(
+    team_id="1337",
     channel_id="1234",
     channel_name="1234",
     user_id="4321",
@@ -31,6 +32,7 @@ def mock_slack_webhook_data(
     response_url="1234",
 ):
     return {
+        "team_id": team_id,
         "channel_id": channel_id,
         "channel_name": channel_name,
         "user_id": user_id,
@@ -40,7 +42,7 @@ def mock_slack_webhook_data(
     }
 
 
-def test_slack_webhook_no_command(client):
+def test_slack_api_no_command(client):
     text = ""
     response, slack_message = call_webhook(client, text)
     assert response.status_code == 200
@@ -56,7 +58,7 @@ def test_slack_webhook_no_command(client):
         "create test_create --pickList 1 2 3 --label test create --selfExclude True",  # noqa: E501
     ],
 )
-def test_slack_webhook_create(text, client):
+def test_slack_api_create(text, client):
     response, slack_message = call_webhook(client, text)
     assert response.status_code == 200
     assert "Command test_create successfully created." in slack_message
@@ -71,7 +73,7 @@ def test_slack_webhook_create(text, client):
         "create --pickList 1 2 3 --label 1 2 3",
     ],
 )
-def test_slack_webhook_create_fail(text, client):
+def test_slack_api_create_fail(text, client):
     response, slack_message = call_webhook(client, text)
     assert response.status_code == 200
     assert "create: error: the following arguments are required:" in slack_message
@@ -83,7 +85,7 @@ def test_slack_webhook_create_fail(text, client):
         "create --commandName test_create --pickList 1 2 3 --label 1 2 3",
     ],
 )
-def test_slack_webhook_create_fail_unrecognized_element(text, client):
+def test_slack_api_create_fail_unrecognized_element(text, client):
     response, slack_message = call_webhook(client, text)
     assert response.status_code == 200
     assert "create: error: unrecognized arguments:" in slack_message
@@ -117,7 +119,7 @@ def test_slack_webhook_create_fail_unrecognized_element(text, client):
         ),
     ],
 )
-def test_slack_webhook_update(text, expected, client):
+def test_slack_api_update(text, expected, client):
     Command.create("test_update", "1234", "label", ["1", "2"], True, "4321")
     response, slack_message = call_webhook(client, text)
 
@@ -135,7 +137,7 @@ def test_slack_webhook_update(text, expected, client):
         assert func_to_apply(updated_command[key]) == func_to_apply(expected[key])
 
 
-def test_slack_webhook_delete(client):
+def test_slack_api_delete(client):
     Command.create("test_delete", "1234", "label", ["1", "2"], False, "4321")
     text = "delete test_delete"
     response, slack_message = call_webhook(client, text)
@@ -147,7 +149,7 @@ def test_slack_webhook_delete(client):
         Command.find_one_by_name_and_chanel("test_delete", "1234", catch=False)
 
 
-def test_slack_webhook_delete_fail(client):
+def test_slack_api_delete_fail(client):
     Command.create("test_delete", "1234", "label", ["1", "2"], False, "4321")
     text = "delete test_delete_unknown_command"
     response, slack_message = call_webhook(client, text)
@@ -159,7 +161,7 @@ def test_slack_webhook_delete_fail(client):
     assert command is not None
 
 
-def test_slack_webhook_custom(client):
+def test_slack_api_custom(client):
     Command.create("test_custom", "1234", "label", ["pick_1", "pick_2"], False, "4321")
     text = "test_custom"
     response, slack_message = call_webhook(client, text)
@@ -168,7 +170,7 @@ def test_slack_webhook_custom(client):
     assert "Hey !" in slack_message
 
 
-def test_slack_webhook_no_custom_command(client):
+def test_slack_api_no_custom_command(client):
     text = "test_custom"
     response, slack_message = call_webhook(client, text)
     assert response.status_code == 200
