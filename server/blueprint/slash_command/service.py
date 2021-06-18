@@ -10,6 +10,7 @@ from server.service.error.decorator import handle_error
 from server.service.flask.decorator import make_context
 from server.service.slack.response import send_to_channel
 from server.service.validator.decorator import validate_schema
+from server.blueprint.interactivity.action import Action
 
 
 def process_slash_command(body):
@@ -22,21 +23,54 @@ def process_slash_command(body):
     if current_app.config["WAIT_FOR_THREAD_BEFORE_RETURN"]:
         thread.join()
 
-    button = [
-        {
-            "text": f"{current_app.config['SLASH_COMMAND']} "
-            + f"{body.get('command_name')} {body.get('text')}"
-        },
-        {
-            "callback_id": "tender_button",
-            "attachment_type": "default",
-            "actions": [
-                {"name": "press", "text": "Press", "type": "button", "value": "pressed"}
-            ],
-        },
-    ]
-
-    return {"attachments": button}
+    slash_command = f"{current_app.config['SLASH_COMMAND']} "
+    command = f"{body.get('command_name')} {body.get('text')}"
+    return {
+        "attachments": [
+            {
+                "blocks": [
+                    {
+                        "type": "section",
+                        "text": {
+                            "type": "mrkdwn",
+                            "text": slash_command + command,
+                        },
+                        "accessory": {
+                            "type": "button",
+                            "text": {
+                                "type": "plain_text",
+                                "text": "Resubmit command",
+                                "emoji": True,
+                            },
+                            "value": command,
+                            "action_id": Action.RESUBMIT_COMMAND.value,
+                        },
+                    }
+                ]
+            }
+        ]
+    }
+    # return {
+    #     "attachments": [
+    #         {
+    #             "blocks": [
+    #                 {
+    #                     "type": "section",
+    #                     "text": slash_command + command,
+    #                     "accessory": {
+    #                         "type": "button",
+    #                         "text": {
+    #                             "type": "plain_text",
+    #                             "text": "Click Me",
+    #                         },
+    #                         "value": command,
+    #                         "action_id": "tender_button",
+    #                     },
+    #                 }
+    #             ]
+    #         }
+    #     ]
+    # }
 
 
 @make_context

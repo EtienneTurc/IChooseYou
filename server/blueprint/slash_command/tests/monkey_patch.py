@@ -14,9 +14,7 @@ def monkey_patch_webhook_send(
     delete_original=None,
     headers=None,
 ):
-    # print("HEREE ------------------")
     print(text)
-    # print(blocks)
     print(attachments)
 
 

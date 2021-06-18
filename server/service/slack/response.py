@@ -18,7 +18,7 @@ def send_to_channel(message: Message, response_url: str) -> None:
     webhook.send(
         text=f"{message.content}" if not message.as_attachment else "",
         response_type=message.visibility.value,
-        replace_original=True,
+        replace_original=False,
         attachments=[
             {
                 "color": message.status.value,
