@@ -14,6 +14,9 @@ install-dev:
 run:
 	${PYTHON_ALIAS} -m flask run --host=0.0.0.0
 
+run-debug:
+	FLASK_DEBUG=1 ${PYTHON_ALIAS} -m flask run --host=0.0.0.0
+
 .PHONY: default clean install install-dev run
 
 test:

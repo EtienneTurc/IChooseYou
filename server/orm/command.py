@@ -1,7 +1,7 @@
 from pymodm import MongoModel, fields
 
-from server.blueprint.back_error import BackError
-from server.command.args import ArgError
+from server.service.command.args import ArgError
+from server.service.error.back_error import BackError
 
 
 # Now let's define some Models.
