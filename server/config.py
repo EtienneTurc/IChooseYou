@@ -1,7 +1,7 @@
 class Config(object):
     DEBUG = False
     TESTING = False
-    SLASH_COMMAND = "/choose"
+    SLASH_COMMAND = "/ichu"
     DATABASE_URI = "mongodb://localhost:27017/ichooseyoudb"
     WAIT_FOR_THREAD_BEFORE_RETURN = False
 
@@ -14,7 +14,7 @@ class ProductionConfig(Config):
 class DevelopmentConfig(Config):
     DEBUG = True
     TESTING = False
-    SLASH_COMMAND = "/choose_dev"
+    SLASH_COMMAND = "/ichu_dev"
 
 
 class TestingConfig(Config):

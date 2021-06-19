@@ -32,7 +32,7 @@ class BaseCommand:
         description: str,
         examples: list[str],
         name: str = "",
-        args=[]
+        args=list[Arg]
     ):
         self.name = name
         self.description = description

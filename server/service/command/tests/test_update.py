@@ -32,7 +32,7 @@ team_id = "1337"
             "my new label",
         ),
         (
-            "test_update --pickList 1 2 3",
+            "test_update --pick-list 1 2 3",
             "['1', '2', '3']",
         ),
         (
@@ -40,11 +40,11 @@ team_id = "1337"
             "['1', '2', '3']",
         ),
         (
-            "test_update --pickList all_members",
+            "test_update --pick-list all_members",
             "['<@1234>', '<@2345>', '<@3456>']",
         ),
         (
-            "test_update --addToPickList 3",
+            "test_update --add-to-pick-list 3",
             "'3'",
         ),
         (
@@ -52,7 +52,7 @@ team_id = "1337"
             "'3'",
         ),
         (
-            "test_update --removeFromPickList 1",
+            "test_update --remove-from-pick-list 1",
             "['2']",
         ),
         (
@@ -64,21 +64,29 @@ team_id = "1337"
             "User using the slash command excluded.",
         ),
         (
-            "test_update --label my new label --selfExclude",
+            "test_update --label my new label --self-exclude",
             "User using the slash command excluded.",
         ),
         (
-            "test_update --label my new label --selfExclude True",
+            "test_update --label my new label --self-exclude True",
             "User using the slash command excluded.",
         ),
         (
-            "test_update --label my new label --selfExclude False",
+            "test_update --label my new label --self-exclude False",
             "User using the slash command not excluded.",
         ),
     ],
 )
 def test_update(text, expected_message, client):
-    Command.create("test_update", channel_id, "label", ["1", "2"], True, user_id)
+    Command.create(
+        name="test_update",
+        channel_id=channel_id,
+        label="label",
+        pick_list=["1", "2"],
+        self_exclude=True,
+        only_active_users=False,
+        created_by_user_id=user_id,
+    )
     message = UpdateCommand(text=text, team_id=team_id, channel_id=channel_id).exec(
         user_id
     )
@@ -98,7 +106,7 @@ def test_create_help(text, client):
 
 
 def test_update_fail_if_command_does_not_exist(client):
-    text = "test_update --label my label --pickList 1 2 3 --selfExclude"
+    text = "test_update --label my label --pick-list 1 2 3 --self-exclude"
 
     with pytest.raises(ArgError, match="Command test_update does not exist."):
         UpdateCommand(text=text, team_id=team_id, channel_id=channel_id).exec(user_id)

@@ -93,6 +93,7 @@ def resolve_command(
             label=command.label,
             pick_list=command.pick_list,
             self_exclude=command.self_exclude,
-        ).exec(user, text)
+            only_active_users=command.only_active_users,
+        ).exec(user["id"], text, team_id=team_id)
 
     return send_to_channel(message, response_url)

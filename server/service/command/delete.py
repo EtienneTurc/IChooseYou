@@ -17,7 +17,7 @@ class DeleteCommand(BaseCommand):
         ]
         args = [
             Arg(
-                name="commandName",
+                name="command_name",
                 prefix="",
                 nargs=1,
                 help="Name of the command to delete.",
@@ -35,7 +35,7 @@ class DeleteCommand(BaseCommand):
 
     @addHelp
     def exec(self, *args, **kwargs):
-        command_name = self.options.get("commandName")
+        command_name = self.options.get("command_name")
         command = Command.find_one_by_name_and_chanel(command_name, self.channel_id)
         Command.delete_command(command)
 

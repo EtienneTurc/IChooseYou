@@ -15,7 +15,7 @@ user_id = "4321"
     "text, expected_message",
     [
         (
-            "test_create --label my label --pickList 1 2 3 --selfExclude",
+            "test_create --label my label --pick-list 1 2 3 --self-exclude",
             "Command test_create successfully created.",
         ),
         (
@@ -23,7 +23,7 @@ user_id = "4321"
             "Command test_create successfully created.",
         ),
         (
-            "test_create --label my label --pickList 1 2 3 --selfExclude",
+            "test_create --label my label --pick-list 1 2 3 --self-exclude",
             "my label",
         ),
         (
@@ -31,7 +31,7 @@ user_id = "4321"
             "my label",
         ),
         (
-            "test_create --label my label --pickList 1 2 3 --selfExclude",
+            "test_create --label my label --pick-list 1 2 3 --self-exclude",
             "['1', '2', '3']",
         ),
         (
@@ -43,23 +43,23 @@ user_id = "4321"
             "User using the slash command excluded.",
         ),
         (
-            "test_create --label my label --pickList 1 2 3 --selfExclude",
+            "test_create --label my label --pick-list 1 2 3 --self-exclude",
             "User using the slash command excluded.",
         ),
         (
-            "test_create --label my label --pickList 1 2 3 --selfExclude True",  # noqa E501
+            "test_create --label my label --pick-list 1 2 3 --self-exclude True",  # noqa E501
             "User using the slash command excluded.",
         ),
         (
-            "test_create --label my label --pickList 1 2 3 --selfExclude False",  # noqa E501
+            "test_create --label my label --pick-list 1 2 3 --self-exclude False",  # noqa E501
             "User using the slash command not excluded.",
         ),
         (
-            "test_create --label my label --pickList 1 2 3",
+            "test_create --label my label --pick-list 1 2 3",
             "User using the slash command not excluded.",
         ),
         (
-            "test_create --label my label --pickList all_members",
+            "test_create --label my label --pick-list all_members",
             "['<@1234>', '<@2345>', '<@3456>']",
         ),
     ],
@@ -84,7 +84,7 @@ def test_create_help(text, client):
 
 
 def test_create_fail_if_already_exist(client):
-    text = "test_create --label my label --pickList 1 2 3 --selfExclude"
+    text = "test_create --label my label --pick-list 1 2 3 --self-exclude"
     CreateCommand(text=text, team_id=team_id, channel_id=channel_id).exec(user_id)
 
     with pytest.raises(BackError, match="Command already exists."):

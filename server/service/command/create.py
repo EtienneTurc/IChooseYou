@@ -8,14 +8,10 @@ from server.service.slack.message import (
     MessageStatus,
     MessageVisibility,
 )
+from server.service.command.enum import PickListSpecialArg
 
 label_help = "Text to display using the following format:"
-label_help += "\n>Hey ! <user> choose <element> to <your_label>\n"
-label_help += " Note that you can parametrize your label with args from the"
-label_help += " command line with $1 ... $N for positional arguments"
-label_help += " or with $name_of_my_arg for named arguments.\n"
-label_help += " For instance 'my label with $1 positional argument and"
-label_help += " a named argument named $name' is a valid label with two arguments."
+label_help += "\n>Hey ! <user> choose <element> to <your_label> <text_on_call>\n"
 
 
 pick_list_help = "List from which to pick from."
@@ -24,7 +20,8 @@ pick_list_help += " thus an element can't be composed of two words."
 pick_list_help += "\n> If you want to directly notify a user when he is selected,"
 pick_list_help += " you must mention him in the pickList."
 pick_list_help += "\n> You can add all members of the channel to the pick list"
-pick_list_help += " with the argument `-p all_members` or `--pickList all_members`."
+pick_list_help += f" with the argument `-p {PickListSpecialArg.ALL_MEMBERS.value}`"
+pick_list_help += f" or `--pick-list {PickListSpecialArg.ALL_MEMBERS.value}`."
 
 
 class CreateCommand(BaseCommand):
@@ -32,20 +29,20 @@ class CreateCommand(BaseCommand):
         name = "create"
         description = "Command to create new slash commands"
         examples = [
-            "mySuperCommand --pickList first_element second --label my super awesome label",  # noqa E501
-            "mySuperCommand --pickList all_members --label will replace bash args such $my_var_name",  # noqa E501
+            "mySuperCommand --pick-list first_element second --label my super awesome label",  # noqa E501
+            f"mySuperCommand --pick-list {PickListSpecialArg.ALL_MEMBERS.value} --label will add members of the channel",  # noqa E501
         ]
 
         args = [
             Arg(
-                name="commandName",
+                name="command_name",
                 prefix="",
                 nargs=1,
                 help="Name of the command to create.",
             ),
             Arg(name="label", short="l", nargs="+", required=True, help=label_help),
             Arg(
-                name="pickList",
+                name="pick-list",
                 short="p",
                 nargs="+",
                 required=True,
@@ -54,13 +51,22 @@ class CreateCommand(BaseCommand):
                 help=pick_list_help,
             ),
             Arg(
-                name="selfExclude",
+                name="self-exclude",
                 short="s",
                 nargs="?",
                 const="True",
                 default="False",
                 type=bool,
                 help="Exclude the person using the slash command to be picked. Default value is False.",  # noqa E501
+            ),
+            Arg(
+                name="only-active-users",
+                short="o",
+                nargs="?",
+                const="True",
+                default="False",
+                type=bool,
+                help="Exclude non active users to be picked. Default value is False.",
             ),
         ]
         super(CreateCommand, self).__init__(
@@ -76,19 +82,21 @@ class CreateCommand(BaseCommand):
     @addHelp
     def exec(self, user_id: int, *args, **kwargs) -> Message:
         pick_list = format_pick_list(
-            self.options["pickList"], self.team_id, self.channel_id
+            self.options["pick_list"], self.team_id, self.channel_id
         )
+        print(self.options)
 
         Command.create(
-            self.options["commandName"],
-            self.channel_id,
-            self.options["label"],
-            pick_list,
-            self.options["selfExclude"],
-            user_id,
+            name=self.options["command_name"],
+            channel_id=self.channel_id,
+            label=self.options["label"],
+            pick_list=pick_list,
+            self_exclude=self.options["self_exclude"],
+            only_active_users=self.options["only_active_users"],
+            created_by_user_id=user_id,
         )
         created_command = Command.find_one_by_name_and_chanel(
-            self.options["commandName"], self.channel_id
+            self.options["command_name"], self.channel_id
         )
         message_content = f"Command {created_command.name} successfully created.\n"
         message_content += format_custom_command_help(created_command)

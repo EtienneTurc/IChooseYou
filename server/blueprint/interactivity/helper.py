@@ -1,5 +1,4 @@
 def format_payload_for_slash_command(payload):
-    print(payload)
     text = payload.get("actions")[0].get("value")
     command_name = text.split(" ")[0]
     text = " ".join(text.split(" ")[1:])

@@ -11,7 +11,15 @@ team_id = "1337"
 
 
 def test_delete(client):
-    Command.create("test_delete", channel_id, "label", ["1", "2"], True, "4321")
+    Command.create(
+        name="test_delete",
+        channel_id=channel_id,
+        label="label",
+        pick_list=["1", "2"],
+        self_exclude=True,
+        only_active_users=False,
+        created_by_user_id="4321",
+    )
     text = "test_delete"
     message = DeleteCommand(text=text, team_id=team_id, channel_id=channel_id).exec()
     assert "Command test_delete successfully deleted." == message.content

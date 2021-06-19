@@ -9,7 +9,15 @@ team_id = "1337"
 
 def test_help_with_no_commands(client):
     text = ""
-    Command.create("test_help", channel_id, "my fancy label", ["1", "2"], True, "4321")
+    Command.create(
+        name="test_help",
+        channel_id=channel_id,
+        label="my fancy label",
+        pick_list=["1", "2"],
+        self_exclude=True,
+        only_active_users=False,
+        created_by_user_id="4321",
+    )
     message = HelpCommand(text=text, team_id=team_id, channel_id=channel_id).exec()
 
     expected_texts = [
@@ -33,12 +41,13 @@ def test_help_with_given_known_command(client):
     text = "create"
     message = HelpCommand(text=text, team_id=team_id, channel_id=channel_id).exec()
 
+    print(message.content)
     expected_texts = [
         "*create*",
-        "*commandName*",
-        "*pickList*",
+        "*command_name*",
+        "*pick-list*",
         "*label*",
-        "*selfExclude*",
+        "*self-exclude*",
     ]
     for expected_text in expected_texts:
         assert expected_text in message.content
@@ -48,7 +57,15 @@ def test_help_with_given_known_command(client):
 
 def test_help_with_given_custom_command(client):
     text = "test_help"
-    Command.create("test_help", channel_id, "my fancy label", ["1", "2"], True, "4321")
+    Command.create(
+        name="test_help",
+        channel_id=channel_id,
+        label="my fancy label",
+        pick_list=["1", "2"],
+        self_exclude=True,
+        only_active_users=False,
+        created_by_user_id="4321",
+    )
     message = HelpCommand(text=text, team_id=team_id, channel_id=channel_id).exec()
 
     expected_texts = [

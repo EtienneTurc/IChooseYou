@@ -52,10 +52,10 @@ def test_slash_command_no_command(client):
 @pytest.mark.parametrize(
     "text",
     [
-        "create test_create --pickList 1 --label test",
-        "create test_create --pickList 1 2 3 --label test create",
-        "create test_create --pickList 1 2 3 --label test create --selfExclude",  # noqa: E501
-        "create test_create --pickList 1 2 3 --label test create --selfExclude True",  # noqa: E501
+        "create test_create --pick-list 1 --label test",
+        "create test_create --pick-list 1 2 3 --label test create",
+        "create test_create --pick-list 1 2 3 --label test create --self-exclude",  # noqa: E501
+        "create test_create --pick-list 1 2 3 --label test create --self-exclude True",  # noqa: E501
     ],
 )
 def test_slash_command_create(text, client):
@@ -68,9 +68,9 @@ def test_slash_command_create(text, client):
     "text",
     [
         "create test_create",
-        "create test_create --pickList 1 2 3",
+        "create test_create --pick-list 1 2 3",
         "create test_create --label 1 2 3",
-        "create --pickList 1 2 3 --label 1 2 3",
+        "create --pick-list 1 2 3 --label 1 2 3",
     ],
 )
 def test_slash_command_create_fail(text, client):
@@ -82,7 +82,7 @@ def test_slash_command_create_fail(text, client):
 @pytest.mark.parametrize(
     "text",
     [
-        "create --commandName test_create --pickList 1 2 3 --label 1 2 3",
+        "create --commandName test_create --pick-list 1 2 3 --label 1 2 3",
     ],
 )
 def test_slash_command_create_fail_unrecognized_element(text, client):
@@ -95,32 +95,40 @@ def test_slash_command_create_fail_unrecognized_element(text, client):
     "text, expected",
     [
         (
-            "update test_update --pickList 1 2 3",
+            "update test_update --pick-list 1 2 3",
             {"pick_list": ["1", "2", "3"]},
         ),
         (
-            "update test_update --addToPickList 1 2 3 4",
+            "update test_update --add-to-pick-list 1 2 3 4",
             {"pick_list": ["1", "2", "3", "4"]},
         ),
         (
-            "update test_update --removeFromPickList 1 2 3 4",
+            "update test_update --remove-from-pick-list 1 2 3 4",
             {"pick_list": []},
         ),
         ("update test_update --label My label", {"label": "My label"}),
         ("update test_update --label My label", {"self_exclude": True}),
-        ("update test_update --selfExclude", {"self_exclude": True}),
+        ("update test_update --self-exclude", {"self_exclude": True}),
         (
-            "update test_update --selfExclude True",
+            "update test_update --self-exclude True",
             {"self_exclude": True},
         ),
         (
-            "update test_update --selfExclude False",
+            "update test_update --self-exclude False",
             {"self_exclude": False},
         ),
     ],
 )
 def test_slash_command_update(text, expected, client):
-    Command.create("test_update", "1234", "label", ["1", "2"], True, "4321")
+    Command.create(
+        name="test_update",
+        channel_id="1234",
+        label="label",
+        pick_list=["1", "2"],
+        self_exclude=True,
+        only_active_users=False,
+        created_by_user_id="4321",
+    )
     response, slack_message = call_webhook(client, text)
 
     assert response.status_code == 200
@@ -138,7 +146,15 @@ def test_slash_command_update(text, expected, client):
 
 
 def test_slash_command_delete(client):
-    Command.create("test_delete", "1234", "label", ["1", "2"], False, "4321")
+    Command.create(
+        name="test_delete",
+        channel_id="1234",
+        label="label",
+        pick_list=["1", "2"],
+        self_exclude=True,
+        only_active_users=False,
+        created_by_user_id="4321",
+    )
     text = "delete test_delete"
     response, slack_message = call_webhook(client, text)
 
@@ -150,7 +166,15 @@ def test_slash_command_delete(client):
 
 
 def test_slash_command_delete_fail(client):
-    Command.create("test_delete", "1234", "label", ["1", "2"], False, "4321")
+    Command.create(
+        name="test_delete",
+        channel_id="1234",
+        label="label",
+        pick_list=["1", "2"],
+        self_exclude=True,
+        only_active_users=False,
+        created_by_user_id="4321",
+    )
     text = "delete test_delete_unknown_command"
     response, slack_message = call_webhook(client, text)
 
@@ -162,7 +186,15 @@ def test_slash_command_delete_fail(client):
 
 
 def test_slash_command_custom(client):
-    Command.create("test_custom", "1234", "label", ["pick_1", "pick_2"], False, "4321")
+    Command.create(
+        name="test_custom",
+        channel_id="1234",
+        label="label",
+        pick_list=["pick_1", "pick_2"],
+        self_exclude=False,
+        only_active_users=False,
+        created_by_user_id="4321",
+    )
     text = "test_custom"
     response, slack_message = call_webhook(client, text)
 

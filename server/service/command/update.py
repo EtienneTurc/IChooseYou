@@ -15,20 +15,20 @@ class UpdateCommand(BaseCommand):
         name = "update"
         description = "Update a given command"
         examples = [
-            "mySuperCommand --addToPickList my_element_to_add",
-            "mySuperCommand --pickList my new pick list",
-            "mySuperCommand --selfExclude",
+            "mySuperCommand --add-to-pick-list my_element_to_add",
+            "mySuperCommand --pick-list my new pick list",
+            "mySuperCommand --self-exclude --only-active-users",
         ]
         args = [
             Arg(
-                name="commandName",
+                name="command_name",
                 prefix="",
                 nargs=1,
                 help="Name of the command to update.",
             ),
             Arg(name="label", short="l", nargs="*", help="New label"),
             Arg(
-                name="pickList",
+                name="pick-list",
                 short="p",
                 nargs="*",
                 type=list,
@@ -36,7 +36,7 @@ class UpdateCommand(BaseCommand):
                 help="New pick list",
             ),
             Arg(
-                name="addToPickList",
+                name="add-to-pick-list",
                 short="a",
                 nargs="*",
                 type=list,
@@ -44,7 +44,7 @@ class UpdateCommand(BaseCommand):
                 help="Elements to add to the pick list.",
             ),
             Arg(
-                name="removeFromPickList",
+                name="remove-from-pick-list",
                 short="r",
                 nargs="*",
                 type=list,
@@ -52,12 +52,20 @@ class UpdateCommand(BaseCommand):
                 help="Elements to remove from the pick list.",
             ),
             Arg(
-                name="selfExclude",
+                name="self-exclude",
                 short="s",
                 nargs="?",
                 const="True",
                 type=bool,
                 help="Exclude the person using the slash command to be picked.",
+            ),
+            Arg(
+                name="only-active-users",
+                short="o",
+                nargs="?",
+                const="True",
+                type=bool,
+                help="Exclude non active users to be picked.",
             ),
         ]
         super(UpdateCommand, self).__init__(
@@ -71,36 +79,39 @@ class UpdateCommand(BaseCommand):
         )
 
     @addHelp
-    def exec(self, user_id: int, *args, **kwargs):
-        command_name = self.options["commandName"]
+    def exec(self, user_id: int, *args, **kwargs) -> Message:
+        command_name = self.options["command_name"]
         command = Command.find_one_by_name_and_chanel(command_name, self.channel_id)
 
         new_values = {}
         if self.options["label"]:
             new_values["label"] = self.options["label"]
 
-        if self.options["addToPickList"]:
+        if self.options["add_to_pick_list"]:
             new_values["pick_list"] = list(
-                set(command.pick_list) | set(self.options["addToPickList"])
+                set(command.pick_list) | set(self.options["add_to_pick_list"])
             )
 
-        if self.options["removeFromPickList"]:
+        if self.options["remove_from_pick_list"]:
             pick_list = (
                 new_values.get("pick_list")
                 if new_values.get("pick_list")
                 else command.pick_list
             )
             new_values["pick_list"] = list(
-                set(pick_list) - set(self.options["removeFromPickList"])
+                set(pick_list) - set(self.options["remove_from_pick_list"])
             )
 
-        if self.options["pickList"]:
+        if self.options["pick_list"]:
             new_values["pick_list"] = format_pick_list(
-                self.options["pickList"], self.team_id, self.channel_id
+                self.options["pick_list"], self.team_id, self.channel_id
             )
 
-        if self.options["selfExclude"] is not None:
-            new_values["self_exclude"] = self.options["selfExclude"]
+        if self.options["self_exclude"] is not None:
+            new_values["self_exclude"] = self.options["self_exclude"]
+
+        if self.options["only_active_users"] is not None:
+            new_values["only_active_users"] = self.options["only_active_users"]
 
         Command.update(command.name, command.channel_id, user_id, new_values)
 

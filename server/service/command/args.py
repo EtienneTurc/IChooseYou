@@ -18,6 +18,7 @@ class ArgumentParser(argparse.ArgumentParser):
 @dataclass
 class Arg:
     name: str
+    variable_name: str = None
     short: str = None
     prefix: str = "--"
     type: any = str
@@ -29,12 +30,17 @@ class Arg:
     default: any = None
     clean_mentions: bool = False
 
+    def __post_init__(self):
+        if not self.variable_name:
+            self.variable_name = self.name.replace("-", "_")
+
     def add_to_parser(self, parser):
         arg = dict(self.__dict__)
         del arg["name"]
         del arg["short"]
         del arg["prefix"]
         del arg["clean_mentions"]
+        del arg["variable_name"]
         if str(arg["nargs"]).isdigit() and arg["required"] is None:
             arg["required"] = True
         if arg["type"] == bool:

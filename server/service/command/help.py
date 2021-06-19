@@ -32,7 +32,7 @@ class HelpCommand(BaseCommand):
         ]
         args = [
             Arg(
-                name="commandName",
+                name="command_name",
                 prefix="",
                 nargs="?",
                 help="Name of the command to show info from. (Optional)",
@@ -50,8 +50,8 @@ class HelpCommand(BaseCommand):
 
     @addHelp
     def exec(self, *args, **kwargs):
-        if self.options.get("commandName"):
-            command_name = self.options.get("commandName")
+        if self.options.get("command_name"):
+            command_name = self.options.get("command_name")
             if command_name in KNOWN_COMMANDS_NAMES:
                 command = KNOWN_COMMANDS[command_name]
                 return Message(
