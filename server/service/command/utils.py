@@ -1,42 +1,8 @@
 import functools
 import re
 
-from server.service.command.args import Arg
 from server.service.slack.message_formatting import format_mention_user
 from server.service.slack.request import get_users_in_channel
-
-
-def find_args_in_text(text):
-    text_list = format_text_to_list(text)
-    first_arg_index = -1
-
-    named_args = []
-    for index, word in enumerate(text_list):
-        if word[:2] == "--":
-            if first_arg_index == -1:
-                first_arg_index = index
-            named_args.append(Arg(name=word[2:], nargs="+"))
-
-    positional_args = []
-    if first_arg_index == -1:
-        first_arg_index = len(text_list)
-    for word in text_list[:first_arg_index]:
-        positional_args.append(Arg(name=word))
-
-    return positional_args, named_args
-
-
-def get_args_in_label(label):
-    label_list = label.split(" ")
-    positional_args = []
-    named_args = []
-    for word in label_list:
-        if word[0] == "$" and word[1:].isdigit():
-            positional_args.append(word)
-        elif word[0] == "$":
-            named_args.append(word)
-
-    return positional_args, named_args
 
 
 def get_as_string(value, *, nargs0or1):
@@ -88,7 +54,7 @@ def options_to_dict(options, args):
     return options_dict
 
 
-def format_text_to_list(text):
+def format_text_to_list(text: str) -> list[str]:
     text = text.lstrip()
     text_list = []
     if text:
@@ -96,11 +62,11 @@ def format_text_to_list(text):
     return text_list
 
 
-def format_pick_list(pick_list, team_id, channel_id):
+def format_pick_list(pick_list: list[str], team_id: int, channel_id: int) -> list[str]:
     if pick_list == ["all_members"]:
         pick_list = []
         members = get_users_in_channel(team_id, channel_id)
-        return [format_mention_user({"id": member_id}) for member_id in members]
+        return [format_mention_user(member_id) for member_id in members]
     return pick_list
 
 

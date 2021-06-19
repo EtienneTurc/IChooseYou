@@ -1,14 +1,15 @@
 import argparse
 from dataclasses import dataclass
+from typing import NoReturn
 
 ArgError = argparse.ArgumentError
 
 
 class ArgumentParser(argparse.ArgumentParser):
-    def exit(self, status=0, message=None):
+    def exit(self, status: int = 0, message: str = None) -> NoReturn:
         raise argparse.ArgumentError(None, message)
 
-    def error(self, message):
+    def error(self, message: str) -> NoReturn:
         usage = self.format_usage()
         error_message = f"{usage}{self.prog}: error: {message}"
         raise argparse.ArgumentError(None, error_message)

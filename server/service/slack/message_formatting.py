@@ -19,14 +19,16 @@ def format_known_commands_help(known_commands):
     return message
 
 
-def format_custom_command_message(user, selected_element, label):
-    return f"Hey ! {format_mention_user(user)} choose {selected_element} {label}"
+def format_custom_command_message(
+    user_id: int, selected_element: str, label: str
+) -> str:
+    return f"Hey ! {format_mention_user(user_id)} choose {selected_element} {label}"
 
 
-def format_mention_user(user):
-    if not user or not user.get("id"):
+def format_mention_user(user_id: int) -> str:
+    if not user_id:
         return "<@user>"
-    return f"<@{user['id']}>"
+    return f"<@{user_id}>"
 
 
 def format_custom_command_help(custom_command):

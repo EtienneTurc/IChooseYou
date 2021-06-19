@@ -11,7 +11,7 @@ from server.service.slack.message import (
 
 
 class UpdateCommand(BaseCommand):
-    def __init__(self, *, text, team_id, channel_id):
+    def __init__(self, *, text: str, team_id: int, channel_id: int):
         name = "update"
         description = "Update a given command"
         examples = [
@@ -71,7 +71,7 @@ class UpdateCommand(BaseCommand):
         )
 
     @addHelp
-    def exec(self, user_id, *args, **kwargs):
+    def exec(self, user_id: int, *args, **kwargs):
         command_name = self.options["commandName"]
         command = Command.find_one_by_name_and_chanel(command_name, self.channel_id)
 

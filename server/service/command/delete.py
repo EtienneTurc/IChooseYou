@@ -9,7 +9,7 @@ from server.service.slack.message import (
 
 
 class DeleteCommand(BaseCommand):
-    def __init__(self, *, text, team_id, channel_id):
+    def __init__(self, *, text: str, team_id: int, channel_id: int):
         name = "delete"
         description = "Delete a given command"
         examples = [

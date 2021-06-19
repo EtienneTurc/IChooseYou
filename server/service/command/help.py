@@ -24,7 +24,7 @@ KNOWN_COMMANDS = {
 
 
 class HelpCommand(BaseCommand):
-    def __init__(self, *, text, team_id, channel_id):
+    def __init__(self, *, text: str, team_id: int, channel_id: int):
         name = "help"
         description = "Command to show commands, args and their values"
         examples = [
@@ -74,7 +74,7 @@ class HelpCommand(BaseCommand):
                 visibility=MessageVisibility.HIDDEN,
             )
 
-    def _format_commands_help(self, known_commands, custom_commands):
+    def _format_commands_help(self, known_commands: list[BaseCommand], custom_commands):
         message_content = "_*Fixed commands:*_\n"
         message_content += format_known_commands_help(known_commands)
         message_content += "\n\n _*Created commands:*_\n"

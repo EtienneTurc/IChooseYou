@@ -2,7 +2,6 @@ from server.orm.command import Command
 from server.service.command.args import Arg
 from server.service.command.base_command import BaseCommand, addHelp
 from server.service.command.utils import format_pick_list
-from server.service.command.validator import assert_label_is_correct
 from server.service.slack.message_formatting import format_custom_command_help
 from server.service.slack.message import (
     Message,
@@ -29,12 +28,12 @@ pick_list_help += " with the argument `-p all_members` or `--pickList all_member
 
 
 class CreateCommand(BaseCommand):
-    def __init__(self, *, text, team_id, channel_id):
+    def __init__(self, *, text: str, team_id: int, channel_id: int) -> None:
         name = "create"
         description = "Command to create new slash commands"
         examples = [
             "mySuperCommand --pickList first_element second --label my super awesome label",  # noqa E501
-            "mySuperCommand --pickList all_members --label will replace bash args such as $1 or $my_var_name",  # noqa E501
+            "mySuperCommand --pickList all_members --label will replace bash args such $my_var_name",  # noqa E501
         ]
 
         args = [
@@ -75,9 +74,7 @@ class CreateCommand(BaseCommand):
         )
 
     @addHelp
-    def exec(self, user_id, *args, **kwargs):
-        assert_label_is_correct(self.options["label"])
-
+    def exec(self, user_id: int, *args, **kwargs) -> Message:
         pick_list = format_pick_list(
             self.options["pickList"], self.team_id, self.channel_id
         )
