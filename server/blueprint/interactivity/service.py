@@ -1,6 +1,6 @@
-from server.blueprint.slash_command.service import process_slash_command
-from server.blueprint.interactivity.helper import format_payload_for_slash_command
 from server.blueprint.interactivity.action import Action
+from server.blueprint.interactivity.helper import format_payload_for_slash_command
+from server.blueprint.slash_command.service import process_slash_command
 
 
 def proccess_interactivity(payload):

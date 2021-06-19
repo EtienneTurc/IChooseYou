@@ -1,11 +1,12 @@
 from dataclasses import dataclass
+
 from flask import current_app
 
 from server.service.command.args import ArgError
-from server.service.error.back_error import BackError
-from server.service.slack.message_formatting import format_custom_command_message
-from server.service.slack.message import Message, MessageVisibility
 from server.service.command.utils import select_from_pick_list
+from server.service.error.back_error import BackError
+from server.service.slack.message import Message, MessageVisibility
+from server.service.slack.message_formatting import format_custom_command_message
 
 
 @dataclass

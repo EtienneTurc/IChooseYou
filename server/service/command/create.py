@@ -1,14 +1,10 @@
 from server.orm.command import Command
 from server.service.command.args import Arg
 from server.service.command.base_command import BaseCommand, addHelp
-from server.service.command.utils import format_pick_list
-from server.service.slack.message_formatting import format_custom_command_help
-from server.service.slack.message import (
-    Message,
-    MessageStatus,
-    MessageVisibility,
-)
 from server.service.command.enum import PickListSpecialArg
+from server.service.command.utils import format_pick_list
+from server.service.slack.message import Message, MessageStatus, MessageVisibility
+from server.service.slack.message_formatting import format_custom_command_help
 
 label_help = "Text to display using the following format:"
 label_help += "\n>Hey ! <user> choose <element> to <your_label> <text_on_call>\n"

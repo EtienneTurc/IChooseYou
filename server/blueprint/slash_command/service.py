@@ -2,6 +2,7 @@ import threading
 
 from flask import current_app
 
+from server.blueprint.interactivity.action import Action
 from server.blueprint.slash_command.schema import SlackApiSchema
 from server.orm.command import Command
 from server.service.command.custom import CustomCommand
@@ -10,7 +11,6 @@ from server.service.error.decorator import handle_error
 from server.service.flask.decorator import make_context
 from server.service.slack.response import send_to_channel
 from server.service.validator.decorator import validate_schema
-from server.blueprint.interactivity.action import Action
 
 
 def process_slash_command(body):

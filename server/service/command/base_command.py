@@ -1,11 +1,8 @@
 from flask import current_app
 
 from server.service.command.args import Arg, ArgumentParser
-from server.service.command.utils import (
-    format_examples,
-    format_text_to_list,
-    options_to_dict,
-)
+from server.service.command.utils import (format_examples, format_text_to_list,
+                                          options_to_dict)
 
 
 def addHelp(func):

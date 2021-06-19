@@ -1,11 +1,10 @@
 import functools
-import re
 import random
+import re
 
-from server.service.slack.message_formatting import format_mention_user
-from server.service.slack.request import get_users_in_channel
 from server.service.command.enum import PickListSpecialArg
-from server.service.slack.request import is_user_of_team_active
+from server.service.slack.message_formatting import format_mention_user
+from server.service.slack.request import get_users_in_channel, is_user_of_team_active
 
 
 def get_as_string(value, *, nargs0or1) -> str:

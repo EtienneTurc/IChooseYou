@@ -4,17 +4,11 @@ from server.service.command.base_command import BaseCommand, addHelp
 from server.service.command.create import CreateCommand
 from server.service.command.delete import DeleteCommand
 from server.service.command.update import UpdateCommand
-from server.service.slack.message_formatting import (
-    format_custom_command_help,
-    format_custom_commands_help,
-    format_known_command_help,
-    format_known_commands_help,
-)
-from server.service.slack.message import (
-    Message,
-    MessageStatus,
-    MessageVisibility,
-)
+from server.service.slack.message import Message, MessageStatus, MessageVisibility
+from server.service.slack.message_formatting import (format_custom_command_help,
+                                                     format_custom_commands_help,
+                                                     format_known_command_help,
+                                                     format_known_commands_help)
 
 KNOWN_COMMANDS = {
     "create": CreateCommand,

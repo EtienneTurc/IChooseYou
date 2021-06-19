@@ -1,11 +1,7 @@
 from server.orm.command import Command
 from server.service.command.args import Arg
 from server.service.command.base_command import BaseCommand, addHelp
-from server.service.slack.message import (
-    Message,
-    MessageStatus,
-    MessageVisibility,
-)
+from server.service.slack.message import Message, MessageStatus, MessageVisibility
 
 
 class DeleteCommand(BaseCommand):
