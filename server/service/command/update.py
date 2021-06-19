@@ -7,7 +7,7 @@ from server.service.slack.message_formatting import format_custom_command_help
 
 
 class UpdateCommand(BaseCommand):
-    def __init__(self, *, text: str, team_id: int, channel_id: int):
+    def __init__(self, *, text: str, team_id: str, channel_id: str):
         name = "update"
         description = "Update a given command"
         examples = [
@@ -75,7 +75,7 @@ class UpdateCommand(BaseCommand):
         )
 
     @addHelp
-    def exec(self, user_id: int, *args, **kwargs) -> Message:
+    def exec(self, user_id: str, *args, **kwargs) -> Message:
         command_name = self.options["command_name"]
         command = Command.find_one_by_name_and_chanel(command_name, self.channel_id)
 

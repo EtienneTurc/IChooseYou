@@ -20,12 +20,12 @@ def format_known_commands_help(known_commands):
 
 
 def format_custom_command_message(
-    user_id: int, selected_element: str, label: str
+    user_id: str, selected_element: str, label: str
 ) -> str:
     return f"Hey ! {format_mention_user(user_id)} choose {selected_element} {label}"
 
 
-def format_mention_user(user_id: int) -> str:
+def format_mention_user(user_id: str) -> str:
     if not user_id:
         return "<@user>"
     return f"<@{user_id}>"
@@ -33,6 +33,9 @@ def format_mention_user(user_id: int) -> str:
 
 def format_custom_command_help(custom_command):
     self_exclude = "not " if not custom_command.self_exclude else ""
+    only_active_users = (
+        "Only active users" if custom_command.only_active_users else "All items"
+    )
     slack_message_from_command = format_custom_command_message(
         None, "<selected_element>", custom_command.label
     )
@@ -41,6 +44,7 @@ def format_custom_command_help(custom_command):
     message += f"\n• Message: {slack_message_from_command}"
     message += f"\n• Pick list: {custom_command.pick_list}"
     message += f"\n• User using the slash command {self_exclude}excluded."
+    message += f"\n• {only_active_users} are selected when using the slash command."
 
     return message
 

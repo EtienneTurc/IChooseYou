@@ -75,6 +75,14 @@ team_id = "1337"
             "test_update --label my new label --self-exclude False",
             "User using the slash command not excluded.",
         ),
+        (
+            "test_update --only-active-users",
+            "Only active users are selected when using the slash command.",
+        ),
+        (
+            "test_update -o False",
+            "All items are selected when using the slash command.",
+        ),
     ],
 )
 def test_update(text, expected_message, client):

@@ -35,8 +35,6 @@ def get_as_list(value, *, clean_mentions):
 
 
 def options_to_dict(options, args):
-    print(options)
-    print(args)
     args_dict = {arg.variable_name: arg for arg in args}
     options_dict = {}
     for option_name in options:
@@ -66,7 +64,7 @@ def format_text_to_list(text: str) -> list[str]:
     return text_list
 
 
-def format_pick_list(pick_list: list[str], team_id: int, channel_id: int) -> list[str]:
+def format_pick_list(pick_list: list[str], team_id: str, channel_id: str) -> list[str]:
     if pick_list == [PickListSpecialArg.ALL_MEMBERS.value]:
         pick_list = []
         members = get_users_in_channel(team_id, channel_id)
@@ -96,14 +94,12 @@ def get_user_id_in_mention(text: str) -> int:
 
 
 def select_from_pick_list(
-    pick_list: list[str], team_id: int, only_active_users: bool = False
+    pick_list: list[str], team_id: str, only_active_users: bool = False
 ) -> str:
     if not pick_list or not len(pick_list):
         return None
 
     selected_element = random.choice(pick_list)
-
-    print(only_active_users)
 
     if not only_active_users:
         return selected_element
@@ -112,6 +108,7 @@ def select_from_pick_list(
         return selected_element
 
     user_mentionned = get_user_id_in_mention(selected_element)
+
     if is_user_of_team_active(team_id, user_mentionned):
         return selected_element
 

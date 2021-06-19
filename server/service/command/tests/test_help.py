@@ -41,7 +41,6 @@ def test_help_with_given_known_command(client):
     text = "create"
     message = HelpCommand(text=text, team_id=team_id, channel_id=channel_id).exec()
 
-    print(message.content)
     expected_texts = [
         "*create*",
         "*command_name*",
@@ -73,6 +72,7 @@ def test_help_with_given_custom_command(client):
         "• Message: ",
         "• Pick list: ",
         "• User using the slash command excluded.",
+        "• All items are selected when using the slash command.",
     ]
     for expected_text in expected_texts:
         assert expected_text in message.content

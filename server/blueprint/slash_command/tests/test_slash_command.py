@@ -56,6 +56,7 @@ def test_slash_command_no_command(client):
         "create test_create --pick-list 1 2 3 --label test create",
         "create test_create --pick-list 1 2 3 --label test create --self-exclude",  # noqa: E501
         "create test_create --pick-list 1 2 3 --label test create --self-exclude True",  # noqa: E501
+        "create test_create --pick-list 1 2 3 --label test create -o",  # noqa: E501
     ],
 )
 def test_slash_command_create(text, client):
@@ -116,6 +117,10 @@ def test_slash_command_create_fail_unrecognized_element(text, client):
         (
             "update test_update --self-exclude False",
             {"self_exclude": False},
+        ),
+        (
+            "update test_update -o",
+            {"only_active_users": True},
         ),
     ],
 )

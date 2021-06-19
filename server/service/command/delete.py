@@ -5,7 +5,7 @@ from server.service.slack.message import Message, MessageStatus, MessageVisibili
 
 
 class DeleteCommand(BaseCommand):
-    def __init__(self, *, text: str, team_id: int, channel_id: int):
+    def __init__(self, *, text: str, team_id: str, channel_id: str):
         name = "delete"
         description = "Delete a given command"
         examples = [

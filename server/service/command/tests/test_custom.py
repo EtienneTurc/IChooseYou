@@ -1,12 +1,16 @@
 import pytest
 
+import server.service.slack.tests.monkey_patch_request as monkey_patch_request  # noqa: F401, E501
 from server.service.command.args import ArgError
 from server.service.command.custom import CustomCommand
+from server.service.error.back_error import BackError
+from server.tests.test_app import *  # noqa: F401, F403
 
 name = "custom_command"
 pick_list = [1, 2, 3]
 self_exclude = False
 only_active_users = False
+user_id = "4321"
 
 
 @pytest.mark.parametrize(
@@ -63,7 +67,7 @@ def test_custom_command():
         self_exclude=False,
         only_active_users=False,
     )
-    message = custom_command.exec(4321, "")
+    message = custom_command.exec(user_id, "")
     assert "Hey ! <@4321> choose " in message.content
     assert "my fancy label" in message.content
 
@@ -76,7 +80,7 @@ def test_custom_command_self_exclude():
         self_exclude=True,
         only_active_users=False,
     )
-    message = custom_command.exec(4321, "")
+    message = custom_command.exec(user_id, "")
     assert "choose 2" in message.content
 
 
@@ -90,7 +94,7 @@ def test_custom_command_self_exclude_error():
     )
     error_message = "Pick list contains only the user using the command.*selfExclude.*True.*"  # noqa E501
     with pytest.raises(ArgError, match=error_message):
-        custom_command.exec(4321, "")
+        custom_command.exec(user_id, "")
 
 
 def test_custom_command_pick_list_empty():
@@ -103,4 +107,29 @@ def test_custom_command_pick_list_empty():
     )
     error_message = "Can't pick an element from an empty pick list."
     with pytest.raises(ArgError, match=error_message):
-        custom_command.exec(4321, "")
+        custom_command.exec(user_id, "")
+
+
+def test_custom_only_active_users(client):
+    custom_command = CustomCommand(
+        name=name,
+        label="my label",
+        pick_list=["<@1234|name>"],
+        self_exclude=False,
+        only_active_users=True,
+    )
+    message = custom_command.exec(user_id, "")
+    assert "<@1234|name>" in message.content
+
+
+def test_custom_only_active_users_error(client):
+    custom_command = CustomCommand(
+        name=name,
+        label="my label",
+        pick_list=["<@4321|name>"],
+        self_exclude=False,
+        only_active_users=True,
+    )
+    error_message = "No active users to select found."
+    with pytest.raises(BackError, match=error_message):
+        custom_command.exec(user_id, "")

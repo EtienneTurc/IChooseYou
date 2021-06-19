@@ -62,6 +62,14 @@ user_id = "4321"
             "test_create --label my label --pick-list all_members",
             "['<@1234>', '<@2345>', '<@3456>']",
         ),
+        (
+            "test_create --label my label --pick-list 1 2 3 --only-active-users",
+            "Only active users are selected when using the slash command.",
+        ),
+        (
+            "test_create --label my label --pick-list 1 2 3 -o False",
+            "All items are selected when using the slash command.",
+        ),
     ],
 )
 def test_create(text, expected_message, client):

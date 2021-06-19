@@ -17,10 +17,10 @@ class CustomCommand:
     self_exclude: bool
     only_active_users: bool
 
-    def exec(self, user_id: int, text: str, team_id: int = None, **kwargs):
+    def exec(self, user_id: str, text: str, team_id: str = None, **kwargs):
         pick_list = self.pick_list
         if self.self_exclude:
-            pick_list = [el for el in pick_list if str(user_id) not in el]
+            pick_list = [el for el in pick_list if user_id not in el]
 
         self._assert_pick_list(pick_list, user_id)
 
@@ -40,12 +40,12 @@ class CustomCommand:
         space = " " if self.label and text else ""
         return f"{self.label}{space}{text}"
 
-    def _assert_pick_list(self, pick_list: list[str], user_id: int) -> None:
+    def _assert_pick_list(self, pick_list: list[str], user_id: str) -> None:
         if not len(pick_list):
             if not len(self.pick_list):
                 raise ArgError(None, "Can't pick an element from an empty pick list.")
 
-            if len(self.pick_list) == 1 and str(user_id) in self.pick_list[0]:
+            if len(self.pick_list) == 1 and user_id in self.pick_list[0]:
                 message = "Pick list contains only the user using the command."
                 message += "But the flag selfExclude is set to True."
                 message += "Thus no element can be picked from the pick list."
@@ -57,11 +57,11 @@ class CustomCommand:
         if selected_element is None:
             if self.only_active_users:
                 message = "No active users to select found."
-                message += "If you want to select non active users"
+                message += " If you want to select non active users"
                 message += (
                     " consider updating the command with the following slash command:\n"
                 )
                 message += f"`{current_app.config['SLASH_COMMAND']} update {self.name} -o false`"  # noqa E501
-                raise ArgError(None, message)
+                raise BackError(message, 404)
 
             raise BackError("Could not find an element to select", 500)

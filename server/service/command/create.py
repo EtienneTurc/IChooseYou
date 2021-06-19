@@ -21,7 +21,7 @@ pick_list_help += f" or `--pick-list {PickListSpecialArg.ALL_MEMBERS.value}`."
 
 
 class CreateCommand(BaseCommand):
-    def __init__(self, *, text: str, team_id: int, channel_id: int) -> None:
+    def __init__(self, *, text: str, team_id: str, channel_id: str) -> None:
         name = "create"
         description = "Command to create new slash commands"
         examples = [
@@ -76,11 +76,10 @@ class CreateCommand(BaseCommand):
         )
 
     @addHelp
-    def exec(self, user_id: int, *args, **kwargs) -> Message:
+    def exec(self, user_id: str, *args, **kwargs) -> Message:
         pick_list = format_pick_list(
             self.options["pick_list"], self.team_id, self.channel_id
         )
-        print(self.options)
 
         Command.create(
             name=self.options["command_name"],
