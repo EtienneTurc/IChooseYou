@@ -1,3 +1,5 @@
+from slack_sdk.webhook import WebhookClient
+
 from slack_sdk import WebClient
 
 from server.orm.slack_bot_token import SlackBotToken
@@ -26,12 +28,7 @@ def delete_message_in_channel(team_id: str, channel_id: str, ts: str) -> None:
     client.chat_delete(channel=channel_id, ts=ts)
 
 
-def send_message_to_channel(
-    message: Message,
-    channel_id: str,
-    team_id: str,
-    user_id: str = None,
-) -> None:
+def build_message_payload(message: Message):
     blocks = [
         {
             "type": "section",
@@ -42,17 +39,9 @@ def send_message_to_channel(
         },
     ]
 
-    client = get_web_client(team_id)
-    client_func = (
-        client.chat_postEphemeral
-        if message.visibility == MessageVisibility.HIDDEN
-        else client.chat_postMessage
-    )
-    client_func(
-        channel=channel_id,
-        text=f"{message.content}" if not message.as_attachment else "",
-        user=user_id,
-        attachments=[
+    return {
+        "text": f"{message.content}" if not message.as_attachment else "",
+        "attachments": [
             {
                 "color": message.status.value,
                 "blocks": blocks,
@@ -60,4 +49,36 @@ def send_message_to_channel(
         ]
         if message.as_attachment
         else None,
+    }
+
+
+def send_message_to_channel(
+    message: Message,
+    channel_id: str,
+    team_id: str,
+    user_id: str = None,
+) -> None:
+    payload = build_message_payload(message)
+    client = get_web_client(team_id)
+    client_func = (
+        client.chat_postEphemeral
+        if message.visibility == MessageVisibility.HIDDEN
+        else client.chat_postMessage
+    )
+    client_func(
+        **payload,
+        channel=channel_id,
+        user=user_id,
+    )
+
+
+def send_message_to_channel_via_response_url(
+    message: Message, response_url: str
+) -> None:
+    payload = build_message_payload(message)
+    webhook = WebhookClient(response_url)
+    webhook.send(
+        **payload,
+        response_type=message.visibility.value,
+        replace_original=False,
     )

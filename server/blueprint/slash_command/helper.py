@@ -11,6 +11,7 @@ def format_body(form):
             "id": form.get("user_id"),
             "name": form.get("user_name"),
         },
+        "response_url": form.get("response_url"),
         "team_id": form.get("team_id"),
         "text": text,
         "command_name": command_name,

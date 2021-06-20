@@ -33,6 +33,7 @@ def mock_slack_api_data(
     user_name="patoche",
     text="1234",
     ts="1624201203.000200",
+    response_url="https://whatever.com",
     callback_id=None,
     action_id=None,
 ):
@@ -42,6 +43,7 @@ def mock_slack_api_data(
         "channel": {"id": channel_id, "name": channel_name},
         "message": {"text": text, "ts": ts},
         "actions": [{"value": text}],
+        "response_url": response_url,
     }
     if callback_id:
         payload["callback_id"] = callback_id

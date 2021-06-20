@@ -28,6 +28,7 @@ def mock_slack_api_data(
     user_id="4321",
     user_name="1234",
     text="1234",
+    response_url="https://whatever.com",
 ):
     return {
         "team_id": team_id,
@@ -36,6 +37,7 @@ def mock_slack_api_data(
         "user_id": user_id,
         "user_name": user_name,
         "text": text,
+        "response_url": response_url,
     }
 
 

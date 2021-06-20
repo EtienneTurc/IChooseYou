@@ -17,6 +17,7 @@ def format_payload_for_slash_command(payload):
         "team_id": payload.get("team").get("id"),
         "text": text,
         "command_name": command_name,
+        "response_url": payload.get("response_url"),
     }
 
 
@@ -27,6 +28,7 @@ def format_payload_for_message_delete(payload):
         "team_id": payload.get("team").get("id"),
         "text": payload.get("message").get("text"),
         "ts": payload.get("message").get("ts"),
+        "response_url": payload.get("response_url"),
     }
 
 
