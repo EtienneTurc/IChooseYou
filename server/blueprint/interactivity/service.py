@@ -1,13 +1,11 @@
 import threading
+
 from flask import current_app
 
-
 from server.blueprint.interactivity.action import Action
-from server.blueprint.interactivity.helper import (
-    format_payload_for_slash_command,
-    format_payload_for_message_delete,
-    assert_message_can_be_delete,
-)
+from server.blueprint.interactivity.helper import (assert_message_can_be_delete,
+                                                   format_payload_for_message_delete,
+                                                   format_payload_for_slash_command)
 from server.blueprint.slash_command.service import process_slash_command
 from server.service.error.decorator import handle_error
 from server.service.flask.decorator import make_context

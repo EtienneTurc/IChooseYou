@@ -4,9 +4,9 @@ from marshmallow import ValidationError
 
 from server.service.command.args import ArgError
 from server.service.error.back_error import BackError
+from server.service.helper.dict_helper import pick
 from server.service.slack.message import Message, MessageStatus, MessageVisibility
 from server.service.slack.sdk_wrapper import send_message_to_channel
-from server.service.helper.dict_helper import pick
 
 
 def error_handler(

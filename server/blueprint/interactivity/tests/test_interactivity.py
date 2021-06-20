@@ -4,9 +4,8 @@ from contextlib import redirect_stdout
 import pytest
 
 import server.service.slack.tests.monkey_patch as monkey_patch  # noqa: F401
-from server.tests.test_app import *  # noqa: F401, F403
 from server.blueprint.interactivity.action import Action
-
+from server.tests.test_app import *  # noqa: F401, F403
 
 user_id = "4321"
 
