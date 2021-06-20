@@ -13,7 +13,6 @@ class SlackApiSchema(Schema):
     user = fields.Nested(SlackEntitySchema())
     command_name = fields.Str(required=True)
     text = fields.Str(required=True)
-    response_url = fields.Str(required=True)
 
     @validates("command_name")
     def not_empty(self, value):

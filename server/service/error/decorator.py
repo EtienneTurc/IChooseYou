@@ -5,10 +5,13 @@ from marshmallow import ValidationError
 from server.service.command.args import ArgError
 from server.service.error.back_error import BackError
 from server.service.slack.message import Message, MessageStatus, MessageVisibility
-from server.service.slack.response import send_to_channel
+from server.service.slack.sdk_wrapper import send_message_to_channel
+from server.service.helper.dict_helper import pick
 
 
-def error_handler(error, error_status, response_url):
+def error_handler(
+    error: str, error_status: int, *, channel_id: str, team_id: str, user_id: str
+) -> None:
     traceback.print_exc()  # Print stacktrace
 
     message = Message(
@@ -19,7 +22,9 @@ def error_handler(error, error_status, response_url):
         visibility=MessageVisibility.HIDDEN,
     )
 
-    return send_to_channel(message, response_url)
+    return send_message_to_channel(
+        message, channel_id=channel_id, team_id=team_id, user_id=user_id
+    )
 
 
 def handle_error(func):
@@ -27,12 +32,22 @@ def handle_error(func):
         try:
             return func(*args, **kwargs)
         except ArgError as error:
-            return error_handler(error, 400, kwargs["response_url"])
+            return error_handler(
+                error, 400, **pick(kwargs, ["channel_id", "team_id", "user_id"])
+            )
         except ValidationError as error:
-            return error_handler(error, 400, kwargs["response_url"])
+            return error_handler(
+                error, 400, **pick(kwargs, ["channel_id", "team_id", "user_id"])
+            )
         except BackError as error:
-            return error_handler(error, error.status, kwargs["response_url"])
+            return error_handler(
+                error,
+                error.status,
+                **pick(kwargs, ["channel_id", "team_id", "user_id"]),
+            )
         except Exception as error:
-            return error_handler(error, 500, kwargs["response_url"])
+            return error_handler(
+                error, 500, **pick(kwargs, ["channel_id", "team_id", "user_id"])
+            )
 
     return handle_error_wrapper

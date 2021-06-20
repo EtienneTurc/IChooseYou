@@ -1,6 +1,6 @@
 import pytest
 
-import server.service.slack.tests.monkey_patch_request as monkey_patch_request  # noqa: F401, E501
+import server.service.slack.tests.monkey_patch as monkey_patch_request  # noqa: F401, E501
 from server.orm.command import Command
 from server.service.command.args import ArgError
 from server.service.command.update import UpdateCommand

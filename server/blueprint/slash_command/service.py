@@ -9,7 +9,7 @@ from server.service.command.custom import CustomCommand
 from server.service.command.help import KNOWN_COMMANDS, KNOWN_COMMANDS_NAMES
 from server.service.error.decorator import handle_error
 from server.service.flask.decorator import make_context
-from server.service.slack.response import send_to_channel
+from server.service.slack.sdk_wrapper import send_message_to_channel
 from server.service.validator.decorator import validate_schema
 
 
@@ -50,35 +50,12 @@ def process_slash_command(body):
             }
         ]
     }
-    # return {
-    #     "attachments": [
-    #         {
-    #             "blocks": [
-    #                 {
-    #                     "type": "section",
-    #                     "text": slash_command + command,
-    #                     "accessory": {
-    #                         "type": "button",
-    #                         "text": {
-    #                             "type": "plain_text",
-    #                             "text": "Click Me",
-    #                         },
-    #                         "value": command,
-    #                         "action_id": "tender_button",
-    #                     },
-    #                 }
-    #             ]
-    #         }
-    #     ]
-    # }
 
 
 @make_context
 @handle_error
 @validate_schema(SlackApiSchema)
-def resolve_command(
-    *, team_id, channel, user, command_name, text, response_url, **kwargs
-):
+def resolve_command(*, team_id, channel, user, command_name, text, **kwargs):
     # Known commands
     if command_name in KNOWN_COMMANDS_NAMES:
         message = KNOWN_COMMANDS[command_name](
@@ -96,4 +73,4 @@ def resolve_command(
             only_active_users=command.only_active_users,
         ).exec(user["id"], text, team_id=team_id)
 
-    return send_to_channel(message, response_url)
+    return send_message_to_channel(message, channel["id"], team_id, user_id=user["id"])

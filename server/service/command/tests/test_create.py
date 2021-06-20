@@ -1,6 +1,6 @@
 import pytest
 
-import server.service.slack.tests.monkey_patch_request as monkey_patch_request  # noqa: F401, E501
+import server.service.slack.tests.monkey_patch as monkey_patch_request  # noqa: F401, E501
 from server.service.command.create import CreateCommand
 from server.service.error.back_error import BackError
 from server.service.slack.message import MessageStatus, MessageVisibility

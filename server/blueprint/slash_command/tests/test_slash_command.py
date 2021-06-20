@@ -3,8 +3,7 @@ from contextlib import redirect_stdout
 
 import pytest
 
-import server.blueprint.slash_command.tests.monkey_patch as monkey_patch  # noqa: F401
-import server.service.slack.tests.monkey_patch_request as monkey_patch_request  # noqa: F401, E501
+import server.service.slack.tests.monkey_patch as monkey_patch  # noqa: F401
 from server.orm.command import Command
 from server.tests.test_app import *  # noqa: F401, F403
 
@@ -29,7 +28,6 @@ def mock_slack_api_data(
     user_id="4321",
     user_name="1234",
     text="1234",
-    response_url="1234",
 ):
     return {
         "team_id": team_id,
@@ -38,7 +36,6 @@ def mock_slack_api_data(
         "user_id": user_id,
         "user_name": user_name,
         "text": text,
-        "response_url": response_url,
     }
 
 
