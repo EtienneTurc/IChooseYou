@@ -35,8 +35,13 @@ def build_message_payload(message: Message):
                 "type": "mrkdwn",
                 "text": f"{message.content}",
             },
-        },
+        }
     ]
+
+    if message.image_url:
+        blocks.append(
+            {"type": "image", "image_url": message.image_url, "alt_text": "dsfdsf"}
+        )
 
     return {
         "text": f"{message.content}" if not message.as_attachment else "",

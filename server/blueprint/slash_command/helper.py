@@ -1,7 +1,12 @@
+def extract_command_from_text(text):
+    separator = " "
+    text = text.replace("\n", f"{separator}\n")
+    command_name = text.split(separator)[0]
+    return command_name, separator.join(text.split(separator)[1:])
+
+
 def format_body(form):
-    text = form.get("text")
-    command_name = text.split(" ")[0]
-    text = " ".join(text.split(" ")[1:])
+    command_name, text = extract_command_from_text(form.get("text"))
     return {
         "channel": {
             "id": form.get("channel_id"),

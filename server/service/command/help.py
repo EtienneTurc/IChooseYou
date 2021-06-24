@@ -3,6 +3,7 @@ from server.service.command.args import Arg
 from server.service.command.base_command import BaseCommand, addHelp
 from server.service.command.create import CreateCommand
 from server.service.command.delete import DeleteCommand
+from server.service.command.randomness import RandomnessCommand
 from server.service.command.update import UpdateCommand
 from server.service.slack.message import Message, MessageStatus, MessageVisibility
 from server.service.slack.message_formatting import (format_custom_command_help,
@@ -14,6 +15,7 @@ KNOWN_COMMANDS = {
     "create": CreateCommand,
     "update": UpdateCommand,
     "delete": DeleteCommand,
+    "randomness": RandomnessCommand,
 }
 
 

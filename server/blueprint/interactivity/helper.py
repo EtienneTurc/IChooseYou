@@ -1,10 +1,11 @@
+from server.blueprint.slash_command.helper import extract_command_from_text
 from server.service.error.back_error import BackError
 
 
 def format_payload_for_slash_command(payload):
-    text = payload.get("actions")[0].get("value")
-    command_name = text.split(" ")[0]
-    text = " ".join(text.split(" ")[1:])
+    command_name, text = extract_command_from_text(
+        payload.get("actions")[0].get("value")
+    )
     return {
         "channel": {
             "id": payload.get("channel").get("id"),

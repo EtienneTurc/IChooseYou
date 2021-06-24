@@ -94,7 +94,7 @@ def get_user_id_in_mention(text: str) -> int:
 
 
 def select_from_pick_list(
-    pick_list: list[str], team_id: str, only_active_users: bool = False
+    pick_list: list[str], team_id: str = None, only_active_users: bool = False
 ) -> str:
     if not pick_list or not len(pick_list):
         return None

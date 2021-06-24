@@ -3,6 +3,7 @@ class Config(object):
     TESTING = False
     SLASH_COMMAND = "/ichu"
     DATABASE_URI = "mongodb://localhost:27017/ichooseyoudb"
+    API_URL = "https://ichooseyou.etienne-t.fr"
     WAIT_FOR_THREAD_BEFORE_RETURN = False
 
 
@@ -15,6 +16,7 @@ class DevelopmentConfig(Config):
     DEBUG = True
     TESTING = False
     SLASH_COMMAND = "/ichu_dev"
+    API_URL = "https://8bf49af69a7e.ngrok.io"
 
 
 class TestingConfig(Config):

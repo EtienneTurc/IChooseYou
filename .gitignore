@@ -1,6 +1,7 @@
 __pycache__
 .vscode
 *.env
+!env/template.env
 .pytest_cache
 .coverage
 htmlcov

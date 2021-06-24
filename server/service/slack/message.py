@@ -20,3 +20,4 @@ class Message:
     status: MessageStatus = MessageStatus.INFO
     visibility: MessageVisibility = MessageVisibility.HIDDEN
     as_attachment: bool = True
+    image_url: str = None
