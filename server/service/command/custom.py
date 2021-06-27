@@ -17,9 +17,11 @@ class CustomCommand:
     self_exclude: bool
     only_active_users: bool
 
-    def exec(self, user_id: str, text: str, team_id: str = None, **kwargs):
+    def exec(
+        self, user_id: str, text: str, team_id: str = None, **kwargs
+    ) -> tuple[Message, str]:
         pick_list = self.pick_list
-        if self.self_exclude:
+        if self.self_exclude and user_id:
             pick_list = [el for el in pick_list if user_id not in el]
 
         self._assert_pick_list(pick_list, user_id)
@@ -30,10 +32,13 @@ class CustomCommand:
         self._assert_selected_element(selected_element)
 
         label = self._create_label(text)
-        return Message(
-            content=format_custom_command_message(user_id, selected_element, label),
-            visibility=MessageVisibility.NORMAL,
-            as_attachment=False,
+        return (
+            Message(
+                content=format_custom_command_message(user_id, selected_element, label),
+                visibility=MessageVisibility.NORMAL,
+                as_attachment=False,
+            ),
+            selected_element,
         )
 
     def _create_label(self, text: str) -> str:
@@ -45,7 +50,7 @@ class CustomCommand:
             if not len(self.pick_list):
                 raise ArgError(None, "Can't pick an element from an empty pick list.")
 
-            if len(self.pick_list) == 1 and user_id in self.pick_list[0]:
+            if len(self.pick_list) == 1 and user_id and user_id in self.pick_list[0]:
                 message = "Pick list contains only the user using the command."
                 message += "But the flag selfExclude is set to True."
                 message += "Thus no element can be picked from the pick list."

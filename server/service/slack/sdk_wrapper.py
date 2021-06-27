@@ -86,3 +86,32 @@ def send_message_to_channel_via_response_url(
         response_type=message.visibility.value,
         replace_original=False,
     )
+
+
+def open_view_modal(modal: str, trigger_id: str, team_id: str) -> None:
+    client = get_web_client(team_id)
+    client.views_open(trigger_id=trigger_id, view=modal)
+
+
+def save_workflow_in_slack(
+    inputs: dict, outputs: list[dict], workflow_step_edit_id: str, team_id: str
+) -> None:
+    client = get_web_client(team_id)
+    client.workflows_updateStep(
+        workflow_step_edit_id=workflow_step_edit_id, inputs=inputs, outputs=outputs
+    )
+
+
+def complete_workflow(workflow_step_execute_id: str, outputs: dict, team_id: str):
+    client = get_web_client(team_id)
+    client.workflows_stepCompleted(
+        workflow_step_execute_id=workflow_step_execute_id, outputs=outputs
+    )
+
+
+def failed_worklow(message: str, workflow_step_execute_id: str, team_id: str):
+    client = get_web_client(team_id)
+    error = {"message": message}
+    client.workflows_stepFailed(
+        workflow_step_execute_id=workflow_step_execute_id, error=error
+    )

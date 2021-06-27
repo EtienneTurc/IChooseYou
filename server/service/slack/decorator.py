@@ -1,3 +1,4 @@
+import json
 import os
 
 from flask import make_response, request
@@ -23,3 +24,15 @@ def validate_signature(func):
         return func(*args, **kwargs)
 
     return validate_signature_wrapper
+
+
+def validate_challenge(func):
+    def validate_challenge_wrapper(*args, **kwargs):
+        payload = request.get_data()
+        body = json.loads(payload)
+
+        if body and body.get("challenge"):
+            return make_response(body.get("challenge"), 200)
+        return func(*args, **kwargs)
+
+    return validate_challenge_wrapper
