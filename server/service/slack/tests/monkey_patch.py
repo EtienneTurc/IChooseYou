@@ -35,9 +35,31 @@ def monkey_patch_client_chat_postMessage(
     print(attachments)
 
 
+def monkey_patch_views_open(self, *, trigger_id: str, view: str, **kwargs):
+    print(trigger_id)
+    print(view)
+
+
 def monkey_patch_webhook_client_send(self, *, text: str, attachments: str, **kwargs):
     print(text)
     print(attachments)
+
+
+def monkey_patch_workflows_updateStep(
+    self, *, workflow_step_edit_id: str, inputs: dict, outputs: list[dict], **kwargs
+):
+    print(inputs)
+    print(outputs)
+
+
+def monkey_patch_workflows_stepCompleted(self, *, workflow_step_execute_id, outputs):
+    print(outputs)
+
+
+def monkey_patch_workflows_stepFailed(
+    self, *, workflow_step_execute_id, error, **kwargs
+):
+    print(error)
 
 
 get_web_client.__code__ = monkey_patch_get_web_client.__code__
@@ -49,6 +71,12 @@ WebClient.users_getPresence.__code__ = monkey_patch_client_users_getPresence.__c
 WebClient.chat_delete.__code__ = monkey_patch_client_chat_delete.__code__
 WebClient.chat_postEphemeral.__code__ = monkey_patch_client_chat_postEphemeral.__code__
 WebClient.chat_postMessage.__code__ = monkey_patch_client_chat_postMessage.__code__
+WebClient.views_open.__code__ = monkey_patch_views_open.__code__
+WebClient.workflows_updateStep.__code__ = monkey_patch_workflows_updateStep.__code__
+WebClient.workflows_stepCompleted.__code__ = (
+    monkey_patch_workflows_stepCompleted.__code__
+)
+WebClient.workflows_stepFailed.__code__ = monkey_patch_workflows_stepFailed.__code__
 
 WebhookClient.send.__code__ = monkey_patch_webhook_client_send.__code__
 
