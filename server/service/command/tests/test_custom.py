@@ -67,7 +67,7 @@ def test_custom_command():
         self_exclude=False,
         only_active_users=False,
     )
-    message = custom_command.exec(user_id, "")
+    message, _ = custom_command.exec(user_id, "")
     assert "Hey ! <@4321> choose " in message.content
     assert "my fancy label" in message.content
 
@@ -80,8 +80,9 @@ def test_custom_command_self_exclude():
         self_exclude=True,
         only_active_users=False,
     )
-    message = custom_command.exec(user_id, "")
+    message, selected_item = custom_command.exec(user_id, "")
     assert "choose 2" in message.content
+    assert selected_item == "2"
 
 
 def test_custom_command_self_exclude_error():
@@ -118,8 +119,9 @@ def test_custom_only_active_users(client):
         self_exclude=False,
         only_active_users=True,
     )
-    message = custom_command.exec(user_id, "")
+    message, selected_item = custom_command.exec(user_id, "")
     assert "<@1234|name>" in message.content
+    assert selected_item == "<@1234|name>"
 
 
 def test_custom_only_active_users_error(client):
