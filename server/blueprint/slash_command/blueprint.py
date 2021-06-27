@@ -7,8 +7,8 @@ from server.service.slack.decorator import validate_signature
 api = Blueprint("slash_command", __name__, url_prefix="/slash_command")
 
 
-@validate_signature
 @api.route("/", methods=["POST"])
+@validate_signature
 def process_slash_command():
     body = format_body(request.form)
     response = service.process_slash_command(body)

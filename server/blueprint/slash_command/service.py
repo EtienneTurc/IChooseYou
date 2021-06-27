@@ -1,5 +1,3 @@
-import threading
-
 from flask import current_app
 
 from server.blueprint.interactivity.action import Action
@@ -9,19 +7,14 @@ from server.service.command.custom import CustomCommand
 from server.service.command.help import KNOWN_COMMANDS, KNOWN_COMMANDS_NAMES
 from server.service.error.decorator import handle_error
 from server.service.flask.decorator import make_context
+from server.service.helper.thread import launch_function_in_thread
+from server.service.slack.message import Message
 from server.service.slack.sdk_wrapper import send_message_to_channel
 from server.service.validator.decorator import validate_schema
 
 
 def process_slash_command(body):
-    thread = threading.Thread(
-        target=resolve_command,
-        args=(current_app._get_current_object(),),
-        kwargs=body,
-    )
-    thread.start()
-    if current_app.config["WAIT_FOR_THREAD_BEFORE_RETURN"]:
-        thread.join()
+    launch_function_in_thread(resolve_command_and_send_to_slack, body)
 
     slash_command = f"{current_app.config['SLASH_COMMAND']} "
     command = f"{body.get('command_name')} {body.get('text')}"
@@ -55,7 +48,34 @@ def process_slash_command(body):
 @make_context
 @handle_error
 @validate_schema(SlackApiSchema)
-def resolve_command(*, team_id, channel, user, command_name, text, **kwargs):
+def resolve_command_and_send_to_slack(
+    *,
+    team_id: str,
+    channel: dict[str, str],
+    user: dict[str, str],
+    command_name: str,
+    text: str,
+    **kwargs,
+):
+    message, _ = resolve_command(
+        team_id=team_id,
+        channel=channel,
+        user=user,
+        command_name=command_name,
+        text=text,
+    )
+    return send_message_to_channel(message, channel["id"], team_id, user_id=user["id"])
+
+
+def resolve_command(
+    *,
+    team_id: str,
+    channel: dict[str, str],
+    user: dict[str, str],
+    command_name: str,
+    text: str,
+) -> tuple[Message, str]:
+    selected_item = None
     # Known commands
     if command_name in KNOWN_COMMANDS_NAMES:
         message = KNOWN_COMMANDS[command_name](
@@ -65,7 +85,7 @@ def resolve_command(*, team_id, channel, user, command_name, text, **kwargs):
     # Custom commands
     else:
         command = Command.find_one_by_name_and_chanel(command_name, channel["id"])
-        message = CustomCommand(
+        message, selected_item = CustomCommand(
             name=command.name,
             label=command.label,
             pick_list=command.pick_list,
@@ -73,4 +93,4 @@ def resolve_command(*, team_id, channel, user, command_name, text, **kwargs):
             only_active_users=command.only_active_users,
         ).exec(user["id"], text, team_id=team_id)
 
-    return send_message_to_channel(message, channel["id"], team_id, user_id=user["id"])
+    return message, selected_item
