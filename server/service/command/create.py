@@ -2,9 +2,10 @@ from server.orm.command import Command
 from server.service.command.args import Arg
 from server.service.command.base_command import BaseCommand, addHelp
 from server.service.command.enum import PickListSpecialArg
-from server.service.command.utils import format_pick_list
+from server.service.command.option_cleaning import format_pick_list
 from server.service.slack.message import Message, MessageStatus, MessageVisibility
 from server.service.slack.message_formatting import format_custom_command_help
+from server.service.strategy.enum import Strategy
 
 label_help = "Text to display using the following format:"
 label_help += "\n>Hey ! <user> choose <element> to <your_label> <text_on_call>\n"
@@ -47,8 +48,15 @@ class CreateCommand(BaseCommand):
                 help=pick_list_help,
             ),
             Arg(
-                name="self-exclude",
+                name="strategy",
                 short="s",
+                nargs="?",
+                default=Strategy.uniform.name,
+                help="Name of the strategy to use from: uniform, round_robin, smooth (default to uniform).",  # noqa E501
+            ),
+            Arg(
+                name="self-exclude",
+                short="e",
                 nargs="?",
                 const="True",
                 default="False",
@@ -80,6 +88,8 @@ class CreateCommand(BaseCommand):
         pick_list = format_pick_list(
             self.options["pick_list"], self.team_id, self.channel_id
         )
+        strategy = Strategy[self.options["strategy"]]
+        weight_list = strategy.value.create_weight_list(len(pick_list))
 
         Command.create(
             name=self.options["command_name"],
@@ -88,6 +98,8 @@ class CreateCommand(BaseCommand):
             pick_list=pick_list,
             self_exclude=self.options["self_exclude"],
             only_active_users=self.options["only_active_users"],
+            weight_list=weight_list,
+            strategy=strategy.name,
             created_by_user_id=user_id,
         )
         created_command = Command.find_one_by_name_and_chanel(
