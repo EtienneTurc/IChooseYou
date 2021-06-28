@@ -1,10 +1,9 @@
 import functools
-import random
 import re
 
 from server.service.command.enum import PickListSpecialArg
 from server.service.slack.message_formatting import format_mention_user
-from server.service.slack.sdk_wrapper import get_users_in_channel, is_user_of_team_active
+from server.service.slack.sdk_wrapper import get_users_in_channel
 
 
 def get_as_string(value, *, nargs0or1) -> str:
@@ -82,36 +81,3 @@ def clean_mention(text: str) -> str:
     if not text:
         return text
     return re.sub(r"<(@U[A-Z0-9]*)\|(.*?)>", r"<\1>", text)
-
-
-def is_mention(text: str) -> bool:
-    return text and text.startswith("<@") and text.endswith(">")
-
-
-def get_user_id_in_mention(text: str) -> int:
-    text_clean = text[2:-1]
-    return text_clean.split("|")[0]
-
-
-def select_from_pick_list(
-    pick_list: list[str], team_id: str = None, only_active_users: bool = False
-) -> str:
-    if not pick_list or not len(pick_list):
-        return None
-
-    selected_element = random.choice(pick_list)
-
-    if not only_active_users:
-        return selected_element
-
-    if not is_mention(selected_element):
-        return selected_element
-
-    user_mentionned = get_user_id_in_mention(selected_element)
-    if is_user_of_team_active(team_id, user_mentionned):
-        return selected_element
-
-    new_pick_list = [el for el in pick_list if el != selected_element]
-    return select_from_pick_list(
-        new_pick_list, team_id, only_active_users=only_active_users
-    )

@@ -10,6 +10,7 @@ from server.service.flask.decorator import make_context
 from server.service.helper.thread import launch_function_in_thread
 from server.service.slack.message import Message
 from server.service.slack.sdk_wrapper import send_message_to_channel
+from server.service.strategy.helper import get_strategy
 from server.service.validator.decorator import validate_schema
 
 
@@ -89,8 +90,20 @@ def resolve_command(
             name=command.name,
             label=command.label,
             pick_list=command.pick_list,
+            weight_list=command.weight_list,
+            strategy=command.strategy,
             self_exclude=command.self_exclude,
             only_active_users=command.only_active_users,
         ).exec(user["id"], text, team_id=team_id)
+
+        # Update weight_list
+        strategy = get_strategy(command.strategy, command.weight_list)
+        strategy.update(index_selected=command.pick_list.index(selected_item))
+        Command.update(
+            command.name,
+            command.channel_id,
+            command.updated_by_user_id,
+            {"weight_list": strategy.weight_list},
+        )
 
     return message, selected_item

@@ -12,6 +12,8 @@ class Command(MongoModel):
     pick_list = fields.ListField()
     self_exclude = fields.BooleanField()
     only_active_users = fields.BooleanField()
+    weight_list = fields.ListField()
+    strategy = fields.CharField()
     created_by_user_id = fields.CharField(required=True)
     updated_by_user_id = fields.CharField(required=True)
 
@@ -38,6 +40,8 @@ class Command(MongoModel):
         pick_list,
         self_exclude,
         only_active_users,
+        weight_list,
+        strategy,
         created_by_user_id,
     ):
         try:
@@ -51,6 +55,8 @@ class Command(MongoModel):
                 pick_list,
                 self_exclude,
                 only_active_users,
+                weight_list,
+                strategy,
                 created_by_user_id,
                 updated_by_user_id=created_by_user_id,
             ).save()
