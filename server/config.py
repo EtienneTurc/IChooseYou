@@ -16,7 +16,7 @@ class DevelopmentConfig(Config):
     DEBUG = True
     TESTING = False
     SLASH_COMMAND = "/ichu_dev"
-    API_URL = "https://8bf49af69a7e.ngrok.io"
+    API_URL = "https://bfa847856e78.ngrok.io"
 
 
 class TestingConfig(Config):
