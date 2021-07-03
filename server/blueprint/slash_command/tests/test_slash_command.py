@@ -5,6 +5,7 @@ import pytest
 
 import server.service.slack.tests.monkey_patch as monkey_patch  # noqa: F401
 from server.orm.command import Command
+from server.service.strategy.enum import Strategy
 from server.tests.test_app import *  # noqa: F401, F403
 
 
@@ -103,8 +104,8 @@ def test_slash_command_create_fail_unrecognized_element(text, client):
             {"pick_list": ["1", "2", "3", "4"]},
         ),
         (
-            "update test_update --remove-from-pick-list 1 2 3 4",
-            {"pick_list": []},
+            "update test_update --remove-from-pick-list 2 3 4",
+            {"pick_list": ["1"]},
         ),
         ("update test_update --label My label", {"label": "My label"}),
         ("update test_update --label My label", {"self_exclude": True}),
@@ -129,6 +130,8 @@ def test_slash_command_update(text, expected, client):
         channel_id="1234",
         label="label",
         pick_list=["1", "2"],
+        weight_list=[1 / 2, 1 / 2],
+        strategy=Strategy.uniform.name,
         self_exclude=True,
         only_active_users=False,
         created_by_user_id="4321",
@@ -155,6 +158,8 @@ def test_slash_command_delete(client):
         channel_id="1234",
         label="label",
         pick_list=["1", "2"],
+        weight_list=[1 / 2, 1 / 2],
+        strategy=Strategy.uniform.name,
         self_exclude=True,
         only_active_users=False,
         created_by_user_id="4321",
@@ -175,6 +180,8 @@ def test_slash_command_delete_fail(client):
         channel_id="1234",
         label="label",
         pick_list=["1", "2"],
+        weight_list=[1 / 2, 1 / 2],
+        strategy=Strategy.uniform.name,
         self_exclude=True,
         only_active_users=False,
         created_by_user_id="4321",
@@ -195,6 +202,8 @@ def test_slash_command_custom(client):
         channel_id="1234",
         label="label",
         pick_list=["pick_1", "pick_2"],
+        weight_list=[1 / 2, 1 / 2],
+        strategy=Strategy.uniform.name,
         self_exclude=False,
         only_active_users=False,
         created_by_user_id="4321",
@@ -211,3 +220,26 @@ def test_slash_command_no_custom_command(client):
     response, slack_message = call_webhook(client, text)
     assert response.status_code == 200
     assert "Command test_custom does not exist." in slack_message
+
+
+def test_slash_command_custom_update_weight_list(client):
+    name = "test_custom"
+    channel_id = "1234"
+    Command.create(
+        name="test_custom",
+        channel_id="1234",
+        label="label",
+        pick_list=["pick_1", "pick_2"],
+        weight_list=[1, 0],
+        strategy=Strategy.round_robin.name,
+        self_exclude=False,
+        only_active_users=False,
+        created_by_user_id="4321",
+    )
+    response, slack_message = call_webhook(client, name)
+
+    assert response.status_code == 200
+    assert "Hey !" in slack_message
+
+    command = Command.find_one_by_name_and_chanel(name=name, channel_id=channel_id)
+    assert command.weight_list == [0, 1]

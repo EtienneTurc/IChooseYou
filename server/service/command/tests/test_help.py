@@ -1,6 +1,7 @@
 from server.orm.command import Command
 from server.service.command.help import HelpCommand
 from server.service.slack.message import MessageStatus, MessageVisibility
+from server.service.strategy.enum import Strategy
 from server.tests.test_app import *  # noqa: F401, F403
 
 channel_id = "1234"
@@ -14,6 +15,8 @@ def test_help_with_no_commands(client):
         channel_id=channel_id,
         label="my fancy label",
         pick_list=["1", "2"],
+        weight_list=[1 / 2, 1 / 2],
+        strategy=Strategy.uniform.name,
         self_exclude=True,
         only_active_users=False,
         created_by_user_id="4321",
@@ -61,6 +64,8 @@ def test_help_with_given_custom_command(client):
         channel_id=channel_id,
         label="my fancy label",
         pick_list=["1", "2"],
+        weight_list=[1 / 2, 1 / 2],
+        strategy=Strategy.uniform.name,
         self_exclude=True,
         only_active_users=False,
         created_by_user_id="4321",

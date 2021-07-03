@@ -1,6 +1,7 @@
 import pytest
 
 import server.service.slack.tests.monkey_patch as monkey_patch_request  # noqa: F401, E501
+from server.service.command.args import ArgError
 from server.service.command.create import CreateCommand
 from server.service.error.back_error import BackError
 from server.service.slack.message import MessageStatus, MessageVisibility
@@ -19,7 +20,7 @@ user_id = "4321"
             "Command test_create successfully created.",
         ),
         (
-            "test_create -l my label -p 1 2 3 -s",
+            "test_create -l my label -p 1 2 3 -e",
             "Command test_create successfully created.",
         ),
         (
@@ -27,7 +28,7 @@ user_id = "4321"
             "my label",
         ),
         (
-            "test_create -l my label -p 1 2 3 -s",
+            "test_create -l my label -p 1 2 3 -e",
             "my label",
         ),
         (
@@ -35,11 +36,11 @@ user_id = "4321"
             "['1', '2', '3']",
         ),
         (
-            "test_create -l my label -p 1 2 3 -s",
+            "test_create -l my label -p 1 2 3 -e",
             "['1', '2', '3']",
         ),
         (
-            "test_create -l my label -p 1 2 3 -s",
+            "test_create -l my label -p 1 2 3 -e",
             "User using the slash command excluded.",
         ),
         (
@@ -70,6 +71,18 @@ user_id = "4321"
             "test_create --label my label --pick-list 1 2 3 -o False",
             "All items are selected when using the slash command.",
         ),
+        (
+            "test_create --label my label --pick-list 1 2 3 -o False",
+            "Strategy: uniform.",
+        ),
+        (
+            "test_create --label my label --pick-list 1 2 3 -o False --strategy smooth",
+            "Strategy: smooth.",
+        ),
+        (
+            "test_create --label my label --pick-list 1 2 3 -o False -s round_robin",
+            "Strategy: round_robin.",
+        ),
     ],
 )
 def test_create(text, expected_message, client):
@@ -96,4 +109,10 @@ def test_create_fail_if_already_exist(client):
     CreateCommand(text=text, team_id=team_id, channel_id=channel_id).exec(user_id)
 
     with pytest.raises(BackError, match="Command already exists."):
+        CreateCommand(text=text, team_id=team_id, channel_id=channel_id).exec(user_id)
+
+
+def test_create_fail_if_pick_list_empty(client):
+    text = "test_create --label my label --pick-list --self-exclude"
+    with pytest.raises(ArgError):
         CreateCommand(text=text, team_id=team_id, channel_id=channel_id).exec(user_id)

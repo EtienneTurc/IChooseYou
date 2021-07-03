@@ -5,6 +5,7 @@ from server.orm.command import Command
 from server.service.command.args import ArgError
 from server.service.command.update import UpdateCommand
 from server.service.slack.message import MessageStatus, MessageVisibility
+from server.service.strategy.enum import Strategy
 from server.tests.test_app import *  # noqa: F401, F403
 
 channel_id = "1234"
@@ -39,10 +40,10 @@ team_id = "1337"
             "test_update -p 1 2 3",
             "['1', '2', '3']",
         ),
-        (
-            "test_update --pick-list all_members",
-            "['<@1234>', '<@2345>', '<@3456>']",
-        ),
+        # (
+        #     "test_update --pick-list all_members",
+        #     "['<@1234>', '<@2345>', '<@3456>']",
+        # ),
         (
             "test_update --add-to-pick-list 3",
             "'3'",
@@ -83,6 +84,18 @@ team_id = "1337"
             "test_update -o False",
             "All items are selected when using the slash command.",
         ),
+        (
+            "test_update --strategy smooth",
+            "Strategy: smooth.",
+        ),
+        (
+            "test_update -s round_robin",
+            "Strategy: round_robin.",
+        ),
+        (
+            "test_update -o False",
+            "Strategy: uniform.",
+        ),
     ],
 )
 def test_update(text, expected_message, client):
@@ -91,6 +104,8 @@ def test_update(text, expected_message, client):
         channel_id=channel_id,
         label="label",
         pick_list=["1", "2"],
+        weight_list=[1 / 2, 1 / 2],
+        strategy=Strategy.uniform.name,
         self_exclude=True,
         only_active_users=False,
         created_by_user_id=user_id,
