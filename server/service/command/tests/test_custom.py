@@ -4,10 +4,13 @@ import server.service.slack.tests.monkey_patch as monkey_patch_request  # noqa: 
 from server.service.command.args import ArgError
 from server.service.command.custom import CustomCommand
 from server.service.error.back_error import BackError
+from server.service.strategy.enum import Strategy
 from server.tests.test_app import *  # noqa: F401, F403
 
 name = "custom_command"
 pick_list = [1, 2, 3]
+weight_list = [1 / 3, 1 / 3, 1 / 3]
+strategy = Strategy.uniform.name
 self_exclude = False
 only_active_users = False
 user_id = "4321"
@@ -53,6 +56,8 @@ def test_create_label(label, text, expected_label):
         name=name,
         label=label,
         pick_list=pick_list,
+        weight_list=weight_list,
+        strategy=strategy,
         self_exclude=False,
         only_active_users=False,
     )
@@ -64,6 +69,8 @@ def test_custom_command():
         name=name,
         label="my fancy label",
         pick_list=pick_list,
+        weight_list=weight_list,
+        strategy=strategy,
         self_exclude=False,
         only_active_users=False,
     )
@@ -77,6 +84,8 @@ def test_custom_command_self_exclude():
         name=name,
         label="my label",
         pick_list=["<@4321|name>", "2"],
+        weight_list=[1 / 2, 1 / 2],
+        strategy=strategy,
         self_exclude=True,
         only_active_users=False,
     )
@@ -90,6 +99,8 @@ def test_custom_command_self_exclude_error():
         name=name,
         label="my label",
         pick_list=["<@4321|name>"],
+        weight_list=[1],
+        strategy=strategy,
         self_exclude=True,
         only_active_users=False,
     )
@@ -103,11 +114,13 @@ def test_custom_command_pick_list_empty():
         name=name,
         label="my label",
         pick_list=[],
+        weight_list=[],
+        strategy=strategy,
         self_exclude=False,
         only_active_users=False,
     )
     error_message = "Can't pick an element from an empty pick list."
-    with pytest.raises(ArgError, match=error_message):
+    with pytest.raises(BackError, match=error_message):
         custom_command.exec(user_id, "")
 
 
@@ -116,6 +129,8 @@ def test_custom_only_active_users(client):
         name=name,
         label="my label",
         pick_list=["<@1234|name>"],
+        weight_list=[1],
+        strategy=strategy,
         self_exclude=False,
         only_active_users=True,
     )
@@ -129,6 +144,8 @@ def test_custom_only_active_users_error(client):
         name=name,
         label="my label",
         pick_list=["<@4321|name>"],
+        weight_list=[1],
+        strategy=strategy,
         self_exclude=False,
         only_active_users=True,
     )

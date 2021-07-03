@@ -4,6 +4,7 @@ from server.orm.command import Command
 from server.service.command.args import ArgError
 from server.service.command.delete import DeleteCommand
 from server.service.slack.message import MessageStatus, MessageVisibility
+from server.service.strategy.enum import Strategy
 from server.tests.test_app import *  # noqa: F401, F403
 
 channel_id = "1234"
@@ -16,6 +17,8 @@ def test_delete(client):
         channel_id=channel_id,
         label="label",
         pick_list=["1", "2"],
+        weight_list=[1 / 2, 1 / 2],
+        strategy=Strategy.uniform.name,
         self_exclude=True,
         only_active_users=False,
         created_by_user_id="4321",
