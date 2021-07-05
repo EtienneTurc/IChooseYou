@@ -27,6 +27,10 @@ class OutputVariable(Enum):
     SELECTION_MESSAGE = "selection_message"
 
 
+def create_select_item_name(index: int) -> str:
+    return f"{OutputVariable.SELECTED_ITEM.value}_{index}"
+
+
 def build_send_to_slack_check_box(send_to_slack_enabled):
     text = "Send message to slack.\n"
     text += "If disabled, it will only expose the result of the command"

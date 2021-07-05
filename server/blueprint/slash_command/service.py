@@ -76,7 +76,7 @@ def resolve_command(
     command_name: str,
     text: str,
 ) -> tuple[Message, str]:
-    selected_item = None
+    selected_items = None
     # Known commands
     if command_name in KNOWN_COMMANDS_NAMES:
         message = KNOWN_COMMANDS[command_name](
@@ -86,7 +86,7 @@ def resolve_command(
     # Custom commands
     else:
         command = Command.find_one_by_name_and_chanel(command_name, channel["id"])
-        message, selected_item = CustomCommand(
+        message, selected_items = CustomCommand(
             name=command.name,
             label=command.label,
             pick_list=command.pick_list,
@@ -94,11 +94,17 @@ def resolve_command(
             strategy=command.strategy,
             self_exclude=command.self_exclude,
             only_active_users=command.only_active_users,
-        ).exec(user["id"], text, team_id=team_id)
+            text=text,
+        ).exec(user["id"], team_id=team_id)
 
         # Update weight_list
         strategy = get_strategy(command.strategy, command.weight_list)
-        strategy.update(index_selected=command.pick_list.index(selected_item))
+        strategy.update(
+            indices_selected=[
+                command.pick_list.index(selected_item)
+                for selected_item in selected_items
+            ]
+        )
         Command.update(
             command.name,
             command.channel_id,
@@ -106,4 +112,4 @@ def resolve_command(
             {"weight_list": strategy.weight_list},
         )
 
-    return message, selected_item
+    return message, selected_items
