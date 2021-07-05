@@ -5,13 +5,15 @@ from server.blueprint.interactivity.helper import (assert_message_can_be_delete,
                                                    format_payload_for_slash_command,
                                                    format_payload_to_save_workflow)
 from server.blueprint.slash_command.service import process_slash_command
+from server.service.command.custom import CustomCommand
 from server.service.error.decorator import handle_error
 from server.service.flask.decorator import make_context
 from server.service.helper.thread import launch_function_in_thread
 from server.service.slack.sdk_wrapper import (delete_message_in_channel, open_view_modal,
                                               save_workflow_in_slack)
 from server.service.slack.workflow import (OutputVariable, WorkflowActionId,
-                                           build_workflow_step_edit_modal)
+                                           build_workflow_step_edit_modal,
+                                           create_select_item_name)
 
 
 def proccess_interactivity(payload):
@@ -74,16 +76,31 @@ def open_configuration_modal(
 @make_context
 @handle_error
 def save_workflow(*, inputs: dict, team_id: str, workflow_step_edit_id: str, **kwargs):
+    number_of_items_to_select = CustomCommand(
+        name=None,
+        label=None,
+        pick_list=None,
+        weight_list=None,
+        strategy=None,
+        self_exclude=None,
+        only_active_users=None,
+        text=inputs.get(WorkflowActionId.COMMAND_INPUT.value).get("value")
+        if inputs.get(WorkflowActionId.COMMAND_INPUT.value).get("value")
+        else "",
+    ).number_of_items_to_select
     outputs = [
         {
-            "name": OutputVariable.SELECTED_ITEM.value,
+            "name": create_select_item_name(index),
             "type": "text",
-            "label": "Selected item",
-        },
+            "label": f"Selected item n°{index}",
+        }
+        for index in range(number_of_items_to_select)
+    ]
+    outputs.append(
         {
             "name": OutputVariable.SELECTION_MESSAGE.value,
             "type": "text",
             "label": "Selection message",
-        },
-    ]
+        }
+    )
     save_workflow_in_slack(inputs, outputs, workflow_step_edit_id, team_id)

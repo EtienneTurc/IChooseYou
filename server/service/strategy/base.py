@@ -3,6 +3,7 @@ from dataclasses import dataclass
 import numpy as np
 
 from server.service.error.back_error import BackError
+from server.service.helper.dict_helper import normalize
 
 
 @dataclass
@@ -23,24 +24,23 @@ class BaseStrategy:
     def validate(self) -> bool:
         return np.sum(self.weight_list) == 1
 
-    def add_elements(
-        self, number_of_elements_to_add: int, new_value_weight: float = None
+    def add_items(
+        self, number_of_items_to_add: int, new_value_weight: float = None
     ) -> None:
         if new_value_weight is None:
             new_value_weight = 1 / len(self.weight_list)
 
-        self.weight_list += [new_value_weight] * number_of_elements_to_add
-        self.weight_list = list(np.array(self.weight_list) / np.sum(self.weight_list))
+        self.weight_list += [new_value_weight] * number_of_items_to_add
+        self.weight_list = normalize(self.weight_list)
 
-    def remove_elements(self, indices_of_elements_to_remove: int) -> None:
-        self.weight_list = np.array(
+    def remove_items(self, indices_of_items_to_remove: int) -> None:
+        self.weight_list = normalize(
             [
                 weight
                 for (index, weight) in enumerate(self.weight_list)
-                if index not in indices_of_elements_to_remove
+                if index not in indices_of_items_to_remove
             ]
         )
-        self.weight_list = list(self.weight_list / np.sum(self.weight_list))
 
     def update(self, **kwargs) -> list[float]:
         return self.weight_list

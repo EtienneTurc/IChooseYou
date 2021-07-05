@@ -8,7 +8,7 @@ from server.service.slack.message_formatting import format_custom_command_help
 from server.service.strategy.enum import Strategy
 
 label_help = "Text to display using the following format:"
-label_help += "\n>Hey ! <user> choose <element> to <your_label> <text_on_call>\n"
+label_help += "\n>Hey ! <user> choose <item> to <your_label> <text_on_call>\n"
 
 
 pick_list_help = "List from which to pick from."

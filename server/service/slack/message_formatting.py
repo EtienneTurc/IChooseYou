@@ -20,9 +20,23 @@ def format_known_commands_help(known_commands):
 
 
 def format_custom_command_message(
-    user_id: str, selected_element: str, label: str
+    user_id: str, selected_items: list[str], label: str
 ) -> str:
-    return f"Hey ! {format_mention_user(user_id)} choose {selected_element} {label}"
+    selected_items_msg = format_custom_selected_items(selected_items)
+    return f"Hey ! {format_mention_user(user_id)} choose {selected_items_msg} {label}"
+
+
+def format_custom_selected_items(selected_items: list[str]) -> str:
+    if len(selected_items) == 1:
+        return selected_items[0]
+
+    left_items = selected_items[:-1]
+    right_item = selected_items[-1]
+
+    left = ", ".join(left_items)
+    right = f" and {right_item}"
+
+    return left + right
 
 
 def format_mention_user(user_id: str) -> str:
@@ -37,7 +51,7 @@ def format_custom_command_help(custom_command):
         "Only active users" if custom_command.only_active_users else "All items"
     )
     slack_message_from_command = format_custom_command_message(
-        None, "<selected_element>", custom_command.label
+        None, "<selected_item>", custom_command.label
     )
 
     message = f"*{custom_command.name}*:"
@@ -54,7 +68,7 @@ def format_custom_commands_help(custom_commands):
     message = ""
     for custom_command in custom_commands:
         slack_message_from_command = format_custom_command_message(
-            None, "selected_element", custom_command.label
+            None, "selected_item", custom_command.label
         )
         message += f"• *{custom_command.name}*: {slack_message_from_command}.\n"
     return message

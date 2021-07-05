@@ -4,7 +4,7 @@ from server.service.command.base_command import BaseCommand, addHelp
 from server.service.command.option_cleaning import format_pick_list
 from server.service.command.update_helper import (compute_new_pick_list,
                                                   compute_new_weight_list,
-                                                  get_indices_of_elements_to_remove,
+                                                  get_indices_of_items_to_remove,
                                                   get_values_to_update)
 from server.service.command.validator import (assert_pick_list_can_be_updated,
                                               assert_strategy_is_valid)
@@ -18,7 +18,7 @@ class UpdateCommand(BaseCommand):
         name = "update"
         description = "Update a given command"
         examples = [
-            "mySuperCommand --add-to-pick-list my_element_to_add",
+            "mySuperCommand --add-to-pick-list my_item_to_add",
             "mySuperCommand --pick-list my new pick list",
             "mySuperCommand --self-exclude --only-active-users",
         ]
@@ -144,20 +144,20 @@ class UpdateCommand(BaseCommand):
             )
             if self.options["pick_list"]
             else None,
-            elements_to_add=self.options["add_to_pick_list"],
-            elements_to_remove=self.options["remove_from_pick_list"],
+            items_to_add=self.options["add_to_pick_list"],
+            items_to_remove=self.options["remove_from_pick_list"],
         )
 
-        indices_of_elements_to_remove = get_indices_of_elements_to_remove(
+        indices_of_items_to_remove = get_indices_of_items_to_remove(
             command.pick_list, values_to_remove_from_pick_list
         )
         assert_pick_list_can_be_updated(
             len(command.pick_list),
             len(values_to_add_to_pick_list),
-            len(indices_of_elements_to_remove),
+            len(indices_of_items_to_remove),
         )
         new_pick_list = compute_new_pick_list(
-            command.pick_list, values_to_add_to_pick_list, indices_of_elements_to_remove
+            command.pick_list, values_to_add_to_pick_list, indices_of_items_to_remove
         )
 
         strategy_name = (
@@ -169,7 +169,7 @@ class UpdateCommand(BaseCommand):
             len(new_pick_list),
         )
         new_weight_list = compute_new_weight_list(
-            strategy, values_to_add_to_pick_list, indices_of_elements_to_remove
+            strategy, values_to_add_to_pick_list, indices_of_items_to_remove
         )
 
         return new_pick_list, new_weight_list

@@ -5,7 +5,7 @@ from server.service.error.decorator import handle_workflow_error
 from server.service.flask.decorator import make_context
 from server.service.helper.thread import launch_function_in_thread
 from server.service.slack.sdk_wrapper import complete_workflow, send_message_to_channel
-from server.service.slack.workflow import OutputVariable
+from server.service.slack.workflow import OutputVariable, create_select_item_name
 
 
 def process_event(payload):
@@ -33,7 +33,7 @@ def process_workflow_step(
     send_to_slack: bool,
     **kwargs,
 ) -> None:
-    message, selected_item = resolve_command(
+    message, selected_items = resolve_command(
         team_id=team_id,
         channel=channel,
         user=user,
@@ -44,8 +44,9 @@ def process_workflow_step(
     if send_to_slack:
         send_message_to_channel(message, channel["id"], team_id, user_id=user["id"])
 
-    outputs = {
-        OutputVariable.SELECTED_ITEM.value: selected_item,
-        OutputVariable.SELECTION_MESSAGE.value: message.content,
-    }
+    outputs = {}
+    for index, selected_item in enumerate(selected_items):
+        outputs[create_select_item_name(index)] = selected_item
+    outputs[OutputVariable.SELECTION_MESSAGE.value] = message.content
+
     complete_workflow(workflow_step_execute_id, outputs, team_id)
