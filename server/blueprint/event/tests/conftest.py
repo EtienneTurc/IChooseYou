@@ -13,8 +13,8 @@ TEST_COMMAND_CREATED_BY = "1234"
 
 
 @pytest.fixture()
-def test_command():
-    Command.create(
+def test_command() -> Command:
+    return Command.create(
         name=TEST_COMMAND_NAME,
         channel_id=TEST_COMMAND_CHANNEL_ID,
         label=TEST_COMMAND_LABEL,
