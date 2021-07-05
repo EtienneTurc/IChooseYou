@@ -243,3 +243,29 @@ def test_slash_command_custom_update_weight_list(client):
 
     command = Command.find_one_by_name_and_chanel(name=name, channel_id=channel_id)
     assert command.weight_list == [0, 1]
+
+
+def test_slash_command_custom_multi_select(client):
+    command_name = "test_custom"
+    text = f"{command_name} -n 2"
+    channel_id = "1234"
+    Command.create(
+        name=command_name,
+        channel_id="1234",
+        label="label",
+        pick_list=["pick_1", "pick_2"],
+        weight_list=[1, 0],
+        strategy=Strategy.round_robin.name,
+        self_exclude=False,
+        only_active_users=False,
+        created_by_user_id="4321",
+    )
+    response, slack_message = call_webhook(client, text)
+
+    assert response.status_code == 200
+    assert "pick_1 and pick_2" in slack_message
+
+    command = Command.find_one_by_name_and_chanel(
+        name=command_name, channel_id=channel_id
+    )
+    assert command.weight_list == [1, 0]

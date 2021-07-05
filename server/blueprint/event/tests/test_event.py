@@ -8,8 +8,10 @@ from server.blueprint.event.tests.conftest import (TEST_COMMAND_CHANNEL_ID,
                                                    TEST_COMMAND_LABEL, TEST_COMMAND_NAME,
                                                    TEST_COMMAND_PICK_LIST)
 from server.blueprint.event.type import EventType
-from server.service.slack.workflow import OutputVariable, WorkflowActionId
+from server.service.slack.workflow import (OutputVariable, WorkflowActionId,
+                                           create_select_item_name)
 from server.tests.test_app import *  # noqa: F401, F403
+from server.tests.test_fixture import *  # noqa: F401, F403
 
 extra_text = "here is some extra text"
 
@@ -80,21 +82,31 @@ def test_event_workflow_complete(expected_text, client, test_command):
 
 
 @pytest.mark.parametrize(
-    "expected_text",
+    "command, expected_text",
     [
-        "Hey !",
-        TEST_COMMAND_LABEL,
-        extra_text,
-        OutputVariable.SELECTED_ITEM.value,
-        OutputVariable.SELECTION_MESSAGE.value,
+        (f"/ichu {TEST_COMMAND_NAME}", "Hey !"),
+        (f"/ichu {TEST_COMMAND_NAME}", TEST_COMMAND_LABEL),
+        (f"/ichu {TEST_COMMAND_NAME} {extra_text}", extra_text),
+        (f"/ichu {TEST_COMMAND_NAME}", OutputVariable.SELECTED_ITEM.value),
+        (f"/ichu {TEST_COMMAND_NAME}", OutputVariable.SELECTION_MESSAGE.value),
+        (f"/ichu {TEST_COMMAND_NAME} -n 2", create_select_item_name(0)),
+        (f"/ichu {TEST_COMMAND_NAME} -n 2", create_select_item_name(1)),
+        (
+            f"/ichu {TEST_COMMAND_NAME} -n 2",
+            f"'{create_select_item_name(0)}': '{TEST_COMMAND_PICK_LIST[1]}'",
+        ),
+        (
+            f"/ichu {TEST_COMMAND_NAME} -n 2",
+            f"'{create_select_item_name(1)}': '{TEST_COMMAND_PICK_LIST[2]}'",
+        ),
     ],
 )
-def test_event_workflow_complete_output(expected_text, client, test_command):
+def test_event_workflow_complete_output(
+    command, expected_text, client, test_command, set_seed
+):
     inputs = {
         WorkflowActionId.CHANNEL_INPUT.value: {"value": TEST_COMMAND_CHANNEL_ID},
-        WorkflowActionId.COMMAND_INPUT.value: {
-            "value": f"/ichu {TEST_COMMAND_NAME} {extra_text}"
-        },
+        WorkflowActionId.COMMAND_INPUT.value: {"value": command},
         WorkflowActionId.SEND_TO_SLACK_CHECKBOX.value: {"value": ""},
     }
     response, slack_message = call_webhook(
@@ -102,27 +114,6 @@ def test_event_workflow_complete_output(expected_text, client, test_command):
     )
     assert response.status_code == 200
     assert expected_text in slack_message
-
-
-def test_event_workflow_complete_selected_element(client, test_command):
-    inputs = {
-        WorkflowActionId.CHANNEL_INPUT.value: {"value": TEST_COMMAND_CHANNEL_ID},
-        WorkflowActionId.COMMAND_INPUT.value: {
-            "value": f"/ichu {TEST_COMMAND_NAME} {extra_text}"
-        },
-        WorkflowActionId.SEND_TO_SLACK_CHECKBOX.value: {"value": ""},
-    }
-    response, slack_message = call_webhook(
-        client, event_type=EventType.WORKFLOW_STEP_EXECUTE.value, inputs=inputs
-    )
-    assert response.status_code == 200
-    condition = False
-    for element in TEST_COMMAND_PICK_LIST:
-        condition = (
-            condition
-            or f"'{OutputVariable.SELECTED_ITEM.value}': '{element}'" in slack_message
-        )
-    assert condition
 
 
 @pytest.mark.parametrize(
