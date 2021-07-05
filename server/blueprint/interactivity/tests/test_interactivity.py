@@ -6,7 +6,7 @@ import pytest
 import server.service.slack.tests.monkey_patch as monkey_patch  # noqa: F401
 from server.blueprint.interactivity.action import Action
 from server.service.slack.workflow import (OutputVariable, WorkflowActionId,
-                                           WorkflowBlockId)
+                                           WorkflowBlockId, create_select_item_name)
 from server.tests.test_app import *  # noqa: F401, F403
 
 user_id = "4321"
@@ -213,6 +213,16 @@ def test_interactivity_open_conversation_modal(
                 }
             },
             ["fake_command_given"],
+        ),
+        (
+            {
+                WorkflowBlockId.COMMAND_INPUT.value: {
+                    WorkflowActionId.COMMAND_INPUT.value: {
+                        "value": "fake_command_given -n 2"
+                    }
+                }
+            },
+            [create_select_item_name(0), create_select_item_name(1)],
         ),
         (
             {
