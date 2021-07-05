@@ -51,7 +51,7 @@ def format_custom_command_help(custom_command):
         "Only active users" if custom_command.only_active_users else "All items"
     )
     slack_message_from_command = format_custom_command_message(
-        None, "<selected_item>", custom_command.label
+        None, ["<selected_item>"], custom_command.label
     )
 
     message = f"*{custom_command.name}*:"
@@ -68,7 +68,7 @@ def format_custom_commands_help(custom_commands):
     message = ""
     for custom_command in custom_commands:
         slack_message_from_command = format_custom_command_message(
-            None, "selected_item", custom_command.label
+            None, ["selected_item"], custom_command.label
         )
         message += f"• *{custom_command.name}*: {slack_message_from_command}.\n"
     return message

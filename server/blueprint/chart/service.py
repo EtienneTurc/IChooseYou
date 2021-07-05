@@ -25,15 +25,15 @@ def create_heat_map(command_name: str, channel_id: str) -> tuple[any, str]:
     pixels = img.load()
     for i in range(img.size[0]):
         for j in range(img.size[1]):
-            selected_item = select_from_pick_list(
-                command.pick_list, strategy.weight_list
+            [selected_item] = select_from_pick_list(
+                command.pick_list, strategy.weight_list, command.strategy
             )
             pixels[i, j] = (
                 item_to_color[selected_item],
                 saturation,
                 lightness,
             )
-            strategy.update(index_selected=command.pick_list.index(selected_item))
+            strategy.update(indices_selected=[command.pick_list.index(selected_item)])
 
     img = img.resize((img_final_size, img_final_size), Image.NEAREST)
     img = img.convert(mode="RGB")
