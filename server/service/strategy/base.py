@@ -22,7 +22,7 @@ class BaseStrategy:
             raise BackError("Weight list must sum up to 1.", 400)
 
     def validate(self) -> bool:
-        return np.sum(self.weight_list) == 1
+        return round(np.sum(self.weight_list), 6) == 1
 
     def add_items(
         self, number_of_items_to_add: int, new_value_weight: float = None
