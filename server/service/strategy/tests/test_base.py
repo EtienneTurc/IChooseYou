@@ -14,6 +14,14 @@ def test_base_strategy_creation():
     assert strategy.weight_list == weight_list
 
 
+def test_base_strategy_creation_round_sum():
+    weight_list = [0.999999999999]
+    try:
+        BaseStrategy(weight_list=weight_list)
+    except Exception:
+        pytest.fail("Should not fail even if the weight list is not exactly 1")
+
+
 @pytest.mark.parametrize(
     "weight_list, error_message",
     [([], "Weight list must not be empty."), ([1, 2], "Weight list must sum up to 1.")],
