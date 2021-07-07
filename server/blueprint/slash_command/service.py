@@ -89,8 +89,8 @@ def resolve_command(
         message, selected_items = CustomCommand(
             name=command.name,
             label=command.label,
-            pick_list=command.pick_list,
-            weight_list=command.weight_list,
+            pick_list=command.pick_list[:],
+            weight_list=command.weight_list[:],
             strategy=command.strategy,
             self_exclude=command.self_exclude,
             only_active_users=command.only_active_users,
