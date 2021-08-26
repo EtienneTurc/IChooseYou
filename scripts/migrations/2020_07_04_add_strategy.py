@@ -1,4 +1,4 @@
-from scripts.migrations.connection import *  # noqa F401, F403
+from scripts.connection import *  # noqa F401, F403
 from server.orm.command import Command
 from server.service.strategy.enum import Strategy
 
