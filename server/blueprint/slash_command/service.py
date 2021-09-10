@@ -1,6 +1,6 @@
+from server.service.slack.message_formatting import format_command_sent
 from flask import current_app
 
-from server.blueprint.interactivity.action import Action
 from server.blueprint.slash_command.schema import SlackApiSchema
 from server.orm.command import Command
 from server.service.command.custom import CustomCommand
@@ -12,38 +12,49 @@ from server.service.slack.message import Message
 from server.service.slack.sdk_wrapper import send_message_to_channel
 from server.service.strategy.helper import get_strategy
 from server.service.validator.decorator import validate_schema
+from server.service.slack.modal.main_modal import build_main_modal
+from server.service.slack.modal.custom_command_modal import build_custom_command_modal
+from server.service.slack.sdk_wrapper import open_view_modal
 
 
 def process_slash_command(body):
+    should_open_modal = not body.get("text")
+
+    if should_open_modal:
+        launch_function_in_thread(open_slack_modal, body)
+        return ""
+
     launch_function_in_thread(resolve_command_and_send_to_slack, body)
 
-    slash_command = f"{current_app.config['SLASH_COMMAND']} "
-    command = f"{body.get('command_name')} {body.get('text')}"
-    return {
-        "attachments": [
-            {
-                "blocks": [
-                    {
-                        "type": "section",
-                        "text": {
-                            "type": "mrkdwn",
-                            "text": slash_command + command,
-                        },
-                        "accessory": {
-                            "type": "button",
-                            "text": {
-                                "type": "plain_text",
-                                "text": "Resubmit command",
-                                "emoji": True,
-                            },
-                            "value": command,
-                            "action_id": Action.RESUBMIT_COMMAND.value,
-                        },
-                    }
-                ]
-            }
-        ]
-    }
+    return format_command_sent(
+        current_app.config["SLASH_COMMAND"], body.get("command_name"), body.get("text")
+    )
+
+
+@make_context
+@handle_error
+def open_slack_modal(
+    *,
+    team_id: str,
+    channel_id: str,
+    user: dict[str, str],
+    command_name: str,
+    trigger_id: str,
+    text: str,
+    **kwargs,
+):
+
+    if command_name:
+        command = Command.find_one_by_name_and_chanel(command_name, channel_id)
+        modal = build_custom_command_modal(
+            command_id=command._id, command_name=command.name, size_of_pick_list=3
+        )
+    else:
+        commands = Command.find_all_in_chanel(channel_id)
+        modal = build_main_modal(commands=commands, **kwargs)
+
+    print(modal)
+    open_view_modal(modal, trigger_id, team_id)
 
 
 @make_context
@@ -52,7 +63,7 @@ def process_slash_command(body):
 def resolve_command_and_send_to_slack(
     *,
     team_id: str,
-    channel: dict[str, str],
+    channel_id: str,
     user: dict[str, str],
     command_name: str,
     text: str,
@@ -60,32 +71,33 @@ def resolve_command_and_send_to_slack(
 ):
     message, _ = resolve_command(
         team_id=team_id,
-        channel=channel,
+        channel_id=channel_id,
         user=user,
         command_name=command_name,
         text=text,
     )
-    return send_message_to_channel(message, channel["id"], team_id, user_id=user["id"])
+    return send_message_to_channel(message, channel_id, team_id, user_id=user["id"])
 
 
 def resolve_command(
     *,
     team_id: str,
-    channel: dict[str, str],
+    channel_id: str,
     user: dict[str, str],
     command_name: str,
     text: str,
 ) -> tuple[Message, str]:
     selected_items = None
+
     # Known commands
     if command_name in KNOWN_COMMANDS_NAMES:
         message = KNOWN_COMMANDS[command_name](
-            text=text, team_id=team_id, channel_id=channel["id"]
+            text=text, team_id=team_id, channel_id=channel_id
         ).exec(user["id"])
 
     # Custom commands
     else:
-        command = Command.find_one_by_name_and_chanel(command_name, channel["id"])
+        command = Command.find_one_by_name_and_chanel(command_name, channel_id)
         message, selected_items = CustomCommand(
             name=command.name,
             label=command.label,

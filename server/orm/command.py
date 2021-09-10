@@ -1,4 +1,5 @@
 from pymodm import MongoModel, fields
+from bson.objectid import ObjectId
 
 from server.service.command.args import ArgError
 from server.service.error.back_error import BackError
@@ -18,7 +19,7 @@ class Command(MongoModel):
     updated_by_user_id = fields.CharField(required=True)
 
     @staticmethod
-    def find_one_by_name_and_chanel(name, channel_id, catch=True):
+    def find_one_by_name_and_chanel(name: str, channel_id: int, catch=True):
         if not catch:
             return Command.objects.get({"name": name, "channel_id": channel_id})
 
@@ -28,8 +29,12 @@ class Command(MongoModel):
             raise ArgError(None, f"Command {name} does not exist.")
 
     @staticmethod
-    def find_all_in_chanel(channel_id):
+    def find_all_in_chanel(channel_id: int):
         return list(Command.objects.raw({"channel_id": channel_id}))
+
+    @staticmethod
+    def find_by_id(id: int):
+        return Command.objects.get({"_id": ObjectId(id)})
 
     @staticmethod
     def create(

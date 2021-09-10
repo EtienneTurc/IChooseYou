@@ -1,5 +1,5 @@
 from flask import current_app
-from marshmallow import Schema, ValidationError, fields, validates
+from marshmallow import Schema, ValidationError, fields, validates, INCLUDE
 
 
 class SlackEntitySchema(Schema):
@@ -8,6 +8,9 @@ class SlackEntitySchema(Schema):
 
 
 class SlackApiSchema(Schema):
+    class Meta:
+        unknown = INCLUDE
+
     team_id = fields.Str(required=True)
     channel = fields.Nested(SlackEntitySchema())
     user = fields.Nested(SlackEntitySchema())

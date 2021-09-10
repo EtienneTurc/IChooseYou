@@ -8,10 +8,7 @@ def extract_command_from_text(text):
 def format_body(form):
     command_name, text = extract_command_from_text(form.get("text"))
     return {
-        "channel": {
-            "id": form.get("channel_id"),
-            "name": form.get("channel_name"),
-        },
+        "channel_id": form.get("channel_id"),
         "user": {
             "id": form.get("user_id"),
             "name": form.get("user_name"),
@@ -19,5 +16,6 @@ def format_body(form):
         "response_url": form.get("response_url"),
         "team_id": form.get("team_id"),
         "text": text,
+        "trigger_id": form.get("trigger_id"),
         "command_name": command_name,
     }

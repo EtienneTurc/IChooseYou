@@ -1,3 +1,6 @@
+from server.blueprint.interactivity.action import Action
+
+
 def format_known_command_help(known_command):
     command = known_command(text=None, team_id=None, channel_id=None)
     message = f"*{command.name}*: {command.description}.\n"
@@ -79,3 +82,32 @@ def format_examples(examples):
     for example in examples:
         message += f"> `{example}`\n"
     return message
+
+
+def format_command_sent(slash_command, command_name, text):
+    command = f"{command_name} {text}"
+    return {
+        "attachments": [
+            {
+                "blocks": [
+                    {
+                        "type": "section",
+                        "text": {
+                            "type": "mrkdwn",
+                            "text": slash_command + " " + command,
+                        },
+                        "accessory": {
+                            "type": "button",
+                            "text": {
+                                "type": "plain_text",
+                                "text": "Resubmit command",
+                                "emoji": True,
+                            },
+                            "value": command,
+                            "action_id": Action.RESUBMIT_COMMAND.value,
+                        },
+                    }
+                ]
+            }
+        ]
+    }

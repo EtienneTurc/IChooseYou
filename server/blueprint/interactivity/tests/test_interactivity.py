@@ -5,8 +5,12 @@ import pytest
 
 import server.service.slack.tests.monkey_patch as monkey_patch  # noqa: F401
 from server.blueprint.interactivity.action import Action
-from server.service.slack.workflow import (OutputVariable, WorkflowActionId,
-                                           WorkflowBlockId, create_select_item_name)
+from server.service.slack.workflow import (
+    OutputVariable,
+    WorkflowActionId,
+    WorkflowBlockId,
+    create_select_item_name,
+)
 from server.tests.test_app import *  # noqa: F401, F403
 
 user_id = "4321"
@@ -259,7 +263,7 @@ def test_interactivity_open_conversation_modal(
 def test_interactivity_save_workflow(view_state_inputs, expected_texts, client):
     response, slack_message = call_webhook(
         client,
-        type=Action.WORKFLOW_SUBMISSION.value,
+        type=Action.VIEW_SUBMISSION.value,
         view_state_inputs=view_state_inputs,
     )
     assert response.status_code == 200

@@ -1,19 +1,33 @@
 from server.blueprint.interactivity.action import Action
-from server.blueprint.interactivity.helper import (assert_message_can_be_delete,
-                                                   format_payload_for_configuration_modal,
-                                                   format_payload_for_message_delete,
-                                                   format_payload_for_slash_command,
-                                                   format_payload_to_save_workflow)
+from server.blueprint.interactivity.helper import (
+    assert_message_can_be_delete,
+    format_payload_for_configuration_modal,
+    format_payload_for_message_delete,
+    format_resubmit_payload_for_slash_command,
+    format_payload_to_save_workflow,
+    format_callback_payload_for_slash_command,
+)
 from server.blueprint.slash_command.service import process_slash_command
 from server.service.command.custom import CustomCommand
 from server.service.error.decorator import handle_error
 from server.service.flask.decorator import make_context
 from server.service.helper.thread import launch_function_in_thread
-from server.service.slack.sdk_wrapper import (delete_message_in_channel, open_view_modal,
-                                              save_workflow_in_slack)
-from server.service.slack.workflow import (OutputVariable, WorkflowActionId,
-                                           build_workflow_step_edit_modal,
-                                           create_select_item_name)
+from server.service.slack.sdk_wrapper import (
+    delete_message_in_channel,
+    open_view_modal,
+    save_workflow_in_slack,
+)
+from server.service.slack.workflow import (
+    OutputVariable,
+    WorkflowActionId,
+    build_workflow_step_edit_modal,
+    create_select_item_name,
+)
+from server.service.helper.dict_helper import get_by_path
+from server.service.slack.helper import get_callback_action, get_id_from_callback_id
+from server.service.slack.modal.enum import SlackModalAction
+
+slack_modal_actions = [action.value for action in SlackModalAction]
 
 
 def proccess_interactivity(payload):
@@ -27,7 +41,7 @@ def proccess_interactivity(payload):
     ]
 
     if Action.RESUBMIT_COMMAND.value in actions:
-        body = format_payload_for_slash_command(payload)
+        body = format_resubmit_payload_for_slash_command(payload)
         return process_slash_command(body)
 
     elif Action.DELETE_MESSAGE.value in actions:
@@ -40,10 +54,20 @@ def proccess_interactivity(payload):
         launch_function_in_thread(open_configuration_modal, body)
         return ""
 
-    elif Action.WORKFLOW_SUBMISSION.value in actions:
-        body = format_payload_to_save_workflow(payload)
-        launch_function_in_thread(save_workflow, body)
-        return ""
+    elif Action.VIEW_SUBMISSION.value in actions:
+        callback_id = get_by_path(payload, "view.callback_id")
+        callback_action = get_callback_action(callback_id)
+
+        if callback_action in slack_modal_actions:
+            body = format_callback_payload_for_slash_command(
+                callback_action, get_id_from_callback_id(callback_id), payload
+            )
+            process_slash_command(body)
+            return ""
+        else:
+            body = format_payload_to_save_workflow(payload)
+            launch_function_in_thread(save_workflow, body)
+            return ""
 
     return "Action not handled"
 
