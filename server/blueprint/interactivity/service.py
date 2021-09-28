@@ -6,6 +6,7 @@ from server.blueprint.interactivity.helper import (
     format_resubmit_payload_for_slash_command,
     format_payload_to_save_workflow,
     format_callback_payload_for_slash_command,
+    format_main_modal_run_command_for_slash_command,
 )
 from server.blueprint.slash_command.service import process_slash_command
 from server.service.command.custom import CustomCommand
@@ -15,6 +16,7 @@ from server.service.helper.thread import launch_function_in_thread
 from server.service.slack.sdk_wrapper import (
     delete_message_in_channel,
     open_view_modal,
+    push_new_view_modal,
     save_workflow_in_slack,
 )
 from server.service.slack.workflow import (
@@ -26,6 +28,9 @@ from server.service.slack.workflow import (
 from server.service.helper.dict_helper import get_by_path
 from server.service.slack.helper import get_callback_action, get_id_from_callback_id
 from server.service.slack.modal.enum import SlackModalAction
+from server.service.slack.modal.custom_command_modal import build_custom_command_modal
+from server.orm.command import Command
+
 
 slack_modal_actions = [action.value for action in SlackModalAction]
 
@@ -40,9 +45,12 @@ def proccess_interactivity(payload):
         payload.get("type"),
     ]
 
+    print("interactivity", payload)
+
     if Action.RESUBMIT_COMMAND.value in actions:
         body = format_resubmit_payload_for_slash_command(payload)
-        return process_slash_command(body)
+        process_slash_command(body)
+        return ""
 
     elif Action.DELETE_MESSAGE.value in actions:
         body = format_payload_for_message_delete(payload)
@@ -54,6 +62,16 @@ def proccess_interactivity(payload):
         launch_function_in_thread(open_configuration_modal, body)
         return ""
 
+    elif Action.MAIN_MODAL_RUN_COMMAND.value in actions:
+        body = format_main_modal_run_command_for_slash_command(payload)
+        launch_function_in_thread(add_new_view_modal, body)
+        return ""
+
+    elif Action.MAIN_MODAL_CREATE_NEW_COMMAND in actions:
+        # create command open modal
+        print("create_new_command and opening modal")
+        return ""
+
     elif Action.VIEW_SUBMISSION.value in actions:
         callback_id = get_by_path(payload, "view.callback_id")
         callback_action = get_callback_action(callback_id)
@@ -63,7 +81,7 @@ def proccess_interactivity(payload):
                 callback_action, get_id_from_callback_id(callback_id), payload
             )
             process_slash_command(body)
-            return ""
+            return {"response_action": "clear"}
         else:
             body = format_payload_to_save_workflow(payload)
             launch_function_in_thread(save_workflow, body)
@@ -95,6 +113,26 @@ def open_configuration_modal(
         send_to_slack_enabled.get("value") if send_to_slack_enabled else True,
     )
     open_view_modal(modal, trigger_id, team_id)
+
+
+@make_context
+@handle_error
+def add_new_view_modal(
+    *,
+    team_id: str,
+    channel_id: str,
+    user: dict[str, str],
+    command_name: str,
+    trigger_id: str,
+    text: str,
+    **kwargs,
+):
+
+    command = Command.find_one_by_name_and_chanel(command_name, channel_id)
+    modal = build_custom_command_modal(
+        command_id=command._id, command_name=command.name, size_of_pick_list=3
+    )
+    push_new_view_modal(modal, trigger_id, team_id)
 
 
 @make_context

@@ -9,7 +9,7 @@ from server.service.error.back_error import BackError
 class Command(MongoModel):
     name = fields.CharField(required=True)
     channel_id = fields.CharField(required=True)
-    label = fields.CharField()
+    label = fields.CharField(blank=True)
     pick_list = fields.ListField()
     self_exclude = fields.BooleanField()
     only_active_users = fields.BooleanField()

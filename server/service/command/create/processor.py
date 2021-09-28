@@ -1,0 +1,53 @@
+from server.orm.command import Command
+from server.service.command.helper import format_pick_list
+from server.service.slack.message import Message, MessageStatus, MessageVisibility
+from server.service.slack.message_formatting import format_custom_command_help
+from server.service.strategy.enum import Strategy
+from server.service.tpr.response_format import Response
+from server.service.slack.response.response_type import SlackResponseType
+
+
+# @validate_payload TODO Use marshmallow schema instead
+def create_command_processor(
+    *,
+    user_id: str,
+    team_id: str,
+    channel_id: str,
+    new_command_name: str,
+    label: str = "",
+    pick_list: list[str],
+    strategy: str = Strategy.uniform.name,
+    self_exclude: bool = False,
+    only_active_users: bool = False,
+    **kwargs,
+) -> Response:
+    pick_list = format_pick_list(pick_list, team_id, channel_id)
+    strategy_enum = Strategy[strategy]
+    weight_list = strategy_enum.value.create_weight_list(len(pick_list))
+
+    Command.create(
+        name=new_command_name,
+        channel_id=channel_id,
+        label=label,
+        pick_list=pick_list,
+        self_exclude=self_exclude,
+        only_active_users=only_active_users,
+        weight_list=weight_list,
+        strategy=strategy_enum.name,
+        created_by_user_id=user_id,
+    )
+    created_command = Command.find_one_by_name_and_chanel(new_command_name, channel_id)
+
+    message_content = f"Command {created_command.name} successfully created.\n"
+    message_content += format_custom_command_help(created_command)
+
+    return Response(
+        type=SlackResponseType.SLACK_SEND_MESSAGE_IN_CHANNEL.value,
+        data={
+            "message": Message(
+                content=message_content,
+                status=MessageStatus.SUCCESS,
+                visibility=MessageVisibility.NORMAL,
+            )
+        },
+    )

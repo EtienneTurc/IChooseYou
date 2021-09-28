@@ -5,8 +5,11 @@ from marshmallow import ValidationError
 from server.service.command.args import ArgError
 from server.service.error.back_error import BackError
 from server.service.slack.message import Message, MessageStatus, MessageVisibility
-from server.service.slack.sdk_wrapper import (failed_worklow,
-                                              send_message_to_channel_via_response_url)
+from server.service.slack.sdk_wrapper import (
+    failed_worklow,
+    send_message_to_channel_via_response_url,
+)
+from server.service.error.mapping import ERROR_TO_RESPONSE_ACTION
 
 
 def error_handler(error: str, error_status: int, *, response_url: str) -> None:
@@ -63,3 +66,13 @@ def handle_workflow_error(func):
             )
 
     return handle_error_wrapper
+
+
+def tpr_handle_error(func):
+    def tpr_handle_error_wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as error:
+            return ERROR_TO_RESPONSE_ACTION[type(error)](**kwargs)
+
+    return tpr_handle_error_wrapper

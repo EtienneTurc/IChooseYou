@@ -1,3 +1,4 @@
+from server.blueprint.interactivity.action import Action
 from server.blueprint.slash_command.helper import extract_command_from_text
 from server.service.error.back_error import BackError
 from server.service.helper.dict_helper import get_by_path
@@ -30,19 +31,35 @@ def format_resubmit_payload_for_slash_command(payload):
     }
 
 
+def format_main_modal_run_command_for_slash_command(payload):
+    payload_actions = get_by_path(payload, "actions")
+
+    command_id = None
+    for action in payload_actions:
+        if get_by_path(action, "action_id") == Action.MAIN_MODAL_RUN_COMMAND.value:
+            command_id = get_by_path(action, "value")
+
+    if not command_id:
+        raise BackError("Command id not found in paylaod", 400)
+
+    return format_callback_payload_for_slash_command(
+        Action.MAIN_MODAL_RUN_COMMAND.value, command_id, payload
+    )
+
+
 def format_callback_payload_for_slash_command(
-    callback_action: str, id: str, payload: dict[any, any]
+    callback_action: str, command_id: str, payload: dict[any, any]
 ):
-    callback_action_mapping = {
-        SlackModalAction.RUN_CUSTOM_COMMAND.value: format_run_command_payload_for_slash_command  # noqa E501
+    command = Command.find_by_id(command_id)
+    return {
+        **CALLBACK_ACTION_MAPPING[callback_action](command, payload),
+        "text": CALLBACK_TEXT_ACTION_MAPPING[callback_action](command, payload),
     }
 
-    return callback_action_mapping[callback_action](id, payload)
 
-
-def format_run_command_payload_for_slash_command(id: int, payload: dict[any, any]):
-    command = Command.find_by_id(id)
-
+def format_run_command_standard_payload_for_slash_command(
+    command: Command, payload: dict[any, any]
+):
     return {
         "user": {
             "id": payload.get("user").get("id"),
@@ -50,13 +67,13 @@ def format_run_command_payload_for_slash_command(id: int, payload: dict[any, any
         },
         "channel_id": command.channel_id,
         "team_id": payload.get("team").get("id"),
-        "text": get_text_from_run_command_payload(payload),
         "command_name": command.name,
+        "trigger_id": payload.get("trigger_id"),
         "response_url": "",  # TODO
     }
 
 
-def get_text_from_run_command_payload(payload):
+def get_text_from_run_command_payload(_, payload) -> str:
     dict = get_by_path(payload, "view.state.values")
     inputs = {}
 
@@ -126,3 +143,14 @@ def assert_message_can_be_delete(text: str, user_id: str) -> bool:
         message = "Only the user that triggered the slash command can delete"
         message += " the corresponding message."
         raise BackError(message, 400)
+
+
+CALLBACK_ACTION_MAPPING = {
+    SlackModalAction.RUN_CUSTOM_COMMAND.value: format_run_command_standard_payload_for_slash_command,  # noqa E501
+    Action.MAIN_MODAL_RUN_COMMAND.value: format_run_command_standard_payload_for_slash_command,  # noqa E501
+}
+
+CALLBACK_TEXT_ACTION_MAPPING = {
+    SlackModalAction.RUN_CUSTOM_COMMAND.value: get_text_from_run_command_payload,  # noqa E501
+    Action.MAIN_MODAL_RUN_COMMAND.value: lambda *_: "",
+}

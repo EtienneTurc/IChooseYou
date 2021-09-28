@@ -4,6 +4,8 @@ from server.service.command.args import ArgError
 from server.service.error.back_error import BackError
 from server.service.strategy.enum import Strategy
 
+# TODO clean
+
 
 def assert_pick_list_can_be_updated(
     number_of_items_in_pick_list: int,

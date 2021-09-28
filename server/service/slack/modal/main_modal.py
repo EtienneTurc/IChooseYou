@@ -2,6 +2,13 @@ from flask import current_app
 
 from server.orm.command import Command
 
+from enum import Enum
+
+
+class SlackMainModalActionId(Enum):
+    CREATE_NEW_COMMAND = "create_new_command"
+    RUN_COMMAND = "run_command"
+
 
 def build_main_modal_header():
     return {
@@ -11,21 +18,22 @@ def build_main_modal_header():
             "text": current_app.config["APP_NAME"],
             "emoji": True,
         },
+        "close": {"type": "plain_text", "text": "Close", "emoji": True},
     }
 
 
-def build_manage_section():
+def build_create_command_section():
     return {
         "type": "section",
         "text": {
             "type": "mrkdwn",
-            "text": ":hammer: *Create, update or delete existing command*",
+            "text": ":hammer: *Create a new command*",
         },
         "accessory": {
             "type": "button",
-            "text": {"type": "plain_text", "text": "Manage", "emoji": True},
+            "text": {"type": "plain_text", "text": "Add", "emoji": True},
             "style": "primary",
-            "value": "click_me_123",
+            "action_id": SlackMainModalActionId.CREATE_NEW_COMMAND.value,
         },
     }
 
@@ -35,22 +43,29 @@ def build_command_section(command: Command):
         "type": "section",
         "text": {
             "type": "mrkdwn",
-            "text": f"*{command.name}*",
+            "text": build_command_text(command),
         },
         "accessory": {
             "type": "button",
-            "text": {"type": "plain_text", "text": "Execute", "emoji": True},
-            "style": "primary",
-            "value": "click_me_123",
-            "action_id": "execute",
+            "text": {"type": "plain_text", "text": "Run", "emoji": True},
+            "action_id": SlackMainModalActionId.RUN_COMMAND.value,
+            "value": str(command._id),
         },
     }
+
+
+def build_command_text(command: Command) -> str:
+    name = f"*{command.name}*"
+    description = "Description of my command Description of my command Description of my command Description of my command Description of my command"
+    update = "<google.com|update>"
+    delete = "<google.com|delete>"
+    return f"{name}\n{description}\n{update} | {delete}"
 
 
 def build_main_modal(*, commands: list[Command], **kwargs):
     modal_header = build_main_modal_header()
     blocks = [
-        build_manage_section(),
+        build_create_command_section(),
         {"type": "divider"},
         *[build_command_section(command) for command in commands],
     ]

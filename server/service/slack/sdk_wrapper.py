@@ -90,9 +90,12 @@ def send_message_to_channel_via_response_url(
 
 def open_view_modal(modal: str, trigger_id: str, team_id: str) -> None:
     client = get_web_client(team_id)
-    print(client)
     client.views_open(trigger_id=trigger_id, view=modal)
-    print("hello")
+
+
+def push_new_view_modal(modal: str, trigger_id: str, team_id: str) -> None:
+    client = get_web_client(team_id)
+    client.views_push(trigger_id=trigger_id, view=modal)
 
 
 def save_workflow_in_slack(

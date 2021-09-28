@@ -29,6 +29,7 @@ def build_header(command_name: str):
             "text": f"{command_name}",
             "emoji": True,
         },
+        "close": {"type": "plain_text", "text": "Close", "emoji": True},
     }
 
 
