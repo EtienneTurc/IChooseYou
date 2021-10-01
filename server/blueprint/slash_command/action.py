@@ -7,10 +7,17 @@ class BlueprintSlashCommandAction(Enum):
     DELETE = "delete"
     RANDOMNESS = "randomness"
     CUSTOM = "custom"
+    OPEN_MAIN_MODAl = "open_main_modal"
 
 
 KNOWN_SLASH_COMMANDS_ACTIONS = [
     action.value
     for action in BlueprintSlashCommandAction
-    if action is not BlueprintSlashCommandAction.CUSTOM
+    if action
+    in [
+        BlueprintSlashCommandAction.CREATE,
+        BlueprintSlashCommandAction.UPDATE,
+        BlueprintSlashCommandAction.DELETE,
+        BlueprintSlashCommandAction.RANDOMNESS,
+    ]
 ]

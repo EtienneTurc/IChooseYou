@@ -25,7 +25,7 @@ def parse_command_line(
     return {
         **values,
         "additional_text": extract_additional_text(
-            positional_args[len(expected_positional_args) :] + named_arg,
+            positional_args[len(expected_positional_args):] + named_arg,
             expected_named_args,
             values,
         ),
@@ -80,17 +80,19 @@ def create_named_arg_parser(
 
 
 def extract_additional_text(
-    text: str, expected_named_args: list[Arg], values: dict[str, any]
+    text_as_list: list[str], expected_named_args: list[Arg], values: dict[str, any]
 ) -> str:
-    additional_text = text
+    additional_text = " ".join(text_as_list)
+    print(additional_text)
     for arg in expected_named_args:
-        if values.get(arg.variable.name):
+        if values.get(arg.name):
             additional_text = additional_text.replace(
-                f"{arg.prefix}{arg.name} {values.get(arg.variable_name)}",
+                f"{arg.prefix}{arg.name} {values.get(arg.name)}",
                 "",
             )
             additional_text = additional_text.replace(
-                f"-{arg.short} {values.get(arg.variable_name)}", ""
+                f"-{arg.short} {values.get(arg.name)}", ""
             )
             additional_text = additional_text.strip()
+            additional_text = additional_text.replace("  ", " ")
     return additional_text

@@ -28,6 +28,7 @@ def update_command_processor(
     user_id: str,
     team_id: str,
     channel_id: str,
+    **kwargs,
 ) -> Response:
     # TODO assert_strategy_is_valid(strategy)
     command = Command.find_one_by_name_and_chanel(command_to_update, channel_id)

@@ -36,14 +36,14 @@ def format_main_modal_run_command_for_slash_command(payload):
 
     command_id = None
     for action in payload_actions:
-        if get_by_path(action, "action_id") == Action.MAIN_MODAL_RUN_COMMAND.value:
+        if get_by_path(action, "action_id") == Action.MAIN_MODAL_SELECT_COMMAND.value:
             command_id = get_by_path(action, "value")
 
     if not command_id:
         raise BackError("Command id not found in paylaod", 400)
 
     return format_callback_payload_for_slash_command(
-        Action.MAIN_MODAL_RUN_COMMAND.value, command_id, payload
+        Action.MAIN_MODAL_SELECT_COMMAND.value, command_id, payload
     )
 
 
@@ -147,10 +147,10 @@ def assert_message_can_be_delete(text: str, user_id: str) -> bool:
 
 CALLBACK_ACTION_MAPPING = {
     SlackModalAction.RUN_CUSTOM_COMMAND.value: format_run_command_standard_payload_for_slash_command,  # noqa E501
-    Action.MAIN_MODAL_RUN_COMMAND.value: format_run_command_standard_payload_for_slash_command,  # noqa E501
+    Action.MAIN_MODAL_SELECT_COMMAND.value: format_run_command_standard_payload_for_slash_command,  # noqa E501
 }
 
 CALLBACK_TEXT_ACTION_MAPPING = {
     SlackModalAction.RUN_CUSTOM_COMMAND.value: get_text_from_run_command_payload,  # noqa E501
-    Action.MAIN_MODAL_RUN_COMMAND.value: lambda *_: "",
+    Action.MAIN_MODAL_SELECT_COMMAND.value: lambda *_: "",
 }

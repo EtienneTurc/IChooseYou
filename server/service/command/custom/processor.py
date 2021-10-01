@@ -1,3 +1,4 @@
+from typing import NoReturn
 from server.service.helper.dict_helper import normalize
 from server.service.selection.selection import select_from_pick_list
 from server.service.slack.message import Message, MessageVisibility
@@ -6,6 +7,7 @@ from server.orm.command import Command
 from server.service.command.custom.helper import create_custom_command_label
 from server.service.tpr.response_format import Response
 from server.service.slack.response.response_type import SlackResponseType
+from server.service.strategy.helper import get_strategy
 
 
 def custom_command_processor(
@@ -16,6 +18,7 @@ def custom_command_processor(
     channel_id: str,
     team_id: str,
     user_id: str,
+    should_update_weight_list: bool = False,
     **kwargs,
 ) -> Response:
     command = Command.find_one_by_name_and_chanel(command_name, channel_id)
@@ -52,6 +55,9 @@ def custom_command_processor(
 
     label = create_custom_command_label(command.label, additional_text)
 
+    if should_update_weight_list:
+        update_weight_list(command, selected_items)
+
     return Response(
         type=SlackResponseType.SLACK_SEND_MESSAGE_IN_CHANNEL.value,
         data={
@@ -62,4 +68,19 @@ def custom_command_processor(
             ),
             "selected_items": selected_items,
         },
+    )
+
+
+def update_weight_list(command: Command, selected_items: list[str]) -> NoReturn:
+    strategy = get_strategy(command.strategy, command.weight_list)
+    strategy.update(
+        indices_selected=[
+            command.pick_list.index(selected_item) for selected_item in selected_items
+        ]
+    )
+    Command.update(
+        command.name,
+        command.channel_id,
+        command.updated_by_user_id,
+        {"weight_list": strategy.weight_list},
     )

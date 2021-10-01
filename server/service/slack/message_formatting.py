@@ -1,4 +1,4 @@
-from server.blueprint.interactivity.action import Action
+from server.blueprint.interactivity.action import BlueprintInteractivityAction
 
 
 def format_known_command_help(known_command):
@@ -104,7 +104,7 @@ def format_command_sent(slash_command, command_name, text):
                                 "emoji": True,
                             },
                             "value": command,
-                            "action_id": Action.RESUBMIT_COMMAND.value,
+                            "action_id": BlueprintInteractivityAction.RESUBMIT_COMMAND.value,
                         },
                     }
                 ]

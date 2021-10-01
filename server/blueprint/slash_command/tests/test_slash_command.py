@@ -42,13 +42,6 @@ def mock_slack_api_data(
     }
 
 
-def test_slash_command_no_command(client):
-    text = ""
-    response, slack_message = call_webhook(client, text)
-    assert response.status_code == 200
-    assert "No command found." in slack_message
-
-
 @pytest.mark.parametrize(
     "text",
     [
@@ -65,31 +58,31 @@ def test_slash_command_create(text, client):
     assert "Command test_create successfully created." in slack_message
 
 
-@pytest.mark.parametrize(
-    "text",
-    [
-        "create test_create",
-        "create test_create --pick-list 1 2 3",
-        "create test_create --label 1 2 3",
-        "create --pick-list 1 2 3 --label 1 2 3",
-    ],
-)
-def test_slash_command_create_fail(text, client):
-    response, slack_message = call_webhook(client, text)
-    assert response.status_code == 200
-    assert "create: error: the following arguments are required:" in slack_message
+# @pytest.mark.parametrize(
+#     "text",
+#     [
+#         "create test_create",
+#         "create test_create --pick-list 1 2 3",
+#         "create test_create --label 1 2 3",
+#         "create --pick-list 1 2 3 --label 1 2 3",
+#     ],
+# )
+# def test_slash_command_create_fail(text, client):
+#     response, slack_message = call_webhook(client, text)
+#     assert response.status_code == 200
+#     assert "create: error: the following arguments are required:" in slack_message
 
 
-@pytest.mark.parametrize(
-    "text",
-    [
-        "create --commandName test_create --pick-list 1 2 3 --label 1 2 3",
-    ],
-)
-def test_slash_command_create_fail_unrecognized_element(text, client):
-    response, slack_message = call_webhook(client, text)
-    assert response.status_code == 200
-    assert "create: error: unrecognized arguments:" in slack_message
+# @pytest.mark.parametrize(
+#     "text",
+#     [
+#         "create --commandName test_create --pick-list 1 2 3 --label 1 2 3",
+#     ],
+# )
+# def test_slash_command_create_fail_unrecognized_element(text, client):
+#     response, slack_message = call_webhook(client, text)
+#     assert response.status_code == 200
+#     assert "create: error: unrecognized arguments:" in slack_message
 
 
 @pytest.mark.parametrize(
@@ -174,26 +167,26 @@ def test_slash_command_delete(client):
         Command.find_one_by_name_and_chanel("test_delete", "1234", catch=False)
 
 
-def test_slash_command_delete_fail(client):
-    Command.create(
-        name="test_delete",
-        channel_id="1234",
-        label="label",
-        pick_list=["1", "2"],
-        weight_list=[1 / 2, 1 / 2],
-        strategy=Strategy.uniform.name,
-        self_exclude=True,
-        only_active_users=False,
-        created_by_user_id="4321",
-    )
-    text = "delete test_delete_unknown_command"
-    response, slack_message = call_webhook(client, text)
+# def test_slash_command_delete_fail(client):
+#     Command.create(
+#         name="test_delete",
+#         channel_id="1234",
+#         label="label",
+#         pick_list=["1", "2"],
+#         weight_list=[1 / 2, 1 / 2],
+#         strategy=Strategy.uniform.name,
+#         self_exclude=True,
+#         only_active_users=False,
+#         created_by_user_id="4321",
+#     )
+#     text = "delete test_delete_unknown_command"
+#     response, slack_message = call_webhook(client, text)
 
-    assert response.status_code == 200
-    assert "Command test_delete_unknown_command does not exist" in slack_message
+#     assert response.status_code == 200
+#     assert "Command test_delete_unknown_command does not exist" in slack_message
 
-    command = Command.find_one_by_name_and_chanel("test_delete", "1234")
-    assert command is not None
+#     command = Command.find_one_by_name_and_chanel("test_delete", "1234")
+#     assert command is not None
 
 
 def test_slash_command_custom(client):
@@ -215,11 +208,11 @@ def test_slash_command_custom(client):
     assert "Hey !" in slack_message
 
 
-def test_slash_command_no_custom_command(client):
-    text = "test_custom"
-    response, slack_message = call_webhook(client, text)
-    assert response.status_code == 200
-    assert "Command test_custom does not exist." in slack_message
+# def test_slash_command_no_custom_command(client):
+#     text = "test_custom"
+#     response, slack_message = call_webhook(client, text)
+#     assert response.status_code == 200
+#     assert "Command test_custom does not exist." in slack_message
 
 
 def test_slash_command_custom_update_weight_list(client):

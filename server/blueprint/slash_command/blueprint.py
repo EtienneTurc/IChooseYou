@@ -18,7 +18,12 @@ api = Blueprint("slash_command", __name__, url_prefix="/slash_command")
 def process_slash_command():
     command_name, _ = extract_command_from_text(request.form.get("text"))
 
-    if command_name in KNOWN_SLASH_COMMANDS_ACTIONS:
+    if command_name == "" or command_name is None:
+        response = transform_process_respond(
+            BlueprintSlashCommandAction.OPEN_MAIN_MODAl.value, request.form
+        )
+
+    elif command_name in KNOWN_SLASH_COMMANDS_ACTIONS:
         response = transform_process_respond(
             BlueprintSlashCommandAction[command_name.upper()].value,
             request.form,

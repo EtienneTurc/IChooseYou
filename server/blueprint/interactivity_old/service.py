@@ -62,7 +62,7 @@ def proccess_interactivity(payload):
         launch_function_in_thread(open_configuration_modal, body)
         return ""
 
-    elif Action.MAIN_MODAL_RUN_COMMAND.value in actions:
+    elif Action.MAIN_MODAL_SELECT_COMMAND.value in actions:
         body = format_main_modal_run_command_for_slash_command(payload)
         launch_function_in_thread(add_new_view_modal, body)
         return ""

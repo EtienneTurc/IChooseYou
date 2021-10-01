@@ -2,7 +2,7 @@ from slack_sdk import WebClient
 from slack_sdk.webhook.client import WebhookClient
 
 from server.service.slack.decorator import is_signature_valid
-from server.service.slack.sdk_wrapper import get_web_client
+from server.service.slack.sdk_helper import get_web_client
 
 
 def monkey_patch_get_web_client(team_id: str) -> WebClient:

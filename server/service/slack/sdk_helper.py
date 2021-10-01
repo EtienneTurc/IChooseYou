@@ -11,8 +11,7 @@ def get_web_client(team_id: str) -> WebClient:
 
 def create_slack_sdk_web_client(func):
     def create_slack_sdk_client_wrapper(*args, **kwargs):
-        token = SlackBotToken.find_by_team_id(kwargs.get("team_id")).access_token
-        client = WebClient(token=token)
+        client = get_web_client(kwargs.get("team_id"))
         return func(client, *args, **kwargs)
 
     return create_slack_sdk_client_wrapper

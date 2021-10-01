@@ -7,7 +7,7 @@ from enum import Enum
 
 class SlackMainModalActionId(Enum):
     CREATE_NEW_COMMAND = "create_new_command"
-    RUN_COMMAND = "run_command"
+    SELECT_COMMAND = "select_command"
 
 
 def build_main_modal_header():
@@ -48,7 +48,7 @@ def build_command_section(command: Command):
         "accessory": {
             "type": "button",
             "text": {"type": "plain_text", "text": "Run", "emoji": True},
-            "action_id": SlackMainModalActionId.RUN_COMMAND.value,
+            "action_id": SlackMainModalActionId.SELECT_COMMAND.value,
             "value": str(command._id),
         },
     }

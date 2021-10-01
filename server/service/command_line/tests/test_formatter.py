@@ -8,9 +8,7 @@ positional_second_arg = Arg(name="positional_second_arg", nargs=1)
 simple_named_arg = Arg(name="simple_named_arg", nargs=1)
 multiple_args = Arg(name="multiple_args", nargs="+")
 list_args = Arg(name="list_args", nargs="+", type=list)
-bool_arg = Arg(
-    name="bool_arg", nargs="?", type=bool, action="store_true", default=False
-)
+bool_arg = Arg(name="bool_arg", nargs="?", type=bool, action="store_true")
 optional_single_arg = Arg(name="optional_single_arg", nargs="?")
 
 
@@ -63,7 +61,7 @@ optional_single_arg = Arg(name="optional_single_arg", nargs="?")
             "--simple_named_arg hello",
             [],
             [simple_named_arg, multiple_args],
-            {"simple_named_arg": "hello", "multiple_args": ""},
+            {"simple_named_arg": "hello"},
         ),
         (
             "--multiple_args hello world",
@@ -121,6 +119,51 @@ optional_single_arg = Arg(name="optional_single_arg", nargs="?")
                 "positional_first_arg": "hello",
                 "simple_named_arg": "world",
                 "multiple_args": "to all",
+            },
+        ),
+        (
+            "text for additional text",
+            [],
+            [],
+            {
+                "additional_text": "text for additional text",
+            },
+        ),
+        (
+            "text for additional text",
+            [positional_first_arg],
+            [],
+            {
+                "additional_text": "for additional text",
+                "positional_first_arg": "text",
+            },
+        ),
+        (
+            "--simple_named_arg hello for additional text",
+            [],
+            [simple_named_arg],
+            {
+                "additional_text": "for additional text",
+                "simple_named_arg": "hello",
+            },
+        ),
+        (
+            "--multiple_args not for additional text",
+            [],
+            [multiple_args],
+            {
+                "additional_text": "",
+                "multiple_args": "not for additional text",
+            },
+        ),
+        (
+            "text start for additional text --simple_named_arg hello and end of text",
+            [positional_first_arg],
+            [simple_named_arg],
+            {
+                "additional_text": "start for additional text and end of text",
+                "positional_first_arg": "text",
+                "simple_named_arg": "hello",
             },
         ),
     ],
