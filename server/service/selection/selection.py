@@ -69,7 +69,7 @@ def remove_item(
     item_to_remove_weight = weight_list[item_to_remove_index]
     new_pick_list = [el for el in pick_list if el != item_to_remove]
     new_weight_list = (
-        weight_list[:item_to_remove_index] + weight_list[(item_to_remove_index + 1) :]
+        weight_list[:item_to_remove_index] + weight_list[(item_to_remove_index + 1):]
     )
 
     # Round robin support

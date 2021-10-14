@@ -24,7 +24,7 @@ def parse_command_line(
     return {
         **values,
         "additional_text": extract_additional_text(
-            positional_args[len(expected_positional_args) :] + named_arg,
+            positional_args[len(expected_positional_args):] + named_arg,
             expected_named_args,
             values,
         ),
