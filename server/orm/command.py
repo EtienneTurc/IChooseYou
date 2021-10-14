@@ -1,8 +1,9 @@
-from pymodm import MongoModel, fields
+from server.service.error.type.bad_request_error import BadRequestError
 from bson.objectid import ObjectId
+from pymodm import MongoModel, fields
+import pymongo
 
-from server.service.command.args import ArgError
-from server.service.error.back_error import BackError
+from server.service.error.type.missing_element_error import MissingElementError
 
 
 # Now let's define some Models.
@@ -10,6 +11,7 @@ class Command(MongoModel):
     name = fields.CharField(required=True)
     channel_id = fields.CharField(required=True)
     label = fields.CharField(blank=True)
+    description = fields.CharField(blank=True)
     pick_list = fields.ListField()
     self_exclude = fields.BooleanField()
     only_active_users = fields.BooleanField()
@@ -26,11 +28,15 @@ class Command(MongoModel):
         try:
             return Command.objects.get({"name": name, "channel_id": channel_id})
         except Command.DoesNotExist:
-            raise ArgError(None, f"Command {name} does not exist.")
+            raise MissingElementError(f"Command {name} does not exist.")
 
     @staticmethod
     def find_all_in_chanel(channel_id: int):
-        return list(Command.objects.raw({"channel_id": channel_id}))
+        return list(
+            Command.objects.raw({"channel_id": channel_id}).aggregate(
+                {"$sort": {"name": pymongo.ASCENDING}}
+            )
+        )
 
     @staticmethod
     def find_by_id(id: int):
@@ -42,6 +48,7 @@ class Command(MongoModel):
         name,
         channel_id,
         label,
+        description,
         pick_list,
         self_exclude,
         only_active_users,
@@ -51,12 +58,13 @@ class Command(MongoModel):
     ):
         try:
             Command.find_one_by_name_and_chanel(name, channel_id, catch=False)
-            raise BackError("Command already exists.", 400)
+            raise BadRequestError(f"Command {name} already exists.")
         except Command.DoesNotExist:
             Command(
                 name,
                 channel_id,
                 label,
+                description,
                 pick_list,
                 self_exclude,
                 only_active_users,

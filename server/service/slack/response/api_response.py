@@ -2,11 +2,11 @@ from slack_sdk import WebClient
 from slack_sdk.webhook import WebhookClient
 
 from server.service.slack.message import Message, MessageVisibility
+from server.service.slack.response.helper import build_message_payload
 from server.service.slack.sdk_helper import (
     create_slack_sdk_web_client,
     create_slack_sdk_webhook_client,
 )
-from server.service.slack.response.helper import build_message_payload
 
 
 @create_slack_sdk_web_client
@@ -59,7 +59,7 @@ def open_view_modal(
 
 
 @create_slack_sdk_web_client
-def push_new_view_modal(
+def push_view_modal(
     client: WebClient, *, modal: str, trigger_id: str, team_id: str, **kwargs
 ) -> None:
     client.views_push(trigger_id=trigger_id, view=modal)

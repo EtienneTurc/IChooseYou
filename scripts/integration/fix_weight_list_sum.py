@@ -9,7 +9,6 @@ print(f"RECOVERING DATA {commands.count()} COMMANDS !")
 
 for command in commands:
     weight_list = command.weight_list
-    print(np.sum(weight_list))
     try:
         if weight_list and np.sum(weight_list) != 1:
             Command.update(

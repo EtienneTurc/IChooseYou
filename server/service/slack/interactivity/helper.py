@@ -1,10 +1,10 @@
-from server.service.error.back_error import BackError
+from server.service.error.type.bad_request_error import BadRequestError
 
 
 def assert_message_can_be_delete(text: str, user_id: str) -> bool:
     text_split = text.split("Hey ! <@")
     if len(text_split) <= 1:
-        raise BackError("Only pick messages can be deleted.", 400)  # TODO handle error
+        raise BadRequestError("Only pick messages can be deleted.")
 
     user_id_size = len(user_id)
     expected_user_id = text_split[1][:user_id_size]
@@ -12,4 +12,4 @@ def assert_message_can_be_delete(text: str, user_id: str) -> bool:
     if expected_user_id != user_id:
         message = "Only the user that triggered the slash command can delete"
         message += " the corresponding message."
-        raise BackError(message, 400)
+        raise BadRequestError(message)

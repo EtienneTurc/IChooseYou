@@ -2,12 +2,12 @@ import pytest
 
 import server.service.slack.tests.monkey_patch as monkey_patch_request  # noqa: F401, E501
 from server.orm.command import Command
-from server.service.command.args import ArgError
+from server.service.command.update.processor import update_command_processor
 from server.service.slack.message import MessageStatus, MessageVisibility
 from server.service.strategy.enum import Strategy
 from server.tests.test_app import *  # noqa: F401, F403
-from server.service.command.update.processor import update_command_processor
-from server.service.slack.response.response_type import SlackResponseType
+from marshmallow import ValidationError
+from server.service.error.type.missing_element_error import MissingElementError
 
 channel_id = "42"
 team_id = "1337"
@@ -19,6 +19,7 @@ default_expected_command = {
     "name": command_name,
     "channel_id": channel_id,
     "label": "label",
+    "description": "my super description",
     "pick_list": default_pick_list,
     "self_exclude": True,
     "only_active_users": False,
@@ -42,6 +43,11 @@ default_expected_command = {
             "my new label",
         ),
         (
+            {"description": "my new description"},
+            {**default_expected_command, "description": "my new description"},
+            "my new description",
+        ),
+        (
             {"pick_list": ["1", "2"]},
             {
                 **default_expected_command,
@@ -59,7 +65,7 @@ default_expected_command = {
         #     "['<@1234>', '<@2345>', '<@3456>']",
         # ),
         (
-            {"add_to_pick_list": "4"},
+            {"add_to_pick_list": ["4"]},
             {
                 **default_expected_command,
                 "pick_list": ["1", "2", "3", "4"],
@@ -68,7 +74,7 @@ default_expected_command = {
             "['1', '2', '3', '4']",
         ),
         (
-            {"remove_from_pick_list": "2"},
+            {"remove_from_pick_list": ["2"]},
             {
                 **default_expected_command,
                 "pick_list": ["1", "3"],
@@ -137,10 +143,8 @@ def test_update(input_data, expected_command, expected_message, client):
         **input_data,
     )
 
-    assert response.type == SlackResponseType.SLACK_SEND_MESSAGE_IN_CHANNEL.value
+    message = response.get("message")
 
-    message = response.data["message"]
-    print(message.content)
     assert expected_message in message.content
     assert message.status == MessageStatus.SUCCESS
     assert message.visibility == MessageVisibility.NORMAL
@@ -156,10 +160,60 @@ def test_update(input_data, expected_command, expected_message, client):
 
 
 def test_update_fail_if_command_does_not_exist(client):
-    with pytest.raises(ArgError, match="Command test_update does not exist."):
+    with pytest.raises(
+        MissingElementError, match="Command test_update does not exist."
+    ):
         update_command_processor(
             user_id=user_id,
             team_id=team_id,
             channel_id=channel_id,
             command_to_update=command_name,
+        )
+
+
+def test_create_fail_if_command_name_empty(client):
+    error_message = "Field may not be empty."
+    with pytest.raises(ValidationError, match=error_message):
+        update_command_processor(
+            user_id=user_id,
+            team_id=team_id,
+            channel_id=channel_id,
+            command_to_update="",
+        )
+
+
+def test_create_fail_if_pick_list_is_None(client):
+    error_message = "Field may not be null."
+    with pytest.raises(ValidationError, match=error_message):
+        update_command_processor(
+            user_id=user_id,
+            team_id=team_id,
+            channel_id=channel_id,
+            command_to_update=command_name,
+            pick_list=None,
+        )
+
+
+def test_create_fail_if_pick_list_empty(client):
+    error_message = "Field may not be empty."
+    with pytest.raises(ValidationError, match=error_message):
+        update_command_processor(
+            user_id=user_id,
+            team_id=team_id,
+            channel_id=channel_id,
+            command_to_update=command_name,
+            pick_list=[],
+        )
+
+
+def test_create_fail_if_non_valid_strategy(client):
+    error_message = "boop is not a valid strategy."
+    with pytest.raises(ValidationError, match=error_message):
+        update_command_processor(
+            user_id=user_id,
+            team_id=team_id,
+            channel_id=channel_id,
+            new_command_name=command_name,
+            strategy="boop",
+            pick_list=default_pick_list,
         )

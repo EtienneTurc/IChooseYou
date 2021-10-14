@@ -1,16 +1,17 @@
-from server.service.tpr.response_format import Response
-from server.service.slack.response.response_type import SlackResponseType
-from server.service.slack.workflow.edit_modal import build_workflow_edit_modal
-from server.service.command_line.formatter import parse_command_line
 from server.service.command.custom.command_line_args import (
-    POSITIONAL_ARG as CUSTOM_POSITIONAL_ARGS,
     NAMED_ARGS as CUSTOM_NAMED_ARGS,
 )
+from server.service.command.custom.command_line_args import (
+    POSITIONAL_ARG as CUSTOM_POSITIONAL_ARGS,
+)
+from server.service.command_line.formatter import parse_command_line
+from server.service.slack.workflow.edit_modal import build_workflow_edit_modal
 from server.service.slack.workflow.enum import OutputVariable, WorkflowActionId
 from server.service.slack.workflow.helper import (
     create_select_item_name,
     create_value_dict,
 )
+from server.service.command.custom.processor import custom_command_processor
 
 
 def edit_workflow_processor(
@@ -19,13 +20,11 @@ def edit_workflow_processor(
     command_input_value: str = "",
     send_to_slack_checkbox_value: bool = True,
     **kwargs,
-) -> Response:
+) -> dict[str, any]:
     modal = build_workflow_edit_modal(
         channel_input_value, command_input_value, send_to_slack_checkbox_value
     )
-    return Response(
-        type=SlackResponseType.SLACK_OPEN_VIEW_MODAL.value, data={"modal": modal}
-    )
+    return {"modal": modal}
 
 
 def save_workflow_processor(
@@ -34,7 +33,7 @@ def save_workflow_processor(
     command_input_value: str = "",
     send_to_slack_checkbox_value: bool = True,
     **kwargs,
-):
+) -> dict[str, any]:
     inputs = {
         WorkflowActionId.CHANNEL_INPUT.value: create_value_dict(channel_input_value),
         WorkflowActionId.COMMAND_INPUT.value: create_value_dict(command_input_value),
@@ -63,7 +62,39 @@ def save_workflow_processor(
         }
     )
 
-    return Response(
-        type=SlackResponseType.SLACK_SAVE_WORKFLOW,
-        data={"inputs": inputs, "outputs": outputs},
+    return {"inputs": inputs, "outputs": outputs}
+
+
+def workflow_step_execute_processor(
+    *,
+    command_name: str,
+    team_id: str,
+    user_id: str,
+    channel_id: str,
+    text: str,
+    **kwargs,
+) -> dict[str, any]:
+    custom_command_response = custom_command_processor(
+        command_name=command_name,
+        channel_id=channel_id,
+        team_id=team_id,
+        user_id=user_id,
+        should_update_weight_list=True,
+        **parse_command_line(text, CUSTOM_POSITIONAL_ARGS, CUSTOM_NAMED_ARGS),
     )
+
+    outputs = {}
+    for index, selected_item in enumerate(
+        custom_command_response.get("selected_items")
+    ):
+        outputs[create_select_item_name(index)] = selected_item
+    outputs[OutputVariable.SELECTION_MESSAGE.value] = (
+        custom_command_response.get("message").content
+        if custom_command_response.get("message")
+        else ""
+    )
+
+    return {
+        "outputs": outputs,
+        "message": custom_command_response.get("message"),
+    }

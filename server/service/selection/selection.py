@@ -4,7 +4,7 @@ import numpy as np
 
 from server.service.helper.dict_helper import normalize
 from server.service.slack.helper import get_user_id_in_mention, is_mention
-from server.service.slack.sdk_wrapper import is_user_of_team_active
+from server.service.slack.sdk_helper import is_user_of_team_active
 from server.service.strategy.helper import get_strategy
 
 
@@ -51,7 +51,7 @@ def select_one_from_pick_list(
         return selected_item, pick_list, weight_list
 
     user_mentionned = get_user_id_in_mention(selected_item)
-    if is_user_of_team_active(team_id, user_mentionned):
+    if is_user_of_team_active(team_id=team_id, user_id=user_mentionned):
         return selected_item, pick_list, weight_list
 
     new_pick_list, new_weight_list = remove_item(selected_item, pick_list, weight_list)
@@ -69,7 +69,7 @@ def remove_item(
     item_to_remove_weight = weight_list[item_to_remove_index]
     new_pick_list = [el for el in pick_list if el != item_to_remove]
     new_weight_list = (
-        weight_list[:item_to_remove_index] + weight_list[(item_to_remove_index + 1):]
+        weight_list[:item_to_remove_index] + weight_list[(item_to_remove_index + 1) :]
     )
 
     # Round robin support

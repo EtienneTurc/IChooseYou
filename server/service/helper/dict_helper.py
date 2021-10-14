@@ -20,3 +20,7 @@ def get_by_path(dict, path: str):
 
 def normalize(input_list: list[float]) -> list[float]:
     return list(np.array(input_list) / np.sum(input_list))
+
+
+def clean_none_values(dict: dict[str, any]) -> dict[str, any]:
+    return {key: dict[key] for key in dict if dict[key] is not None}

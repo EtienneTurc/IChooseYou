@@ -1,7 +1,7 @@
 from enum import Enum
 
 from server.service.slack.helper import format_callback_id
-from server.service.slack.modal.enum import SlackModalAction
+from server.service.slack.modal.enum import SlackModalSubmitAction
 
 
 class SlackCustomCommandModalActionId(Enum):
@@ -52,6 +52,7 @@ def build_additional_text_input():
             "emoji": True,
         },
         "optional": True,
+        "dispatch_action": False,
     }
 
 
@@ -69,13 +70,14 @@ def build_number_of_elements_select(size_of_pick_list: int):
     ]
 
     return {
-        "type": "section",
+        "type": "input",
         "block_id": SlackCustomCommandModalBlockId.NUMBER_OF_ITEMS_BLOCK_ID.value,
-        "text": {
-            "type": "mrkdwn",
+        "label": {
+            "type": "plain_text",
             "text": "Number of elements to pick",
+            "emoji": True,
         },
-        "accessory": {
+        "element": {
             "type": "static_select",
             "placeholder": {
                 "type": "plain_text",
@@ -86,6 +88,7 @@ def build_number_of_elements_select(size_of_pick_list: int):
             "initial_option": options[0],
             "action_id": SlackCustomCommandModalActionId.NUMBER_OF_ITEMS_SELECT.value,
         },
+        "dispatch_action": False,
     }
 
 
@@ -98,7 +101,7 @@ def build_custom_command_modal(
         build_number_of_elements_select(size_of_pick_list),
     ]
     callback_id = format_callback_id(
-        SlackModalAction.RUN_CUSTOM_COMMAND.value, command_id
+        SlackModalSubmitAction.RUN_CUSTOM_COMMAND.value, command_id
     )
 
     return {**modal_header, "blocks": blocks, "callback_id": callback_id}

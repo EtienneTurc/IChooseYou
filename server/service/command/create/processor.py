@@ -3,11 +3,11 @@ from server.service.command.helper import format_pick_list
 from server.service.slack.message import Message, MessageStatus, MessageVisibility
 from server.service.slack.message_formatting import format_custom_command_help
 from server.service.strategy.enum import Strategy
-from server.service.tpr.response_format import Response
-from server.service.slack.response.response_type import SlackResponseType
+from server.service.validator.decorator import validate_schema
+from server.service.command.create.schema import CreateCommandProcessorSchema
 
 
-# @validate_payload TODO Use marshmallow schema instead
+@validate_schema(CreateCommandProcessorSchema)
 def create_command_processor(
     *,
     user_id: str,
@@ -15,12 +15,12 @@ def create_command_processor(
     channel_id: str,
     new_command_name: str,
     label: str = "",
+    description: str = "",
     pick_list: list[str],
     strategy: str = Strategy.uniform.name,
     self_exclude: bool = False,
     only_active_users: bool = False,
-    **kwargs,
-) -> Response:
+) -> dict[str, any]:
     pick_list = format_pick_list(pick_list, team_id, channel_id)
     strategy_enum = Strategy[strategy]
     weight_list = strategy_enum.value.create_weight_list(len(pick_list))
@@ -29,6 +29,7 @@ def create_command_processor(
         name=new_command_name,
         channel_id=channel_id,
         label=label,
+        description=description,
         pick_list=pick_list,
         self_exclude=self_exclude,
         only_active_users=only_active_users,
@@ -41,13 +42,10 @@ def create_command_processor(
     message_content = f"Command {created_command.name} successfully created.\n"
     message_content += format_custom_command_help(created_command)
 
-    return Response(
-        type=SlackResponseType.SLACK_SEND_MESSAGE_IN_CHANNEL.value,
-        data={
-            "message": Message(
-                content=message_content,
-                status=MessageStatus.SUCCESS,
-                visibility=MessageVisibility.NORMAL,
-            )
-        },
-    )
+    return {
+        "message": Message(
+            content=message_content,
+            status=MessageStatus.SUCCESS,
+            visibility=MessageVisibility.NORMAL,
+        )
+    }

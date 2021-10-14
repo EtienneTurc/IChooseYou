@@ -1,9 +1,6 @@
-from server.service.slack.workflow.enum import (
-    WorkflowBlockId,
-    WorkflowActionId,
-)
-
 from flask import current_app
+
+from server.service.slack.workflow.enum import WorkflowActionId, WorkflowBlockId
 
 
 def build_send_to_slack_check_box(send_to_slack_enabled):

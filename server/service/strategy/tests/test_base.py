@@ -1,6 +1,6 @@
+from server.service.error.type.consistency_error import ConsistencyError
 import pytest
 
-from server.service.error.back_error import BackError
 from server.service.strategy.base import BaseStrategy
 
 
@@ -27,7 +27,7 @@ def test_base_strategy_creation_round_sum():
     [([], "Weight list must not be empty."), ([1, 2], "Weight list must sum up to 1.")],
 )
 def test_base_strategy_creation_error(weight_list, error_message):
-    with pytest.raises(BackError, match=error_message):
+    with pytest.raises(ConsistencyError, match=error_message):
         BaseStrategy(weight_list=weight_list)
 
 

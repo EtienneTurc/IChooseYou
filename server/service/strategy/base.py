@@ -1,8 +1,8 @@
 from dataclasses import dataclass
+from server.service.error.type.consistency_error import ConsistencyError
 
 import numpy as np
 
-from server.service.error.back_error import BackError
 from server.service.helper.dict_helper import normalize
 
 
@@ -16,10 +16,10 @@ class BaseStrategy:
 
     def __post_init__(self) -> None:
         if not self.weight_list or not len(self.weight_list):
-            raise BackError("Weight list must not be empty.", 400)
+            raise ConsistencyError("Weight list must not be empty.")
 
         if not self.validate():
-            raise BackError("Weight list must sum up to 1.", 400)
+            raise ConsistencyError("Weight list must sum up to 1.")
 
     def validate(self) -> bool:
         return round(np.sum(self.weight_list), 6) == 1

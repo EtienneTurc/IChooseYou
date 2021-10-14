@@ -15,16 +15,16 @@ def create_app(config_name="prod"):
     connect(app.config["DATABASE_URI"])
 
     # Add blueprints
-    # from server.blueprint.authentication.blueprint import api as authentication_api
-    # from server.blueprint.chart.blueprint import api as chart_api
-    # from server.blueprint.event.blueprint import api as event_api
-    # from server.blueprint.interactivity.blueprint import api as interactivity_api
+    from server.blueprint.authentication.blueprint import api as authentication_api
+    from server.blueprint.chart.blueprint import api as chart_api
+    from server.blueprint.event.blueprint import api as event_api
+    from server.blueprint.interactivity.blueprint import api as interactivity_api
     from server.blueprint.slash_command.blueprint import api as slash_command_api
 
-    # app.register_blueprint(authentication_api)
-    # app.register_blueprint(interactivity_api)
+    app.register_blueprint(authentication_api)
+    app.register_blueprint(interactivity_api)
     app.register_blueprint(slash_command_api)
-    # app.register_blueprint(event_api)
-    # app.register_blueprint(chart_api)
+    app.register_blueprint(event_api)
+    app.register_blueprint(chart_api)
 
     return app

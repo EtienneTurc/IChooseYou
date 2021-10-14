@@ -1,27 +1,27 @@
+from server.service.error.type.bad_request_error import BadRequestError
 import pytest
 
 import server.service.slack.tests.monkey_patch as monkey_patch_request  # noqa: F401, E501
-from server.service.error.back_error import BackError
-from server.service.slack.message import MessageStatus, MessageVisibility
-from server.tests.test_app import *  # noqa: F401, F403
-from server.service.command.create.processor import create_command_processor
-from server.service.strategy.enum import Strategy
-from server.service.command.enum import PickListSpecialArg
 from server.orm.command import Command
-from server.service.slack.response.response_type import SlackResponseType
-
+from server.service.command.create.processor import create_command_processor
+from server.service.command.enum import PickListSpecialArg
+from server.service.slack.message import MessageStatus, MessageVisibility
+from server.service.strategy.enum import Strategy
+from server.tests.test_app import *  # noqa: F401, F403
+from marshmallow import ValidationError
 
 channel_id = "42"
 team_id = "1337"
 user_id = "4321"
 command_name = "test_create"
-default_pick_list = [1, 2, 3]
+default_pick_list = ["1", "2", "3"]
 
 
 default_expected_command = {
     "name": command_name,
     "channel_id": channel_id,
     "label": "",
+    "description": "",
     "pick_list": default_pick_list,
     "self_exclude": False,
     "only_active_users": False,
@@ -38,6 +38,11 @@ default_expected_command = {
             {"label": "my label"},
             {**default_expected_command, "label": "my label"},
             "Command test_create successfully created.",
+        ),
+        (
+            {"description": "my super awesome description"},
+            {**default_expected_command, "description": "my super awesome description"},
+            "my super awesome description",
         ),
         (
             {"pick_list": ["1", "2"]},
@@ -104,9 +109,7 @@ def test_create(input_data, expected_command, expected_message, client):
         **input_data,
     )
 
-    assert response.type == SlackResponseType.SLACK_SEND_MESSAGE_IN_CHANNEL.value
-
-    message = response.data["message"]
+    message = response.get("message")
     assert expected_message in message.content
     assert message.status == MessageStatus.SUCCESS
     assert message.visibility == MessageVisibility.NORMAL
@@ -127,26 +130,77 @@ def test_create_fail_if_already_exist(client):
         team_id=team_id,
         channel_id=channel_id,
         new_command_name=command_name,
-        pick_list=[1, 2, 3],
+        pick_list=["1", "2", "3"],
     )
 
-    with pytest.raises(BackError, match="Command already exists."):
+    with pytest.raises(
+        BadRequestError, match=f"Command {command_name} already exists."
+    ):
         create_command_processor(
             user_id=user_id,
             team_id=team_id,
             channel_id=channel_id,
             new_command_name=command_name,
-            pick_list=[1, 2, 3],
+            pick_list=["1", "2", "3"],
         )
 
 
-# TODO with schema validation
-# def test_create_fail_if_pick_list_empty(client):
-#     with pytest.raises(ArgError):
-#         create_command_processor(
-#             user_id=user_id,
-#             team_id=team_id,
-#             channel_id=channel_id,
-#             new_command_name=command_name,
-#             pick_list=[],
-#         )
+def test_create_fail_if_command_name_empty(client):
+    error_message = "Field may not be empty."
+    with pytest.raises(ValidationError, match=error_message):
+        create_command_processor(
+            user_id=user_id,
+            team_id=team_id,
+            channel_id=channel_id,
+            new_command_name="",
+            pick_list=default_pick_list,
+        )
+
+
+def test_create_fail_if_command_name_in_multiple_words(client):
+    error_message = "Command name must be a single word, i.e without spaces."
+    with pytest.raises(ValidationError, match=error_message):
+        create_command_processor(
+            user_id=user_id,
+            team_id=team_id,
+            channel_id=channel_id,
+            new_command_name="a command",
+            pick_list=default_pick_list,
+        )
+
+
+def test_create_fail_if_pick_list_is_None(client):
+    error_message = "Field may not be null."
+    with pytest.raises(ValidationError, match=error_message):
+        create_command_processor(
+            user_id=user_id,
+            team_id=team_id,
+            channel_id=channel_id,
+            new_command_name=command_name,
+            pick_list=None,
+        )
+
+
+def test_create_fail_if_pick_list_empty(client):
+    error_message = "Field may not be empty."
+    with pytest.raises(ValidationError, match=error_message):
+        create_command_processor(
+            user_id=user_id,
+            team_id=team_id,
+            channel_id=channel_id,
+            new_command_name=command_name,
+            pick_list=[],
+        )
+
+
+def test_create_fail_if_non_valid_strategy(client):
+    error_message = "boop is not a valid strategy."
+    with pytest.raises(ValidationError, match=error_message):
+        create_command_processor(
+            user_id=user_id,
+            team_id=team_id,
+            channel_id=channel_id,
+            new_command_name=command_name,
+            strategy="boop",
+            pick_list=default_pick_list,
+        )

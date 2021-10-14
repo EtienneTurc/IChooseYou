@@ -4,12 +4,18 @@ from contextlib import redirect_stdout
 import pytest
 
 import server.service.slack.tests.monkey_patch as monkey_patch  # noqa: F401
-from server.blueprint.event.tests.conftest import (TEST_COMMAND_CHANNEL_ID,
-                                                   TEST_COMMAND_LABEL, TEST_COMMAND_NAME,
-                                                   TEST_COMMAND_PICK_LIST)
-from server.blueprint.event.type import EventType
-from server.service.slack.workflow import (OutputVariable, WorkflowActionId,
-                                           create_select_item_name)
+from server.blueprint.event.tests.conftest import (
+    TEST_COMMAND_CHANNEL_ID,
+    TEST_COMMAND_LABEL,
+    TEST_COMMAND_NAME,
+    TEST_COMMAND_PICK_LIST,
+)
+from server.blueprint.event.action import BlueprintEventAction
+from server.service.slack.workflow.enum import (
+    OutputVariable,
+    WorkflowActionId,
+)
+from server.service.slack.workflow.helper import create_select_item_name
 from server.tests.test_app import *  # noqa: F401, F403
 from server.tests.test_fixture import *  # noqa: F401, F403
 
@@ -75,7 +81,9 @@ def test_event_workflow_complete(expected_text, client, test_command):
         WorkflowActionId.SEND_TO_SLACK_CHECKBOX.value: {"value": "true"},
     }
     response, slack_message = call_webhook(
-        client, event_type=EventType.WORKFLOW_STEP_EXECUTE.value, inputs=inputs
+        client,
+        event_type=BlueprintEventAction.WORKFLOW_STEP_EXECUTE.value,
+        inputs=inputs,
     )
     assert response.status_code == 200
     assert expected_text in slack_message
@@ -110,7 +118,9 @@ def test_event_workflow_complete_output(
         WorkflowActionId.SEND_TO_SLACK_CHECKBOX.value: {"value": ""},
     }
     response, slack_message = call_webhook(
-        client, event_type=EventType.WORKFLOW_STEP_EXECUTE.value, inputs=inputs
+        client,
+        event_type=BlueprintEventAction.WORKFLOW_STEP_EXECUTE.value,
+        inputs=inputs,
     )
     assert response.status_code == 200
     assert expected_text in slack_message
@@ -147,7 +157,9 @@ def test_event_workflow_complete_output(
 )
 def test_event_workflow_fail(inputs, expected_texts, client, test_command):
     response, slack_message = call_webhook(
-        client, event_type=EventType.WORKFLOW_STEP_EXECUTE.value, inputs=inputs
+        client,
+        event_type=BlueprintEventAction.WORKFLOW_STEP_EXECUTE.value,
+        inputs=inputs,
     )
     assert response.status_code == 200
     for expected_text in expected_texts:

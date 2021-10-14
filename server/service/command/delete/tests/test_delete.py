@@ -1,12 +1,13 @@
+from server.service.error.type.missing_element_error import MissingElementError
 import pytest
 
 from server.orm.command import Command
-from server.service.command.args import ArgError
+
+from server.service.command.delete.processor import delete_command_processor
 from server.service.slack.message import MessageStatus, MessageVisibility
 from server.service.strategy.enum import Strategy
 from server.tests.test_app import *  # noqa: F401, F403
-from server.service.command.delete.processor import delete_command_processor
-from server.service.slack.response.response_type import SlackResponseType
+from marshmallow import ValidationError
 
 channel_id = "1234"
 team_id = "1337"
@@ -29,9 +30,7 @@ def test_delete(client):
         channel_id=channel_id, command_to_delete=command_name
     )
 
-    assert response.type == SlackResponseType.SLACK_SEND_MESSAGE_IN_CHANNEL.value
-
-    message = response.data["message"]
+    message = response.get("message")
 
     assert "Command test_delete successfully deleted." == message.content
     assert message.status == MessageStatus.INFO
@@ -39,5 +38,16 @@ def test_delete(client):
 
 
 def test_delete_fail_if_command_does_not_exist(client):
-    with pytest.raises(ArgError, match="Command test_delete does not exist."):
+    with pytest.raises(
+        MissingElementError, match="Command test_delete does not exist."
+    ):
         delete_command_processor(channel_id=channel_id, command_to_delete=command_name)
+
+
+def test_create_fail_if_command_name_empty(client):
+    error_message = "Field may not be empty."
+    with pytest.raises(ValidationError, match=error_message):
+        delete_command_processor(
+            channel_id=channel_id,
+            command_to_delete="",
+        )

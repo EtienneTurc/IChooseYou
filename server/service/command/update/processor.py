@@ -1,42 +1,44 @@
 from server.orm.command import Command
+from server.service.command.helper import format_pick_list
+from server.service.command.update.helper import (
+    assert_pick_list_can_be_updated,
+    compute_new_pick_list,
+    compute_new_weight_list,
+    get_indices_of_items_to_remove,
+    get_values_to_update,
+)
 from server.service.slack.message import Message, MessageStatus, MessageVisibility
 from server.service.slack.message_formatting import format_custom_command_help
 from server.service.strategy.helper import get_strategy
-from server.service.command.update.helper import (
-    get_values_to_update,
-    get_indices_of_items_to_remove,
-    compute_new_pick_list,
-    compute_new_weight_list,
-    assert_pick_list_can_be_updated,
-)
-from server.service.command.helper import format_pick_list
-from server.service.tpr.response_format import Response
-from server.service.slack.response.response_type import SlackResponseType
+from server.service.validator.decorator import validate_schema
+from server.service.command.update.schema import UpdateCommandProcessorSchema
 
 
-# @validate_payload TODO Use marshmallow schema instead
+@validate_schema(UpdateCommandProcessorSchema)
 def update_command_processor(
     *,
+    user_id: str,
+    team_id: str,
+    channel_id: str,
     command_to_update: str,
+    new_channel_id: str = None,
+    new_command_name: str = None,
     label: str = None,
+    description: str = None,
     pick_list: list[str] = None,
     strategy: str = None,
     add_to_pick_list: list[str] = None,
     remove_from_pick_list: list[str] = None,
     self_exclude: bool = None,
     only_active_users: bool = None,
-    user_id: str,
-    team_id: str,
-    channel_id: str,
-    **kwargs,
-) -> Response:
-    # TODO assert_strategy_is_valid(strategy)
+) -> dict[str, any]:
     command = Command.find_one_by_name_and_chanel(command_to_update, channel_id)
 
     new_values = compute_new_values(
         command,
-        command_name=command_to_update,
+        name=new_command_name or command_to_update,
         label=label,
+        description=description,
         strategy=strategy,
         pick_list=pick_list,
         add_to_pick_list=add_to_pick_list,
@@ -45,29 +47,37 @@ def update_command_processor(
         only_active_users=only_active_users,
         user_id=user_id,
         team_id=team_id,
-        channel_id=channel_id,
+        channel_id=new_channel_id or channel_id,
     )
-    Command.update(command.name, command.channel_id, user_id, new_values)
-    updated_command = Command.find_one_by_name_and_chanel(command_to_update, channel_id)
+    Command.update(command_to_update, channel_id, user_id, new_values)
+    updated_command = Command.find_one_by_name_and_chanel(
+        new_command_name or command_to_update, new_channel_id or channel_id
+    )
 
     message_content = f"Command {updated_command.name} successfully updated.\n"
     message_content += format_custom_command_help(updated_command)
 
-    return Response(
-        type=SlackResponseType.SLACK_SEND_MESSAGE_IN_CHANNEL.value,
-        data={
-            "message": Message(
-                content=message_content,
-                status=MessageStatus.SUCCESS,
-                visibility=MessageVisibility.NORMAL,
-            )
-        },
-    )
+    return {
+        "message": Message(
+            content=message_content,
+            status=MessageStatus.SUCCESS,
+            visibility=MessageVisibility.NORMAL,
+        )
+    }
 
 
 def compute_new_values(command: Command, **payload: dict[str, any]) -> dict[str, any]:
     new_values = compute_new_values_for_simple_fields(
-        ["label", "self_exclude", "only_active_users", "strategy"], **payload
+        [
+            "channel_id",
+            "name",
+            "label",
+            "description",
+            "self_exclude",
+            "only_active_users",
+            "strategy",
+        ],
+        **payload,
     )
 
     new_pick_list, new_weight_list = compute_new_pick_list_and_weight_list(

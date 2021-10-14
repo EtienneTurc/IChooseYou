@@ -2,15 +2,23 @@ import json
 
 from flask import Blueprint, make_response, request
 
-from server.service.slack.decorator import validate_signature
-from server.service.formatter.interactivity import extract_interactivity_actions
 from server.blueprint.interactivity.action import BlueprintInteractivityAction
+from server.service.formatter.interactivity import extract_interactivity_actions
+from server.service.slack.decorator import validate_signature
+from server.service.slack.modal.enum import SlackModalSubmitAction
+from server.service.slack.modal.upsert_command_modal import (
+    SlackUpsertCommandModalActionId,
+)
 from server.service.tpr.main import transform_process_respond
-from server.service.slack.modal.enum import SlackModalAction
 
 api = Blueprint("interactivity", __name__, url_prefix="/interactivity")
 
-slack_modal_actions = [action.value for action in SlackModalAction]
+slack_modal_actions = [action.value for action in SlackModalSubmitAction]
+
+slack_modal_actions_to_ignore = [
+    SlackUpsertCommandModalActionId.SELF_EXCLUDE_CHECKBOX,
+    SlackUpsertCommandModalActionId.ONLY_ACTIVE_USERS_CHECKBOX,
+]
 
 
 @api.route("/", methods=["POST"])
@@ -24,6 +32,10 @@ def proccess_interactivity():
 def proccess_interactivity_for_response(payload: dict[str, any]) -> str:
     actions, callback_action = extract_interactivity_actions(payload)
 
+    for action in slack_modal_actions_to_ignore:
+        if action.value in actions:
+            return "Action ignored"
+
     if callback_action in slack_modal_actions:
         return transform_process_respond(callback_action, payload)
 
@@ -31,4 +43,4 @@ def proccess_interactivity_for_response(payload: dict[str, any]) -> str:
         if action.value in actions:
             return transform_process_respond(action.value, payload)
 
-    return "Action not handled"  # TODO
+    return "Action not handled"

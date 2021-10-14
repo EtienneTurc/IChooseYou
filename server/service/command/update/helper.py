@@ -1,5 +1,5 @@
+from server.service.error.type.bad_request_error import BadRequestError
 from server.service.strategy.base import BaseStrategy
-from server.service.error.back_error import BackError
 
 
 def get_values_to_update(
@@ -70,4 +70,4 @@ def assert_pick_list_can_be_updated(
         not number_of_items_to_add
         and number_of_items_in_pick_list == number_of_items_to_remove
     ):
-        raise BackError("Can't remove all the items in the pick list.", 400)
+        raise BadRequestError("Can't remove all the items in the pick list.")

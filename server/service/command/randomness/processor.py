@@ -1,19 +1,19 @@
 from datetime import datetime
+from server.service.command.randomness.schema import RandomnessCommandProcessorSchema
 
 from flask import current_app
 
 from server.orm.command import Command
 from server.service.slack.message import Message, MessageStatus, MessageVisibility
-from server.service.tpr.response_format import Response
-from server.service.slack.response.response_type import SlackResponseType
+from server.service.validator.decorator import validate_schema
 
 
+@validate_schema(RandomnessCommandProcessorSchema)
 def randomness_command_processor(
     *,
     channel_id: str,
     command_to_show_randomness: str,
-    **kwargs,
-) -> Response:
+) -> dict[str, any]:
     Command.find_one_by_name_and_chanel(
         command_to_show_randomness, channel_id=channel_id
     )
@@ -28,18 +28,15 @@ def randomness_command_processor(
     message = "*Randomness of the command*\n"
     message += "Each color represents a different item of the pick list"
 
-    return Response(
-        type=SlackResponseType.SLACK_SEND_MESSAGE_IN_CHANNEL.value,
-        data={
-            "message": Message(
-                content=message,
-                status=MessageStatus.INFO,
-                visibility=MessageVisibility.HIDDEN,
-                as_attachment=True,
-                image_url=image_url,
-            )
-        },
-    )
+    return {
+        "message": Message(
+            content=message,
+            status=MessageStatus.INFO,
+            visibility=MessageVisibility.HIDDEN,
+            as_attachment=True,
+            image_url=image_url,
+        )
+    }
 
 
 def construct_url(base_url: str, params: dict[str, str]) -> str:

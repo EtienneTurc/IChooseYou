@@ -10,6 +10,7 @@ POSITIONAL_ARG = [
 
 NAMED_ARGS = [
     Arg(name="label", short="l", nargs="+"),
+    Arg(name="description", short="d", nargs="+"),
     Arg(
         name="pick-list",
         short="p",

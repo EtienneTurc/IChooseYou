@@ -1,13 +1,11 @@
 from flask import Blueprint, make_response, request
 
+from server.blueprint.slash_command.action import (
+    KNOWN_SLASH_COMMANDS_ACTIONS,
+    BlueprintSlashCommandAction,
+)
 from server.service.formatter.slash_command import extract_command_from_text
 from server.service.slack.decorator import validate_signature
-
-from server.blueprint.slash_command.action import (
-    BlueprintSlashCommandAction,
-    KNOWN_SLASH_COMMANDS_ACTIONS,
-)
-
 from server.service.tpr.main import transform_process_respond
 
 api = Blueprint("slash_command", __name__, url_prefix="/slash_command")
@@ -33,5 +31,4 @@ def process_slash_command():
             BlueprintSlashCommandAction.CUSTOM.value,
             request.form,
         )
-
     return make_response(response, 200)

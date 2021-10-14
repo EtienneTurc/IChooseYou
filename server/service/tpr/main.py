@@ -1,39 +1,46 @@
+from server.service.error.decorator import tpr_handle_error
+from server.service.flask.decorator import make_context
+from server.service.helper.thread import launch_function_in_thread
 from server.service.tpr.mapping import (
     BLUEPRINT_ACTION_TO_DATA_FLOW,
-    RESPONSE_TYPE_TO_RESPONSE_ACTION,
 )
-from server.service.helper.thread import launch_function_in_thread
-from server.service.flask.decorator import make_context
-from server.service.error.decorator import tpr_handle_error
-from server.service.tpr.response_format import Response
 
 
-@tpr_handle_error
-def transform_process_respond(
-    blueprint_action: str, payload: dict[str, any], run_in_thread=True
-) -> str:
+def get_tpr_error_handler_func(blueprint_action: str, *args, **kwargs) -> any:
+    return BLUEPRINT_ACTION_TO_DATA_FLOW[blueprint_action].error_handler
+
+
+def get_tpr_error_handler_in_thread_func(*args, **kwargs) -> any:
+    return kwargs.get("error_handler")
+
+
+@tpr_handle_error(get_tpr_error_handler_func)
+def transform_process_respond(blueprint_action: str, payload: dict[str, any]) -> str:
     data = BLUEPRINT_ACTION_TO_DATA_FLOW[blueprint_action].formatter(payload)
 
-    return run_processor(
-        BLUEPRINT_ACTION_TO_DATA_FLOW[blueprint_action].processor,
-        data,
-        run_in_thread,
-    )
-
-
-def run_processor(processor: any, data: dict[str, any], run_in_thread: bool) -> str:
-    if not run_in_thread:
-        response = processor(**data)
-        return RESPONSE_TYPE_TO_RESPONSE_ACTION[response.type](response, data)
-
     launch_function_in_thread(
-        run_processor_in_thread, {"processor": processor, "data": data}
+        run_processor_and_respond_in_thread,
+        {
+            "processor": BLUEPRINT_ACTION_TO_DATA_FLOW[blueprint_action].processor,
+            "responder": BLUEPRINT_ACTION_TO_DATA_FLOW[blueprint_action].responder,
+            "error_handler": BLUEPRINT_ACTION_TO_DATA_FLOW[
+                blueprint_action
+            ].error_handler,
+            "data": data,
+        },
     )
+
+    fast_responder = BLUEPRINT_ACTION_TO_DATA_FLOW[blueprint_action].fast_responder
+    if fast_responder:
+        return fast_responder(**data)
+
     return ""
 
 
 @make_context
-@tpr_handle_error
-def run_processor_in_thread(*, processor: any, data: dict[str, any]) -> str:
-    response: Response = processor(**data)
-    return RESPONSE_TYPE_TO_RESPONSE_ACTION[response.type](**response.data, **data)
+@tpr_handle_error(get_tpr_error_handler_in_thread_func)
+def run_processor_and_respond_in_thread(
+    *, processor: any, responder: any, data: dict[str, any], **kwargs
+) -> None:
+    processor_response_data = processor(**data)
+    responder(**processor_response_data, **data)

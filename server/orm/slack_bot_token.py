@@ -1,7 +1,7 @@
+from server.service.error.type.bad_request_error import BadRequestError
 from pymodm import MongoModel, fields
 
-from server.service.command.args import ArgError
-from server.service.error.back_error import BackError
+from server.service.error.type.missing_element_error import MissingElementError
 
 
 # Now let's define some Models.
@@ -21,13 +21,13 @@ class SlackBotToken(MongoModel):
         try:
             return SlackBotToken.objects.get({"team_id": team_id})
         except SlackBotToken.DoesNotExist:
-            raise ArgError(None, "Slack bot token not found.")
+            raise MissingElementError("Slack bot token not found.")
 
     @staticmethod
     def create(*, team_id, team_name, scope, token_type, access_token, bot_user_id):
         try:
             SlackBotToken.find_by_team_id(team_id, catch=False)
-            raise BackError("Slack bot token already exists.", 400)
+            raise BadRequestError("Slack bot token already exists.")
         except SlackBotToken.DoesNotExist:
             SlackBotToken(
                 team_id, team_name, scope, token_type, access_token, bot_user_id

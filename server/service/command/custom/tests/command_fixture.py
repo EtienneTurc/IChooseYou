@@ -2,9 +2,7 @@ import pytest
 
 from server.orm.command import Command
 from server.service.strategy.enum import Strategy
-
 from server.tests.test_app import *  # noqa: F401, F403
-
 
 default_command = {
     "name": "basic_command",
@@ -45,10 +43,36 @@ def command_for_self_exclude(client):
 
 
 @pytest.fixture
+def command_for_self_exclude_error(client):
+    input = {
+        **default_command,
+        "pick_list": ["<@1234|name>"],
+        "weight_list": [1],
+        "self_exclude": True,
+    }
+    command = create_and_return_command(**input)
+    yield command
+    Command.delete_command(command)
+
+
+@pytest.fixture
 def command_for_active_users(client):
     input = {
         **default_command,
         "pick_list": ["<@1234|name>"],
+        "weight_list": [1],
+        "only_active_users": True,
+    }
+    command = create_and_return_command(**input)
+    yield command
+    Command.delete_command(command)
+
+
+@pytest.fixture
+def command_with_no_active_users(client):
+    input = {
+        **default_command,
+        "pick_list": ["<@4321|name>"],
         "weight_list": [1],
         "only_active_users": True,
     }

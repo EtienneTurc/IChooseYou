@@ -1,5 +1,5 @@
-from server.service.command_line.formatter import parse_command_line
 from server.service.command_line.arg import Arg
+from server.service.command_line.formatter import parse_command_line
 
 
 def extract_command_from_text(text: str) -> tuple[str, str]:
