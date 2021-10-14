@@ -58,7 +58,7 @@ def main_modal_update_command_processor(
         self_exclude=command.self_exclude,
         only_active_users=command.only_active_users,
     )
-    return {"modal": modal, "channel_id": command.channel_id}
+    return {"modal": modal}
 
 
 def main_modal_delete_command_processor(

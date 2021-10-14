@@ -43,7 +43,7 @@ def format_custom_command_help(custom_command):
         None, ["<selected_item>"], custom_command.label
     )
 
-    message = f"*{custom_command.name}*:{custom_command.description}"
+    message = f"*{custom_command.name}*: {custom_command.description}"
     message += f"\n• Message: {slack_message_from_command}"
     message += f"\n• Pick list: {custom_command.pick_list}"
     message += f"\n• Strategy: {custom_command.strategy}."

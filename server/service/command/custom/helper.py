@@ -12,8 +12,8 @@ def create_custom_command_label(command_label: str, additional_text: str) -> str
 def assert_pick_list(pick_list: list[str], item_excluded: bool) -> None:
     if not len(pick_list) and item_excluded:
         message = "Pick list contains only the user using the command."
-        message += "But the flag selfExclude is set to True."
-        message += "Thus no item can be picked from the pick list."
+        message += " But the flag selfExclude is set to True."
+        message += " Thus no item can be picked from the pick list."
         raise BadRequestError(message)
 
     if not len(pick_list):

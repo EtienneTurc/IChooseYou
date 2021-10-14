@@ -8,6 +8,7 @@ default_command = {
     "name": "basic_command",
     "channel_id": "1234",
     "label": "basic command label",
+    "description": "basic command description",
     "pick_list": ["1", "2", "3"],
     "self_exclude": False,
     "only_active_users": False,

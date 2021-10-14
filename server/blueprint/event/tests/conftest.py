@@ -8,6 +8,7 @@ TEST_COMMAND_PICK_LIST = ["first element", "second element", "third one"]
 TEST_WEIGHT_LIST = [1 / 3, 1 / 3, 1 / 3]
 TEST_STRATEGY = Strategy.uniform.name
 TEST_COMMAND_LABEL = "label of the command"
+TEST_COMMAND_DESCRIPTION = "description of the command"
 TEST_COMMAND_CHANNEL_ID = "1234"
 TEST_COMMAND_CREATED_BY = "1234"
 
@@ -18,6 +19,7 @@ def test_command() -> Command:
         name=TEST_COMMAND_NAME,
         channel_id=TEST_COMMAND_CHANNEL_ID,
         label=TEST_COMMAND_LABEL,
+        description=TEST_COMMAND_DESCRIPTION,
         pick_list=TEST_COMMAND_PICK_LIST,
         weight_list=TEST_WEIGHT_LIST,
         strategy=TEST_STRATEGY,

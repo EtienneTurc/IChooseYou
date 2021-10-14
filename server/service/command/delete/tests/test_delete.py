@@ -19,6 +19,7 @@ def test_delete(client):
         name=command_name,
         channel_id=channel_id,
         label="label",
+        description="description",
         pick_list=["1", "2"],
         weight_list=[1 / 2, 1 / 2],
         strategy=Strategy.uniform.name,
