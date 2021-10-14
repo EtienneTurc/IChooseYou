@@ -1,7 +1,7 @@
 from enum import Enum
-from server.service.slack.modal.enum import SlackModalSubmitAction
-from server.service.slack.message_formatting import get_user_id_from_mention
 
+from server.service.slack.message_formatting import get_user_id_from_mention
+from server.service.slack.modal.enum import SlackModalSubmitAction
 from server.service.strategy.enum import Strategy
 
 

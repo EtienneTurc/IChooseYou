@@ -1,9 +1,9 @@
 from datetime import datetime
-from server.service.command.randomness.schema import RandomnessCommandProcessorSchema
 
 from flask import current_app
 
 from server.orm.command import Command
+from server.service.command.randomness.schema import RandomnessCommandProcessorSchema
 from server.service.slack.message import Message, MessageStatus, MessageVisibility
 from server.service.validator.decorator import validate_schema
 

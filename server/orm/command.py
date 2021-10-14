@@ -1,8 +1,8 @@
-from server.service.error.type.bad_request_error import BadRequestError
+import pymongo
 from bson.objectid import ObjectId
 from pymodm import MongoModel, fields
-import pymongo
 
+from server.service.error.type.bad_request_error import BadRequestError
 from server.service.error.type.missing_element_error import MissingElementError
 
 

@@ -6,9 +6,8 @@ from server.blueprint.interactivity.action import BlueprintInteractivityAction
 from server.service.formatter.interactivity import extract_interactivity_actions
 from server.service.slack.decorator import validate_signature
 from server.service.slack.modal.enum import SlackModalSubmitAction
-from server.service.slack.modal.upsert_command_modal import (
-    SlackUpsertCommandModalActionId,
-)
+from server.service.slack.modal.upsert_command_modal import \
+    SlackUpsertCommandModalActionId
 from server.service.tpr.main import transform_process_respond
 
 api = Blueprint("interactivity", __name__, url_prefix="/interactivity")

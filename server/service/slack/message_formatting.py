@@ -1,5 +1,6 @@
-from server.blueprint.interactivity.action import BlueprintInteractivityAction
 import re
+
+from server.blueprint.interactivity.action import BlueprintInteractivityAction
 
 
 def format_custom_command_message(

@@ -1,8 +1,8 @@
-from server.service.command.delete.processor import delete_command_processor
-from server.service.slack.modal.upsert_command_modal import build_upsert_command_modal
 from server.orm.command import Command
+from server.service.command.delete.processor import delete_command_processor
 from server.service.slack.modal.custom_command_modal import build_custom_command_modal
 from server.service.slack.modal.main_modal import build_main_modal
+from server.service.slack.modal.upsert_command_modal import build_upsert_command_modal
 
 
 def open_main_modal_processor(

@@ -1,6 +1,6 @@
-from server.service.error.type.consistency_error import ConsistencyError
 import pytest
 
+from server.service.error.type.consistency_error import ConsistencyError
 from server.service.strategy.base import BaseStrategy
 
 

@@ -1,13 +1,9 @@
 from flask import current_app
 
 from server.orm.command import Command
-
 from server.service.helper.list_helper import flatten
-
-from server.service.slack.modal.enum import (
-    SlackMainModalActionId,
-    SlackMainModalOverflowActionId,
-)
+from server.service.slack.modal.enum import (SlackMainModalActionId,
+                                             SlackMainModalOverflowActionId)
 
 
 def build_main_modal_header():

@@ -5,11 +5,8 @@ import pytest
 
 import server.service.slack.tests.monkey_patch as monkey_patch  # noqa: F401
 from server.blueprint.interactivity.action import BlueprintInteractivityAction
-from server.service.slack.workflow.enum import (
-    OutputVariable,
-    WorkflowActionId,
-    WorkflowBlockId,
-)
+from server.service.slack.workflow.enum import (OutputVariable, WorkflowActionId,
+                                                WorkflowBlockId)
 from server.service.slack.workflow.helper import create_select_item_name
 from server.tests.test_app import *  # noqa: F401, F403
 

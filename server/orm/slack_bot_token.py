@@ -1,6 +1,6 @@
-from server.service.error.type.bad_request_error import BadRequestError
 from pymodm import MongoModel, fields
 
+from server.service.error.type.bad_request_error import BadRequestError
 from server.service.error.type.missing_element_error import MissingElementError
 
 

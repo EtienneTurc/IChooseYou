@@ -1,16 +1,13 @@
-from server.service.validator.decorator import validate_schema
-from server.service.command.custom.schema import CustomCommandProcessorSchema
 from server.orm.command import Command
-from server.service.command.custom.helper import (
-    create_custom_command_label,
-    assert_pick_list,
-    assert_selected_items,
-)
+from server.service.command.custom.helper import (assert_pick_list, assert_selected_items,
+                                                  create_custom_command_label)
+from server.service.command.custom.schema import CustomCommandProcessorSchema
 from server.service.helper.dict_helper import normalize
 from server.service.selection.selection import select_from_pick_list
 from server.service.slack.message import Message, MessageVisibility
 from server.service.slack.message_formatting import format_custom_command_message
 from server.service.strategy.helper import get_strategy
+from server.service.validator.decorator import validate_schema
 
 
 @validate_schema(CustomCommandProcessorSchema)

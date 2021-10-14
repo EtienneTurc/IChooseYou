@@ -1,9 +1,7 @@
 from server.service.error.decorator import tpr_handle_error
 from server.service.flask.decorator import make_context
 from server.service.helper.thread import launch_function_in_thread
-from server.service.tpr.mapping import (
-    BLUEPRINT_ACTION_TO_DATA_FLOW,
-)
+from server.service.tpr.mapping import BLUEPRINT_ACTION_TO_DATA_FLOW
 
 
 def get_tpr_error_handler_func(blueprint_action: str, *args, **kwargs) -> any:

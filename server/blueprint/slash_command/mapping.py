@@ -1,54 +1,38 @@
 import functools
-from server.blueprint.slash_command.action import BlueprintSlashCommandAction
-from server.service.command.create.command_line_args import (
-    NAMED_ARGS as CREATE_NAMED_ARGS,
-)
-from server.service.command.create.command_line_args import (
-    POSITIONAL_ARG as CREATE_POSITIONAL_ARGS,
-)
-from server.service.command.create.processor import create_command_processor
-from server.service.command.custom.command_line_args import (
-    NAMED_ARGS as CUSTOM_NAMED_ARGS,
-)
-from server.service.command.custom.command_line_args import (
-    POSITIONAL_ARG as CUSTOM_POSITIONAL_ARGS,
-)
-from server.service.command.custom.processor import custom_command_processor
-from server.service.command.delete.command_line_args import (
-    NAMED_ARGS as DELETE_NAMED_ARGS,
-)
-from server.service.command.delete.command_line_args import (
-    POSITIONAL_ARG as DELETE_POSITIONAL_ARGS,
-)
-from server.service.command.delete.processor import delete_command_processor
-from server.service.command.randomness.command_line_args import (
-    NAMED_ARGS as RANDOMNESS_NAMED_ARGS,
-)
-from server.service.command.randomness.command_line_args import (
-    POSITIONAL_ARG as RANDOMNESS_POSITIONAL_ARGS,
-)
-from server.service.command.randomness.processor import randomness_command_processor
-from server.service.command.update.command_line_args import (
-    NAMED_ARGS as UPDATE_NAMED_ARGS,
-)
-from server.service.command.update.command_line_args import (
-    POSITIONAL_ARG as UPDATE_POSITIONAL_ARGS,
-)
-from server.service.command.update.processor import update_command_processor
-from server.service.formatter.slash_command import (
-    format_slash_command_basic_payload,
-    format_slash_command_payload,
-)
-from server.service.slack.modal.processor import (
-    open_main_modal_processor,
-)
-from server.service.slack.response.api_response import (
-    open_view_modal,
-    send_message_to_channel,
-)
 
-from server.service.tpr.enum import DataFlow
+from server.blueprint.slash_command.action import BlueprintSlashCommandAction
+from server.service.command.create.command_line_args import \
+    NAMED_ARGS as CREATE_NAMED_ARGS
+from server.service.command.create.command_line_args import \
+    POSITIONAL_ARG as CREATE_POSITIONAL_ARGS
+from server.service.command.create.processor import create_command_processor
+from server.service.command.custom.command_line_args import \
+    NAMED_ARGS as CUSTOM_NAMED_ARGS
+from server.service.command.custom.command_line_args import \
+    POSITIONAL_ARG as CUSTOM_POSITIONAL_ARGS
+from server.service.command.custom.processor import custom_command_processor
+from server.service.command.delete.command_line_args import \
+    NAMED_ARGS as DELETE_NAMED_ARGS
+from server.service.command.delete.command_line_args import \
+    POSITIONAL_ARG as DELETE_POSITIONAL_ARGS
+from server.service.command.delete.processor import delete_command_processor
+from server.service.command.randomness.command_line_args import \
+    NAMED_ARGS as RANDOMNESS_NAMED_ARGS
+from server.service.command.randomness.command_line_args import \
+    POSITIONAL_ARG as RANDOMNESS_POSITIONAL_ARGS
+from server.service.command.randomness.processor import randomness_command_processor
+from server.service.command.update.command_line_args import \
+    NAMED_ARGS as UPDATE_NAMED_ARGS
+from server.service.command.update.command_line_args import \
+    POSITIONAL_ARG as UPDATE_POSITIONAL_ARGS
+from server.service.command.update.processor import update_command_processor
 from server.service.error.handler.generic import on_error_handled_send_message
+from server.service.formatter.slash_command import (format_slash_command_basic_payload,
+                                                    format_slash_command_payload)
+from server.service.slack.modal.processor import open_main_modal_processor
+from server.service.slack.response.api_response import (open_view_modal,
+                                                        send_message_to_channel)
+from server.service.tpr.enum import DataFlow
 
 BLUEPRINT_SLASH_COMMAND_ACTION_TO_DATA_FLOW = {
     BlueprintSlashCommandAction.CREATE.value: DataFlow(

@@ -1,8 +1,6 @@
 import traceback
 
-from server.service.slack.response.api_response import (
-    failed_worklow,
-)
+from server.service.slack.response.api_response import failed_worklow
 
 
 def workflow_error_handler(

@@ -1,17 +1,15 @@
 from server.orm.command import Command
 from server.service.command.helper import format_pick_list
-from server.service.command.update.helper import (
-    assert_pick_list_can_be_updated,
-    compute_new_pick_list,
-    compute_new_weight_list,
-    get_indices_of_items_to_remove,
-    get_values_to_update,
-)
+from server.service.command.update.helper import (assert_pick_list_can_be_updated,
+                                                  compute_new_pick_list,
+                                                  compute_new_weight_list,
+                                                  get_indices_of_items_to_remove,
+                                                  get_values_to_update)
+from server.service.command.update.schema import UpdateCommandProcessorSchema
 from server.service.slack.message import Message, MessageStatus, MessageVisibility
 from server.service.slack.message_formatting import format_custom_command_help
 from server.service.strategy.helper import get_strategy
 from server.service.validator.decorator import validate_schema
-from server.service.command.update.schema import UpdateCommandProcessorSchema
 
 
 @validate_schema(UpdateCommandProcessorSchema)

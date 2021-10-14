@@ -1,10 +1,10 @@
 from server.orm.command import Command
+from server.service.command.create.schema import CreateCommandProcessorSchema
 from server.service.command.helper import format_pick_list
 from server.service.slack.message import Message, MessageStatus, MessageVisibility
 from server.service.slack.message_formatting import format_custom_command_help
 from server.service.strategy.enum import Strategy
 from server.service.validator.decorator import validate_schema
-from server.service.command.create.schema import CreateCommandProcessorSchema
 
 
 @validate_schema(CreateCommandProcessorSchema)

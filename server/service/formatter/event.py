@@ -1,10 +1,8 @@
 from server.service.formatter.interactivity import extract_inputs_from_workflow_payload
 from server.service.formatter.slash_command import extract_command_from_text
 from server.service.helper.dict_helper import get_by_path
-from server.service.slack.workflow.enum import (
-    WORKFLOW_ACTION_ID_TO_VARIABLE_NAME,
-    WorkflowActionId,
-)
+from server.service.slack.workflow.enum import (WORKFLOW_ACTION_ID_TO_VARIABLE_NAME,
+                                                WorkflowActionId)
 
 
 def format_event_basic_payload(payload: dict[str, any]) -> dict[str, any]:

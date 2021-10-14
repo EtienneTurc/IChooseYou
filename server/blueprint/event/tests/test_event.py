@@ -4,17 +4,11 @@ from contextlib import redirect_stdout
 import pytest
 
 import server.service.slack.tests.monkey_patch as monkey_patch  # noqa: F401
-from server.blueprint.event.tests.conftest import (
-    TEST_COMMAND_CHANNEL_ID,
-    TEST_COMMAND_LABEL,
-    TEST_COMMAND_NAME,
-    TEST_COMMAND_PICK_LIST,
-)
 from server.blueprint.event.action import BlueprintEventAction
-from server.service.slack.workflow.enum import (
-    OutputVariable,
-    WorkflowActionId,
-)
+from server.blueprint.event.tests.conftest import (TEST_COMMAND_CHANNEL_ID,
+                                                   TEST_COMMAND_LABEL, TEST_COMMAND_NAME,
+                                                   TEST_COMMAND_PICK_LIST)
+from server.service.slack.workflow.enum import OutputVariable, WorkflowActionId
 from server.service.slack.workflow.helper import create_select_item_name
 from server.tests.test_app import *  # noqa: F401, F403
 from server.tests.test_fixture import *  # noqa: F401, F403

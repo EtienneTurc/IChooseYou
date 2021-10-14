@@ -1,9 +1,7 @@
 from enum import Enum
 
-from server.service.slack.modal.main_modal import (
-    SlackMainModalActionId,
-    SlackMainModalOverflowActionId,
-)
+from server.service.slack.modal.main_modal import (SlackMainModalActionId,
+                                                   SlackMainModalOverflowActionId)
 
 
 class BlueprintInteractivityAction(Enum):

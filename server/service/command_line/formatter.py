@@ -1,10 +1,8 @@
 from argparse import ArgumentParser
 
 from server.service.command_line.arg import Arg
-from server.service.command_line.clean_parser_output import (
-    clean_empty_fields,
-    options_to_dict,
-)
+from server.service.command_line.clean_parser_output import (clean_empty_fields,
+                                                             options_to_dict)
 
 
 def parse_command_line(

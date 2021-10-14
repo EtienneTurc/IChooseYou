@@ -1,17 +1,13 @@
-from server.service.command.custom.command_line_args import (
-    NAMED_ARGS as CUSTOM_NAMED_ARGS,
-)
-from server.service.command.custom.command_line_args import (
-    POSITIONAL_ARG as CUSTOM_POSITIONAL_ARGS,
-)
+from server.service.command.custom.command_line_args import \
+    NAMED_ARGS as CUSTOM_NAMED_ARGS
+from server.service.command.custom.command_line_args import \
+    POSITIONAL_ARG as CUSTOM_POSITIONAL_ARGS
+from server.service.command.custom.processor import custom_command_processor
 from server.service.command_line.formatter import parse_command_line
 from server.service.slack.workflow.edit_modal import build_workflow_edit_modal
 from server.service.slack.workflow.enum import OutputVariable, WorkflowActionId
-from server.service.slack.workflow.helper import (
-    create_select_item_name,
-    create_value_dict,
-)
-from server.service.command.custom.processor import custom_command_processor
+from server.service.slack.workflow.helper import (create_select_item_name,
+                                                  create_value_dict)
 
 
 def edit_workflow_processor(

@@ -1,4 +1,4 @@
-from marshmallow import Schema, ValidationError, fields, validates, EXCLUDE
+from marshmallow import EXCLUDE, Schema, ValidationError, fields, validates
 
 
 class DeleteCommandProcessorSchema(Schema):

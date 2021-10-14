@@ -1,8 +1,8 @@
 from dataclasses import dataclass
-from server.service.error.type.consistency_error import ConsistencyError
 
 import numpy as np
 
+from server.service.error.type.consistency_error import ConsistencyError
 from server.service.helper.dict_helper import normalize
 
 

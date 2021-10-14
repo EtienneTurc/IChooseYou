@@ -1,7 +1,7 @@
 from server.orm.command import Command
+from server.service.command.delete.schema import DeleteCommandProcessorSchema
 from server.service.slack.message import Message, MessageStatus, MessageVisibility
 from server.service.validator.decorator import validate_schema
-from server.service.command.delete.schema import DeleteCommandProcessorSchema
 
 
 @validate_schema(DeleteCommandProcessorSchema)

@@ -1,20 +1,16 @@
 import json
+from enum import Enum
+
 from server.blueprint.interactivity.action import BlueprintInteractivityAction
 from server.orm.command import Command
-from server.service.helper.dict_helper import get_by_path, clean_none_values
+from server.service.helper.dict_helper import clean_none_values, get_by_path
 from server.service.slack.helper import get_callback_action, get_id_from_callback_id
-from server.service.slack.workflow.enum import (
-    WORKFLOW_ACTION_ID_TO_VARIABLE_NAME,
-    WORKFLOW_VALUE_PATH,
-    WorkflowActionId,
-)
+from server.service.slack.message_formatting import format_mention_user
 from server.service.slack.modal.upsert_command_modal import (
     SLACK_UPSERT_COMMAND_ACTION_ID_TO_VARIABLE_NAME,
-    SLACK_UPSERT_COMMAND_MODAL_VALUE_PATH,
-    SlackUpsertCommandModalActionId,
-)
-from enum import Enum
-from server.service.slack.message_formatting import format_mention_user
+    SLACK_UPSERT_COMMAND_MODAL_VALUE_PATH, SlackUpsertCommandModalActionId)
+from server.service.slack.workflow.enum import (WORKFLOW_ACTION_ID_TO_VARIABLE_NAME,
+                                                WORKFLOW_VALUE_PATH, WorkflowActionId)
 
 
 def extract_interactivity_actions(payload: dict[str, any]) -> tuple[str, str]:

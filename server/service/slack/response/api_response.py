@@ -3,10 +3,8 @@ from slack_sdk.webhook import WebhookClient
 
 from server.service.slack.message import Message, MessageVisibility
 from server.service.slack.response.helper import build_message_payload
-from server.service.slack.sdk_helper import (
-    create_slack_sdk_web_client,
-    create_slack_sdk_webhook_client,
-)
+from server.service.slack.sdk_helper import (create_slack_sdk_web_client,
+                                             create_slack_sdk_webhook_client)
 
 
 @create_slack_sdk_web_client

@@ -1,13 +1,12 @@
-from server.service.error.type.missing_element_error import MissingElementError
 import pytest
+from marshmallow import ValidationError
 
 from server.orm.command import Command
-
 from server.service.command.delete.processor import delete_command_processor
+from server.service.error.type.missing_element_error import MissingElementError
 from server.service.slack.message import MessageStatus, MessageVisibility
 from server.service.strategy.enum import Strategy
 from server.tests.test_app import *  # noqa: F401, F403
-from marshmallow import ValidationError
 
 channel_id = "1234"
 team_id = "1337"
