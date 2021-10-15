@@ -19,6 +19,11 @@ SLACK_CUSTOM_COMMAND_MODAL_VALUE_PATH = {
     SlackCustomCommandModalActionId.NUMBER_OF_ITEMS_SELECT.value: f"{SlackCustomCommandModalBlockId.NUMBER_OF_ITEMS_BLOCK_ID.value}.{SlackCustomCommandModalActionId.NUMBER_OF_ITEMS_SELECT.value}.selected_option.value",  # noqa E501
 }
 
+SLACK_CUSTOM_COMMAND_ACTION_ID_TO_VARIABLE_NAME = {
+    SlackCustomCommandModalActionId.ADDITIONAL_TEXT_INPUT.value: "additional_text",
+    SlackCustomCommandModalActionId.NUMBER_OF_ITEMS_SELECT.value: "number_of_items_to_select",  # noqa E501
+}
+
 
 def build_header(command_name: str):
     return {

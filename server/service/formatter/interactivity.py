@@ -6,11 +6,21 @@ from server.orm.command import Command
 from server.service.helper.dict_helper import clean_none_values, get_by_path
 from server.service.slack.helper import get_callback_action, get_id_from_callback_id
 from server.service.slack.message_formatting import format_mention_user
+from server.service.slack.modal.custom_command_modal import (
+    SLACK_CUSTOM_COMMAND_ACTION_ID_TO_VARIABLE_NAME,
+    SLACK_CUSTOM_COMMAND_MODAL_VALUE_PATH,
+    SlackCustomCommandModalActionId,
+)
 from server.service.slack.modal.upsert_command_modal import (
     SLACK_UPSERT_COMMAND_ACTION_ID_TO_VARIABLE_NAME,
-    SLACK_UPSERT_COMMAND_MODAL_VALUE_PATH, SlackUpsertCommandModalActionId)
-from server.service.slack.workflow.enum import (WORKFLOW_ACTION_ID_TO_VARIABLE_NAME,
-                                                WORKFLOW_VALUE_PATH, WorkflowActionId)
+    SLACK_UPSERT_COMMAND_MODAL_VALUE_PATH,
+    SlackUpsertCommandModalActionId,
+)
+from server.service.slack.workflow.enum import (
+    WORKFLOW_ACTION_ID_TO_VARIABLE_NAME,
+    WORKFLOW_VALUE_PATH,
+    WorkflowActionId,
+)
 
 
 def extract_interactivity_actions(payload: dict[str, any]) -> tuple[str, str]:
@@ -193,9 +203,16 @@ def format_update_command_payload(payload: dict[str, any]) -> dict[str, any]:
 
 
 def format_run_custom_command_payload(payload: dict[str, any]) -> dict[str, any]:
+    extracted_value = extract_inputs_from_view_values_payload(
+        get_by_path(payload, "view.state.values"),
+        SlackCustomCommandModalActionId,
+        SLACK_CUSTOM_COMMAND_MODAL_VALUE_PATH,
+        SLACK_CUSTOM_COMMAND_ACTION_ID_TO_VARIABLE_NAME,
+    )
     callback_id = get_by_path(payload, "view.callback_id")
     command_id = get_id_from_callback_id(callback_id)
     return {
+        **extracted_value,
         **get_basic_data_from_command_id(command_id),
         **format_interactivity_basic_payload(payload),
     }
