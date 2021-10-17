@@ -80,9 +80,10 @@ BLUEPRINT_SLASH_COMMAND_ACTION_TO_DATA_FLOW = {
             format_slash_command_payload,
             expected_positional_args=CUSTOM_POSITIONAL_ARGS,
             expected_named_args=CUSTOM_NAMED_ARGS,
-            should_update_weight_list=True,
         ),
-        processor=custom_command_processor,
+        processor=functools.partial(
+            custom_command_processor, should_update_weight_list=True
+        ),
         responder=send_message_to_channel,
         error_handler=on_error_handled_send_message,
     ),

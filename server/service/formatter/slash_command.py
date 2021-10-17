@@ -24,7 +24,6 @@ def format_slash_command_payload(
     *,
     expected_positional_args: list[Arg],
     expected_named_args: list[Arg],
-    **kwargs,
 ) -> dict[str, any]:
     command_name, text = extract_command_from_text(payload.get("text"))
 
@@ -32,5 +31,4 @@ def format_slash_command_payload(
         **parse_command_line(text, expected_positional_args, expected_named_args),
         **format_slash_command_basic_payload(payload),
         "command_name": command_name,
-        **kwargs,
     }

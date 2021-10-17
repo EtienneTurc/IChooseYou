@@ -46,6 +46,10 @@ def format_event_complete_workflow_payload(payload):
         "channel_id": inputs.get(
             WORKFLOW_ACTION_ID_TO_VARIABLE_NAME[WorkflowActionId.CHANNEL_INPUT.value]
         ),
-        **inputs,
+        "send_to_slack": inputs.get(
+            WORKFLOW_ACTION_ID_TO_VARIABLE_NAME[
+                WorkflowActionId.SEND_TO_SLACK_CHECKBOX.value
+            ]
+        ),
         **format_event_basic_payload(payload),
     }

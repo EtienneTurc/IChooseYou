@@ -1,3 +1,5 @@
+import functools
+
 from server.blueprint.interactivity.action import BlueprintInteractivityAction
 from server.service.command.create.processor import create_command_processor
 from server.service.command.custom.processor import custom_command_processor
@@ -87,7 +89,9 @@ BLUEPRINT_INTERACTIVITY_ACTION_TO_DATA_FLOW = {
     ),
     SlackModalSubmitAction.RUN_CUSTOM_COMMAND.value: DataFlow(
         formatter=format_run_custom_command_payload,
-        processor=custom_command_processor,
+        processor=functools.partial(
+            custom_command_processor, should_update_weight_list=True
+        ),
         responder=send_message_to_channel,
         fast_responder=(lambda **kwargs: {"response_action": "clear"}),  # TODO clean
         error_handler=on_error_handled_send_message,

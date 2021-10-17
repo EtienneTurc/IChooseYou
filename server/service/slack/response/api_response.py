@@ -84,9 +84,14 @@ def complete_workflow(
     *,
     workflow_step_execute_id: str,
     outputs: dict,
+    send_to_slack: bool = False,
+    message: Message = None,
+    channel_id: Message = None,
     team_id: str,
     **kwargs
 ):
+    if send_to_slack:
+        send_message_to_channel(message=message, channel_id=channel_id, team_id=team_id)
     client.workflows_stepCompleted(
         workflow_step_execute_id=workflow_step_execute_id, outputs=outputs
     )

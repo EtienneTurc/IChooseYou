@@ -22,8 +22,8 @@ def custom_command_processor(
     should_update_weight_list: bool = False,
 ) -> dict[str, any]:
     command = Command.find_one_by_name_and_chanel(command_name, channel_id)
-    pick_list = command.pick_list
-    weight_list = command.weight_list
+    pick_list = command.pick_list[:]
+    weight_list = command.weight_list[:]
 
     if command.self_exclude and user_id:
         indices_of_items_to_remove = [
