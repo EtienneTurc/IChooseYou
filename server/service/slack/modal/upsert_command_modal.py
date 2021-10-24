@@ -32,7 +32,7 @@ SLACK_UPSERT_COMMAND_MODAL_VALUE_PATH = {
     SlackUpsertCommandModalActionId.DESCRIPTION_INPUT.value: f"{SlackUpsertCommandModalBlockId.DESCRIPTION_BLOCK_ID.value}.{SlackUpsertCommandModalActionId.DESCRIPTION_INPUT.value}.value",  # noqa E501
     SlackUpsertCommandModalActionId.LABEL_INPUT.value: f"{SlackUpsertCommandModalBlockId.LABEL_BLOCK_ID.value}.{SlackUpsertCommandModalActionId.LABEL_INPUT.value}.value",  # noqa E501
     SlackUpsertCommandModalActionId.PICK_LIST_INPUT.value: f"{SlackUpsertCommandModalBlockId.PICK_LIST_BLOCK_ID.value}.{SlackUpsertCommandModalActionId.PICK_LIST_INPUT.value}.selected_users",  # noqa E501
-    SlackUpsertCommandModalActionId.STRATEGY_SELECT.value: f"{SlackUpsertCommandModalBlockId.STRATEGY_BLOCK_ID.value}.{SlackUpsertCommandModalActionId.STRATEGY_SELECT.value}.value",  # noqa E501
+    SlackUpsertCommandModalActionId.STRATEGY_SELECT.value: f"{SlackUpsertCommandModalBlockId.STRATEGY_BLOCK_ID.value}.{SlackUpsertCommandModalActionId.STRATEGY_SELECT.value}.selected_option.value",  # noqa E501
     SlackUpsertCommandModalActionId.SELF_EXCLUDE_CHECKBOX.value: f"{SlackUpsertCommandModalBlockId.CHECK_BOXES_BLOCK_ID.value}.{SlackUpsertCommandModalActionId.SELF_EXCLUDE_CHECKBOX.value}.selected_options",  # noqa E501
     SlackUpsertCommandModalActionId.ONLY_ACTIVE_USERS_CHECKBOX.value: f"{SlackUpsertCommandModalBlockId.CHECK_BOXES_BLOCK_ID.value}.{SlackUpsertCommandModalActionId.ONLY_ACTIVE_USERS_CHECKBOX.value}.selected_options",  # noqa E501
 }
