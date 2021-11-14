@@ -51,6 +51,11 @@ def format_interactivity_basic_payload(payload: dict[str, any]) -> dict[str, any
     return clean_none_values(data)
 
 
+def format_interactivity_resubmit_payload(payload: dict[str, any]) -> dict[str, any]:
+    resubmit_button_value = json.loads(payload.get("actions")[0].get("value"))
+    return {**format_interactivity_basic_payload(payload), **resubmit_button_value}
+
+
 def format_interactivity_delete_message_payload(
     payload: dict[str, any]
 ) -> dict[str, any]:

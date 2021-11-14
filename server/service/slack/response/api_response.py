@@ -14,6 +14,7 @@ def send_message_to_channel(
     message: Message,
     channel_id: str,
     user_id: str = None,
+    thread_ts: str = None,
     team_id: str,
     **kwargs
 ) -> None:
@@ -23,11 +24,27 @@ def send_message_to_channel(
         if message.visibility == MessageVisibility.HIDDEN
         else client.chat_postMessage
     )
-    client_func(
-        **payload,
-        channel=channel_id,
-        user=user_id,
+    return client_func(**payload, channel=channel_id, user=user_id, thread_ts=thread_ts)
+
+
+@create_slack_sdk_web_client
+def send_built_message_to_channel(
+    client: WebClient,
+    *,
+    payload: dict[str, any],
+    visibility: MessageVisibility,
+    channel_id: str,
+    user_id: str = None,
+    thread_ts: str = None,
+    team_id: str,
+    **kwargs
+) -> None:
+    client_func = (
+        client.chat_postEphemeral
+        if visibility == MessageVisibility.HIDDEN
+        else client.chat_postMessage
     )
+    return client_func(**payload, channel=channel_id, user=user_id, thread_ts=thread_ts)
 
 
 @create_slack_sdk_web_client

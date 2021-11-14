@@ -16,10 +16,12 @@ def open_main_modal_processor(
     return {"modal": modal}
 
 
-def main_modal_select_command_processor(
+def build_custom_command_modal_processor(
     *,
     command_name: str,
     channel_id: str,
+    additional_text: str = None,
+    number_of_items_to_select: int = None,
     **kwargs,
 ) -> dict[str, any]:
     command = Command.find_one_by_name_and_chanel(command_name, channel_id)
@@ -27,6 +29,8 @@ def main_modal_select_command_processor(
         command_id=command._id,
         command_name=command.name,
         size_of_pick_list=len(command.pick_list),
+        additional_text=additional_text,
+        number_of_items_to_select=number_of_items_to_select,
     )
     return {"modal": modal}
 

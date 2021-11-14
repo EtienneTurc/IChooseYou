@@ -38,7 +38,7 @@ def build_header(command_name: str):
     }
 
 
-def build_additional_text_input():
+def build_additional_text_input(additional_text: str):
     return {
         "type": "input",
         "block_id": SlackCustomCommandModalBlockId.ADDITIONAL_TEXT_BLOCK_ID.value,
@@ -50,6 +50,7 @@ def build_additional_text_input():
                 "text": "Hey ! I choose you to ...",
             },
             "action_id": SlackCustomCommandModalActionId.ADDITIONAL_TEXT_INPUT.value,
+            "initial_value": additional_text if additional_text else ""
         },
         "label": {
             "type": "plain_text",
@@ -61,7 +62,9 @@ def build_additional_text_input():
     }
 
 
-def build_number_of_elements_select(size_of_pick_list: int):
+def build_number_of_elements_select(
+    size_of_pick_list: int, number_of_items_to_select: int
+):
     options = [
         {
             "text": {
@@ -73,6 +76,11 @@ def build_number_of_elements_select(size_of_pick_list: int):
         }
         for i in range(1, size_of_pick_list + 1)
     ]
+    initial_option = (
+        options[number_of_items_to_select - 1]
+        if number_of_items_to_select
+        else options[0]
+    )
 
     return {
         "type": "input",
@@ -90,7 +98,7 @@ def build_number_of_elements_select(size_of_pick_list: int):
                 "emoji": True,
             },
             "options": options,
-            "initial_option": options[0],
+            "initial_option": initial_option,
             "action_id": SlackCustomCommandModalActionId.NUMBER_OF_ITEMS_SELECT.value,
         },
         "dispatch_action": False,
@@ -98,12 +106,18 @@ def build_number_of_elements_select(size_of_pick_list: int):
 
 
 def build_custom_command_modal(
-    *, command_id: int, command_name: str, size_of_pick_list: int, **kwargs
+    *,
+    command_id: int,
+    command_name: str,
+    size_of_pick_list: int,
+    additional_text: str = None,
+    number_of_items_to_select: int = None,
+    **kwargs,
 ):
     modal_header = build_header(command_name)
     blocks = [
-        build_additional_text_input(),
-        build_number_of_elements_select(size_of_pick_list),
+        build_additional_text_input(additional_text),
+        build_number_of_elements_select(size_of_pick_list, number_of_items_to_select),
     ]
     callback_id = format_callback_id(
         SlackModalSubmitAction.RUN_CUSTOM_COMMAND.value, command_id

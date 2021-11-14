@@ -7,17 +7,19 @@ from server.service.command.update.processor import update_command_processor
 from server.service.error.handler.generic import on_error_handled_send_message
 from server.service.formatter.interactivity import (
     format_create_command_payload, format_interactivity_delete_message_payload,
-    format_interactivity_edit_workflow_payload,
+    format_interactivity_edit_workflow_payload, format_interactivity_resubmit_payload,
     format_interactivity_save_workflow_payload,
     format_main_modal_create_new_command_payload,
     format_main_modal_manage_command_payload, format_main_modal_select_command_payload,
     format_run_custom_command_payload, format_update_command_payload)
 from server.service.slack.interactivity.processor import delete_message_processor
 from server.service.slack.modal.enum import SlackModalSubmitAction
-from server.service.slack.modal.processor import (main_modal_create_command_processor,
+from server.service.slack.modal.processor import (build_custom_command_modal_processor,
+                                                  main_modal_create_command_processor,
                                                   main_modal_delete_command_processor,
-                                                  main_modal_select_command_processor,
                                                   main_modal_update_command_processor)
+from server.service.slack.responder.message import \
+    send_message_to_channel_with_resubmit_button_and_info
 from server.service.slack.response.api_response import (delete_message_in_channel,
                                                         open_view_modal, push_view_modal,
                                                         save_workflow,
@@ -47,7 +49,7 @@ BLUEPRINT_INTERACTIVITY_ACTION_TO_DATA_FLOW = {
     ),
     BlueprintInteractivityAction.MAIN_MODAL_SELECT_COMMAND.value: DataFlow(
         formatter=format_main_modal_select_command_payload,
-        processor=main_modal_select_command_processor,
+        processor=build_custom_command_modal_processor,
         responder=push_view_modal,
         error_handler=on_error_handled_send_message,
     ),
@@ -68,6 +70,20 @@ BLUEPRINT_INTERACTIVITY_ACTION_TO_DATA_FLOW = {
         processor=main_modal_delete_command_processor,
         responder=send_message_to_channel,
         fast_responder=(lambda **kwargs: {"response_action": "clear"}),  # TODO clean
+        error_handler=on_error_handled_send_message,
+    ),
+    BlueprintInteractivityAction.RESUBMIT_COMMAND.value: DataFlow(
+        formatter=format_interactivity_resubmit_payload,
+        processor=functools.partial(
+            custom_command_processor, should_update_weight_list=True
+        ),
+        responder=send_message_to_channel_with_resubmit_button_and_info,
+        error_handler=on_error_handled_send_message,
+    ),
+    BlueprintInteractivityAction.UPDATE_AND_RESUBMIT_COMMAND.value: DataFlow(
+        formatter=format_interactivity_resubmit_payload,
+        processor=build_custom_command_modal_processor,
+        responder=open_view_modal,
         error_handler=on_error_handled_send_message,
     ),
     # -------------------------------------------------------------------------
@@ -92,7 +108,7 @@ BLUEPRINT_INTERACTIVITY_ACTION_TO_DATA_FLOW = {
         processor=functools.partial(
             custom_command_processor, should_update_weight_list=True
         ),
-        responder=send_message_to_channel,
+        responder=send_message_to_channel_with_resubmit_button_and_info,
         fast_responder=(lambda **kwargs: {"response_action": "clear"}),  # TODO clean
         error_handler=on_error_handled_send_message,
     ),

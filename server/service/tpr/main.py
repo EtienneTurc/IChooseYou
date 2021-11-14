@@ -41,4 +41,4 @@ def run_processor_and_respond_in_thread(
     *, processor: any, responder: any, data: dict[str, any], **kwargs
 ) -> None:
     processor_response_data = processor(**data)
-    responder(**processor_response_data, **data)
+    responder(**{**data, **processor_response_data})

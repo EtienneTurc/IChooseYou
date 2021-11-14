@@ -66,6 +66,8 @@ def custom_command_processor(
             as_attachment=False,
         ),
         "selected_items": selected_items,
+        "additional_text": additional_text,
+        "number_of_items_to_select": number_of_items_to_select,
     }
 
 

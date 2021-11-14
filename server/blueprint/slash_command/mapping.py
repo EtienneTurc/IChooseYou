@@ -30,6 +30,8 @@ from server.service.error.handler.generic import on_error_handled_send_message
 from server.service.formatter.slash_command import (format_slash_command_basic_payload,
                                                     format_slash_command_payload)
 from server.service.slack.modal.processor import open_main_modal_processor
+from server.service.slack.responder.message import \
+    send_message_to_channel_with_resubmit_button_and_info
 from server.service.slack.response.api_response import (open_view_modal,
                                                         send_message_to_channel)
 from server.service.tpr.enum import DataFlow
@@ -84,7 +86,7 @@ BLUEPRINT_SLASH_COMMAND_ACTION_TO_DATA_FLOW = {
         processor=functools.partial(
             custom_command_processor, should_update_weight_list=True
         ),
-        responder=send_message_to_channel,
+        responder=send_message_to_channel_with_resubmit_button_and_info,
         error_handler=on_error_handled_send_message,
     ),
     BlueprintSlashCommandAction.OPEN_MAIN_MODAl.value: DataFlow(

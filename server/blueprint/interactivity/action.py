@@ -2,10 +2,15 @@ from enum import Enum
 
 from server.service.slack.modal.main_modal import (SlackMainModalActionId,
                                                    SlackMainModalOverflowActionId)
+from server.service.slack.responder.enum import SlackResubmitButtonsActionId
 
 
 class BlueprintInteractivityAction(Enum):
-    RESUBMIT_COMMAND = "resubmit_command"
+    RESUBMIT_COMMAND = SlackResubmitButtonsActionId.RESUBMIT_COMMAND.value
+    UPDATE_AND_RESUBMIT_COMMAND = (
+        SlackResubmitButtonsActionId.UPDATE_AND_RESUBMIT_COMMAND.value
+    )
+
     DELETE_MESSAGE = "delete_message"  # Defined in slack
     EDIT_WORKFLOW = "workflow_edit"  # Defined in slack TODO change
     VIEW_SUBMISSION = "view_submission"  # Defined by slack
