@@ -6,7 +6,7 @@ from server.service.slack.response.api_response import (send_built_message_to_ch
                                                         send_message_to_channel)
 
 
-def send_message_to_channel_with_resubmit_button_and_info(
+def send_message_to_channel_with_resubmit_button(
     *,
     message: Message,
     channel_id: str,
@@ -17,7 +17,7 @@ def send_message_to_channel_with_resubmit_button_and_info(
     number_of_items_to_select: int,
     **kwargs
 ):
-    slack_message = send_message_to_channel(
+    send_message_to_channel(
         message=message, channel_id=channel_id, user_id=user_id, team_id=team_id
     )
 
@@ -33,18 +33,6 @@ def send_message_to_channel_with_resubmit_button_and_info(
         channel_id=channel_id,
         user_id=user_id,
         team_id=team_id,
-        thread_ts=slack_message.get("ts"),
-    )
-
-    # Send info message
-    send_message_to_channel(
-        message=Message(
-            content="Info about the command comming soon",
-            visibility=MessageVisibility.NORMAL.value,
-        ),
-        channel_id=channel_id,
-        team_id=team_id,
-        thread_ts=slack_message.get("ts"),
     )
 
 

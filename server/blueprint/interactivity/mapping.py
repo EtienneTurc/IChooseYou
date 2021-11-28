@@ -19,7 +19,7 @@ from server.service.slack.modal.processor import (build_custom_command_modal_pro
                                                   main_modal_delete_command_processor,
                                                   main_modal_update_command_processor)
 from server.service.slack.responder.message import \
-    send_message_to_channel_with_resubmit_button_and_info
+    send_message_to_channel_with_resubmit_button
 from server.service.slack.response.api_response import (delete_message_in_channel,
                                                         open_view_modal, push_view_modal,
                                                         save_workflow,
@@ -77,7 +77,7 @@ BLUEPRINT_INTERACTIVITY_ACTION_TO_DATA_FLOW = {
         processor=functools.partial(
             custom_command_processor, should_update_weight_list=True
         ),
-        responder=send_message_to_channel_with_resubmit_button_and_info,
+        responder=send_message_to_channel_with_resubmit_button,
         error_handler=on_error_handled_send_message,
     ),
     BlueprintInteractivityAction.UPDATE_AND_RESUBMIT_COMMAND.value: DataFlow(
@@ -108,7 +108,7 @@ BLUEPRINT_INTERACTIVITY_ACTION_TO_DATA_FLOW = {
         processor=functools.partial(
             custom_command_processor, should_update_weight_list=True
         ),
-        responder=send_message_to_channel_with_resubmit_button_and_info,
+        responder=send_message_to_channel_with_resubmit_button,
         fast_responder=(lambda **kwargs: {"response_action": "clear"}),  # TODO clean
         error_handler=on_error_handled_send_message,
     ),
