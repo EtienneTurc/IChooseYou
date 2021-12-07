@@ -53,10 +53,10 @@ def compute_new_pick_list(
     values_to_add_to_pick_list: list[str],
     indices_of_items_to_remove: list[int],
 ) -> list[str]:
-    pick_list += values_to_add_to_pick_list
+    new_pick_list = [*pick_list, *values_to_add_to_pick_list]
     return [
         item
-        for index, item in enumerate(pick_list)
+        for index, item in enumerate(new_pick_list)
         if index not in indices_of_items_to_remove
     ]
 

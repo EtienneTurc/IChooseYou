@@ -137,7 +137,7 @@ def compute_new_pick_list_and_weight_list(
     strategy = get_strategy(
         strategy_name,
         command.weight_list if not strategy else None,
-        len(new_pick_list),
+        len(command.pick_list),
     )
     new_weight_list = compute_new_weight_list(
         strategy, values_to_add_to_pick_list, indices_of_items_to_remove
