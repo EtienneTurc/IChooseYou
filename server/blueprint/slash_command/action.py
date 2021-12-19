@@ -6,6 +6,7 @@ class BlueprintSlashCommandAction(Enum):
     UPDATE = "update"
     DELETE = "delete"
     RANDOMNESS = "randomness"
+    INSTANT = "instant"
     CUSTOM = "custom"
     OPEN_MAIN_MODAl = "open_main_modal"
 
@@ -18,6 +19,7 @@ KNOWN_SLASH_COMMANDS_ACTIONS = [
         BlueprintSlashCommandAction.CREATE,
         BlueprintSlashCommandAction.UPDATE,
         BlueprintSlashCommandAction.DELETE,
+        BlueprintSlashCommandAction.INSTANT,
         BlueprintSlashCommandAction.RANDOMNESS,
     ]
 ]

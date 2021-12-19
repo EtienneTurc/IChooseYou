@@ -16,6 +16,11 @@ from server.service.command.delete.command_line_args import \
 from server.service.command.delete.command_line_args import \
     POSITIONAL_ARG as DELETE_POSITIONAL_ARGS
 from server.service.command.delete.processor import delete_command_processor
+from server.service.command.instant.command_line_args import \
+    NAMED_ARGS as INSTANT_NAMED_ARGS
+from server.service.command.instant.command_line_args import \
+    POSITIONAL_ARG as INSTANT_POSITIONAL_ARGS
+from server.service.command.instant.processor import instant_command_processor
 from server.service.command.randomness.command_line_args import \
     NAMED_ARGS as RANDOMNESS_NAMED_ARGS
 from server.service.command.randomness.command_line_args import \
@@ -74,6 +79,16 @@ BLUEPRINT_SLASH_COMMAND_ACTION_TO_DATA_FLOW = {
             expected_named_args=RANDOMNESS_NAMED_ARGS,
         ),
         processor=randomness_command_processor,
+        responder=send_message_to_channel,
+        error_handler=on_error_handled_send_message,
+    ),
+    BlueprintSlashCommandAction.RANDOMNESS.value: DataFlow(
+        formatter=functools.partial(
+            format_slash_command_payload,
+            expected_positional_args=INSTANT_POSITIONAL_ARGS,
+            expected_named_args=INSTANT_NAMED_ARGS,
+        ),
+        processor=instant_command_processor,
         responder=send_message_to_channel,
         error_handler=on_error_handled_send_message,
     ),
