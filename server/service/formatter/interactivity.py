@@ -9,6 +9,9 @@ from server.service.slack.message_formatting import format_mention_user
 from server.service.slack.modal.custom_command_modal import (
     SLACK_CUSTOM_COMMAND_ACTION_ID_TO_VARIABLE_NAME,
     SLACK_CUSTOM_COMMAND_MODAL_VALUE_PATH, SlackCustomCommandModalActionId)
+from server.service.slack.modal.instant_command_modal import (
+    SLACK_INSTANT_COMMAND_ACTION_ID_TO_VARIABLE_NAME,
+    SLACK_INSTANT_COMMAND_MODAL_VALUE_PATH, SlackInstantCommandModalActionId)
 from server.service.slack.modal.upsert_command_modal import (
     SLACK_UPSERT_COMMAND_ACTION_ID_TO_VARIABLE_NAME,
     SLACK_UPSERT_COMMAND_MODAL_VALUE_PATH, SlackUpsertCommandModalActionId)
@@ -149,6 +152,14 @@ def format_main_modal_create_new_command_payload(
     }
 
 
+def format_main_modal_run_instant_command_payload(
+    payload: dict[str, any]
+) -> dict[str, any]:
+    return {
+        **format_interactivity_basic_payload(payload),
+    }
+
+
 def format_main_modal_manage_command_payload(payload: dict[str, any]) -> dict[str, any]:
     return {
         "command_id": extract_command_id_from_main_modal_manage_command_payload(
@@ -212,6 +223,22 @@ def format_run_custom_command_payload(payload: dict[str, any]) -> dict[str, any]
     return {
         **extracted_value,
         **get_basic_data_from_command_id(command_id),
+        **format_interactivity_basic_payload(payload),
+    }
+
+
+def format_run_instant_command_payload(payload: dict[str, any]) -> dict[str, any]:
+    extracted_value = extract_inputs_from_view_values_payload(
+        get_by_path(payload, "view.state.values"),
+        SlackInstantCommandModalActionId,
+        SLACK_INSTANT_COMMAND_MODAL_VALUE_PATH,
+        SLACK_INSTANT_COMMAND_ACTION_ID_TO_VARIABLE_NAME,
+    )
+
+    metadata = extract_data_from_metadata(get_by_path(payload, "view.private_metadata"))
+    extracted_value["channel_id"] = metadata["channel_id"]
+    return {
+        **extracted_value,
         **format_interactivity_basic_payload(payload),
     }
 

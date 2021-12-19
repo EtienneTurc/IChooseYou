@@ -1,6 +1,7 @@
 from server.orm.command import Command
 from server.service.command.delete.processor import delete_command_processor
 from server.service.slack.modal.custom_command_modal import build_custom_command_modal
+from server.service.slack.modal.instant_command_modal import build_instant_command_modal
 from server.service.slack.modal.main_modal import build_main_modal
 from server.service.slack.modal.upsert_command_modal import build_upsert_command_modal
 
@@ -32,6 +33,11 @@ def build_custom_command_modal_processor(
         additional_text=additional_text,
         number_of_items_to_select=number_of_items_to_select,
     )
+    return {"modal": modal}
+
+
+def build_instant_command_modal_processor(**kwargs) -> dict[str, any]:
+    modal = build_instant_command_modal(**kwargs)
     return {"modal": modal}
 
 

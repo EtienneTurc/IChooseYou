@@ -38,6 +38,26 @@ def build_create_command_section():
     }
 
 
+def build_run_instant_command_section():
+    return {
+        "type": "section",
+        "text": {
+            "type": "mrkdwn",
+            "text": ":rocket: *Run an instant command (1 shot)*",
+        },
+        "accessory": {
+            "type": "button",
+            "text": {
+                "type": "plain_text",
+                "text": "Add",
+                "emoji": True,
+            },
+            "style": "primary",
+            "action_id": SlackMainModalActionId.RUN_INSTANT_COMMAND.value,
+        },
+    }
+
+
 def build_command_section(command: Command) -> list[dict[str, any]]:
     return [
         {"type": "divider"},
@@ -110,6 +130,7 @@ def build_main_modal(*, channel_id: str, commands: list[Command], **kwargs):
     modal_header = build_main_modal_header()
     blocks = [
         build_create_command_section(),
+        build_run_instant_command_section(),
         *flatten([build_command_section(command) for command in commands]),
     ]
 
