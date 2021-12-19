@@ -49,7 +49,7 @@ def build_run_instant_command_section():
             "type": "button",
             "text": {
                 "type": "plain_text",
-                "text": "Add",
+                "text": "Run",
                 "emoji": True,
             },
             "style": "primary",

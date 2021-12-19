@@ -3,7 +3,6 @@ from marshmallow import ValidationError
 
 import server.service.slack.tests.monkey_patch as monkey_patch_request  # noqa: F401, E501
 from server.service.command.instant.processor import instant_command_processor
-from server.service.error.type.bad_request_error import BadRequestError
 from server.service.error.type.missing_element_error import MissingElementError
 from server.service.slack.message import MessageVisibility
 from server.tests.test_fixture import *  # noqa: F401, F403
@@ -41,38 +40,23 @@ def test_instant_command():
     assert message.as_attachment is False
 
 
-def test_custom_command_self_exclude():
+def test_custom_command_not_self_exclude():
     response = instant_command_processor(
         user_id=user_id,
         team_id=team_id,
         channel_id=channel_id,
         label=label,
-        pick_list=[user_id, "2"],
+        pick_list=[f"<@{user_id}|name>"],
         number_of_items_to_select=number_of_items_to_select,
         self_exclude=True,
         only_active_users=only_active_users,
     )
 
     message = response.get("message")
-    assert "choose 2" in message.content
+    assert f"choose <@{user_id}|name>" in message.content
 
     selected_items = response.get("selected_items")
-    assert selected_items == ["2"]
-
-
-def test_custom_command_self_exclude_error():
-    error_message = "Pick list contains only the user using the command.*selfExclude.*True.*"  # noqa E501
-    with pytest.raises(BadRequestError, match=error_message):
-        instant_command_processor(
-            user_id=user_id,
-            team_id=team_id,
-            channel_id=channel_id,
-            label=label,
-            pick_list=[user_id],
-            number_of_items_to_select=number_of_items_to_select,
-            self_exclude=True,
-            only_active_users=only_active_users,
-        )
+    assert selected_items == [f"<@{user_id}|name>"]
 
 
 def test_custom_command_only_active_users():

@@ -9,7 +9,6 @@ class SlackInstantCommandModalActionId(Enum):
     LABEL_INPUT = "label_input"
     PICK_LIST_INPUT = "pick_list_input"
     NUMBER_OF_ITEMS_SELECT = "number_of_items_select"
-    SELF_EXCLUDE_CHECKBOX = "self_exclude_checkbox"
     ONLY_ACTIVE_USERS_CHECKBOX = "only_active_users_checkbox"
 
 
@@ -26,7 +25,6 @@ SLACK_INSTANT_COMMAND_MODAL_VALUE_PATH = {
     SlackInstantCommandModalActionId.LABEL_INPUT.value: f"{SlackInstantCommandModalBlockId.LABEL_BLOCK_ID.value}.{SlackInstantCommandModalActionId.LABEL_INPUT.value}.value",  # noqa E501
     SlackInstantCommandModalActionId.PICK_LIST_INPUT.value: f"{SlackInstantCommandModalBlockId.PICK_LIST_BLOCK_ID.value}.{SlackInstantCommandModalActionId.PICK_LIST_INPUT.value}.selected_users",  # noqa E501
     SlackInstantCommandModalActionId.NUMBER_OF_ITEMS_SELECT.value: f"{SlackInstantCommandModalBlockId.NUMBER_OF_ITEMS_BLOCK_ID.value}.{SlackInstantCommandModalActionId.NUMBER_OF_ITEMS_SELECT.value}.selected_option.value",  # noqa E501
-    SlackInstantCommandModalActionId.SELF_EXCLUDE_CHECKBOX.value: f"{SlackInstantCommandModalBlockId.CHECK_BOXES_BLOCK_ID.value}.{SlackInstantCommandModalActionId.SELF_EXCLUDE_CHECKBOX.value}.selected_options",  # noqa E501
     SlackInstantCommandModalActionId.ONLY_ACTIVE_USERS_CHECKBOX.value: f"{SlackInstantCommandModalBlockId.CHECK_BOXES_BLOCK_ID.value}.{SlackInstantCommandModalActionId.ONLY_ACTIVE_USERS_CHECKBOX.value}.selected_options",  # noqa E501
 }
 
@@ -35,13 +33,12 @@ SLACK_INSTANT_COMMAND_ACTION_ID_TO_VARIABLE_NAME = {
     SlackInstantCommandModalActionId.LABEL_INPUT.value: "label",
     SlackInstantCommandModalActionId.PICK_LIST_INPUT.value: "pick_list",
     SlackInstantCommandModalActionId.NUMBER_OF_ITEMS_SELECT.value: "number_of_items_to_select",  # noqa E501
-    SlackInstantCommandModalActionId.SELF_EXCLUDE_CHECKBOX.value: "self_exclude",
     SlackInstantCommandModalActionId.ONLY_ACTIVE_USERS_CHECKBOX.value: "only_active_users",  # noqa E501
 }
 
 
 def build_header() -> dict[str, any]:
-    text = "Run an intant command (1 shot)"
+    text = "Run an intant command"
     return {
         "type": "modal",
         "submit": {"type": "plain_text", "text": "Submit", "emoji": True},
@@ -166,15 +163,7 @@ def build_number_of_elements_select(
     }
 
 
-def build_check_boxes(*, self_exclude: bool, only_active_users: bool) -> dict[str, any]:
-    self_exclude_option = {
-        "text": {
-            "type": "plain_text",
-            "text": "Should exclude the user that triggers the command ?",
-            "emoji": True,
-        },
-        "value": "True",
-    }
+def build_check_boxes(*, only_active_users: bool) -> dict[str, any]:
     only_active_users_option = {
         "text": {
             "type": "plain_text",
@@ -188,12 +177,6 @@ def build_check_boxes(*, self_exclude: bool, only_active_users: bool) -> dict[st
         "type": "actions",
         "block_id": SlackInstantCommandModalBlockId.CHECK_BOXES_BLOCK_ID.value,
         "elements": [
-            {
-                "type": "checkboxes",
-                "options": [self_exclude_option],
-                **({"initial_options": [self_exclude_option]} if self_exclude else {}),
-                "action_id": SlackInstantCommandModalActionId.SELF_EXCLUDE_CHECKBOX.value,  # noqa E501
-            },
             {
                 "type": "checkboxes",
                 "options": [only_active_users_option],
@@ -218,7 +201,6 @@ def build_instant_command_modal(
     command_name: str = None,
     label: str = None,
     pick_list: list[str] = None,
-    self_exclude: bool = None,
     only_active_users: bool = None,
     number_of_items_to_select: int = None,
     **kwargs,
@@ -229,14 +211,12 @@ def build_instant_command_modal(
         build_label_input(label),
         build_pick_list_input(pick_list),
         build_number_of_elements_select(1, number_of_items_to_select),
-        build_check_boxes(
-            self_exclude=self_exclude, only_active_users=only_active_users
-        ),
+        build_check_boxes(only_active_users=only_active_users),
     ]
 
     return {
         **modal_header,
         "blocks": blocks,
-        "callback_id": SlackModalSubmitAction.RUN_CUSTOM_COMMAND.value,
+        "callback_id": SlackModalSubmitAction.RUN_INSTANT_COMMAND.value,
         "private_metadata": build_metadata(channel_id, command_name),
     }

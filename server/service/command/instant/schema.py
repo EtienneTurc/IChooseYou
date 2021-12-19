@@ -11,7 +11,6 @@ class InstantCommandProcessorSchema(Schema):
     label = fields.Str(required=False)
     pick_list = fields.List(fields.Str(required=True), required=True)
     number_of_items_to_select = fields.Int(required=False)
-    self_exclude = fields.Bool(required=False)
     only_active_users = fields.Bool(required=False)
 
     @validates("pick_list")

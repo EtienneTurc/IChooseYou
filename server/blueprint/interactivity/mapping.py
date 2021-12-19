@@ -14,7 +14,7 @@ from server.service.formatter.interactivity import (
     format_main_modal_manage_command_payload,
     format_main_modal_run_instant_command_payload,
     format_main_modal_select_command_payload, format_run_custom_command_payload,
-    format_update_command_payload)
+    format_run_instant_command_payload, format_update_command_payload)
 from server.service.slack.interactivity.processor import delete_message_processor
 from server.service.slack.modal.enum import SlackModalSubmitAction
 from server.service.slack.modal.processor import (build_custom_command_modal_processor,
@@ -123,9 +123,9 @@ BLUEPRINT_INTERACTIVITY_ACTION_TO_DATA_FLOW = {
         error_handler=on_error_handled_send_message,
     ),
     SlackModalSubmitAction.RUN_INSTANT_COMMAND.value: DataFlow(
-        formatter=format_run_custom_command_payload,
+        formatter=format_run_instant_command_payload,
         processor=instant_command_processor,
-        responder=send_message_to_channel_with_resubmit_button,
+        responder=send_message_to_channel,
         fast_responder=(lambda **kwargs: {"response_action": "clear"}),  # TODO clean
         error_handler=on_error_handled_send_message,
     ),

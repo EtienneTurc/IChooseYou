@@ -156,6 +156,7 @@ def format_main_modal_run_instant_command_payload(
     payload: dict[str, any]
 ) -> dict[str, any]:
     return {
+        **extract_data_from_metadata(get_by_path(payload, "view.private_metadata")),
         **format_interactivity_basic_payload(payload),
     }
 
@@ -234,6 +235,9 @@ def format_run_instant_command_payload(payload: dict[str, any]) -> dict[str, any
         SLACK_INSTANT_COMMAND_MODAL_VALUE_PATH,
         SLACK_INSTANT_COMMAND_ACTION_ID_TO_VARIABLE_NAME,
     )
+    extracted_value["pick_list"] = [
+        format_mention_user(user) for user in extracted_value["pick_list"]
+    ]
 
     metadata = extract_data_from_metadata(get_by_path(payload, "view.private_metadata"))
     extracted_value["channel_id"] = metadata["channel_id"]

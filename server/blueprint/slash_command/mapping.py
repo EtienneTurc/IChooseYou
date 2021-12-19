@@ -82,7 +82,7 @@ BLUEPRINT_SLASH_COMMAND_ACTION_TO_DATA_FLOW = {
         responder=send_message_to_channel,
         error_handler=on_error_handled_send_message,
     ),
-    BlueprintSlashCommandAction.RANDOMNESS.value: DataFlow(
+    BlueprintSlashCommandAction.INSTANT.value: DataFlow(
         formatter=functools.partial(
             format_slash_command_payload,
             expected_positional_args=INSTANT_POSITIONAL_ARGS,

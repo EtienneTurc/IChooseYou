@@ -17,7 +17,6 @@ def instant_command_processor(
     label: str = "",
     pick_list: list[str],
     number_of_items_to_select: int = 1,
-    self_exclude: bool = False,
     only_active_users: bool = False,
 ) -> dict[str, any]:
     pick_list = format_pick_list(pick_list, team_id, channel_id)
@@ -32,7 +31,7 @@ def instant_command_processor(
         number_of_items_to_select=number_of_items_to_select,
         team_id=team_id,
         only_active_users=only_active_users,
-        self_exclude=self_exclude,
+        self_exclude=False,
     )
     assert_selected_items(selected_items, only_active_users)
 

@@ -18,13 +18,6 @@ NAMED_ARGS = [
         type=int,
     ),
     Arg(
-        name="self-exclude",
-        short="e",
-        nargs="?",
-        const="True",
-        type=bool,
-    ),
-    Arg(
         name="only-active-users",
         short="o",
         nargs="?",
