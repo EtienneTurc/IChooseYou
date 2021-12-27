@@ -1,0 +1,24 @@
+{
+  "name": "ichooseyou",
+  "version": "1.0.0",
+  "description": "Slack bot to randomly select anything",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EtienneTurc/IChooseYou.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/EtienneTurc/IChooseYou/issues"
+  },
+  "homepage": "https://github.com/EtienneTurc/IChooseYou#readme",
+  "devDependencies": {
+    "serverless-python-requirements": "^5.2.2",
+    "serverless-wsgi": "^3.0.0"
+  }
+}

@@ -1,6 +1,7 @@
 from flask import Flask
 
 from server.config import CONFIG
+import os
 
 
 def create_app(config_name="prod"):
@@ -12,7 +13,7 @@ def create_app(config_name="prod"):
     # Connect to DB
     from pymodm import connect
 
-    connect(app.config["DATABASE_URI"])
+    connect(app.config.get("DATABASE_URI") or os.environ.get("DATABASE_URI"))
 
     # Add blueprints
     from server.blueprint.authentication.blueprint import api as authentication_api

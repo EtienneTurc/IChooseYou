@@ -1,0 +1,33 @@
+# serverless.yml
+
+service: I-choose-you
+
+plugins:
+  - serverless-python-requirements
+  - serverless-wsgi
+
+
+custom:
+  wsgi:
+    app: app.app
+    packRequirements: false
+  pythonRequirements:
+    dockerizePip: non-linux
+    dockerImage: mlupin/docker-lambda:python3.9-build
+
+provider:
+  name: aws
+  runtime: python3.9
+  stage: dev
+  region: eu-west-3
+  lambdaHashingVersion: 20201221
+  environment:
+    PYTHON_ALIAS: python3.9
+    FLASK_APP: server/app:create_app('dev')
+
+functions:
+  app:
+    handler: wsgi_handler.handler
+    events:
+      - http: ANY /
+      - http: 'ANY {proxy+}'

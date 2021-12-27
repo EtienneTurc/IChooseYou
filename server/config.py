@@ -3,7 +3,6 @@ class Config(object):
     TESTING = False
     APP_NAME = "I choose you"
     SLASH_COMMAND = "/ichu"
-    DATABASE_URI = "mongodb://localhost:27017/ichooseyoudb"
     API_URL = "https://ichooseyou.etienne-t.fr"
     WAIT_FOR_THREAD_BEFORE_RETURN = False
 
