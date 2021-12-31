@@ -3,9 +3,41 @@ import random
 import numpy as np
 
 from server.service.helper.dict_helper import normalize
+from server.service.selection.assertion import assert_pick_list
 from server.service.slack.helper import get_user_id_in_mention, is_mention
 from server.service.slack.sdk_helper import is_user_of_team_active
 from server.service.strategy.helper import get_strategy
+
+
+def clean_and_select_from_pick_list(
+    *,
+    pick_list: list[str],
+    weight_list: list[float],
+    user_id: str,
+    strategy_name: str,
+    number_of_items_to_select: int = 1,
+    team_id: str = None,
+    only_active_users: bool = False,
+    self_exclude: bool = False,
+) -> list[str]:
+    initial_pick = pick_list[:]
+    pick_list, weight_list = exclude_user_from_pick_list(
+        pick_list=pick_list,
+        weight_list=weight_list,
+        user_id=user_id,
+        self_exclude=self_exclude,
+    )
+
+    assert_pick_list(pick_list, len(pick_list) != len(initial_pick))
+
+    return select_from_pick_list(
+        pick_list,
+        weight_list,
+        strategy_name,
+        number_of_items_to_select=number_of_items_to_select,
+        team_id=team_id,
+        only_active_users=only_active_users,
+    )
 
 
 def select_from_pick_list(
@@ -80,3 +112,27 @@ def remove_item(
         new_weight_list = normalize(new_weight_list)
 
     return new_pick_list, new_weight_list
+
+
+def exclude_user_from_pick_list(
+    *, pick_list: list[str], weight_list: dict[float], user_id: str, self_exclude: bool
+):
+    if not self_exclude or not user_id:
+        return pick_list, weight_list
+
+    indices_of_items_to_remove = [
+        index for index, item in enumerate(pick_list) if user_id in item
+    ]
+    pick_list = [
+        item
+        for index, item in enumerate(pick_list)
+        if index not in indices_of_items_to_remove
+    ]
+    weight_list = normalize(
+        [
+            item
+            for index, item in enumerate(weight_list)
+            if index not in indices_of_items_to_remove
+        ]
+    )
+    return pick_list, weight_list
