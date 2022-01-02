@@ -29,7 +29,7 @@ def build_create_command_section():
             "type": "button",
             "text": {
                 "type": "plain_text",
-                "text": "Add",
+                "text": "Create",
                 "emoji": True,
             },
             "style": "primary",

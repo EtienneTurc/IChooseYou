@@ -1,9 +1,11 @@
 __pycache__
 .vscode
 *.env
-*.png
 !env/template.env
 .pytest_cache
 .coverage
 htmlcov
-assets
+assets/*
+!assets/I_choose_you_logo.png
+!assets/I_choose_you_banner_centered.png
+!assets/documentation
