@@ -30,21 +30,24 @@ default_expected_command = {
 
 
 @pytest.mark.parametrize(
-    "input_data, expected_command, expected_message",
+    "input_data, expected_command, expected_message, non_expected_message",
     [
         (
             {},
             default_expected_command,
-            "Command test_update successfully updated.",
+            f"{user_id} updated *{command_name}*.",
+            None,
         ),
         (
             {"label": "my new label"},
             {**default_expected_command, "label": "my new label"},
-            "my new label",
+            "Command message changed to: Hey ! <@user> choose <selected_item> my new label",  # noqa E501
+            None,
         ),
         (
             {"description": "my new description"},
             {**default_expected_command, "description": "my new description"},
+            None,
             "my new description",
         ),
         (
@@ -54,7 +57,8 @@ default_expected_command = {
                 "pick_list": ["1", "2"],
                 "weight_list": [1 / 2, 1 / 2],
             },
-            "['1', '2']",
+            "Users removed: 3.",
+            None,
         ),
         # (
         #     {"pick_list": [PickListSpecialArg.ALL_MEMBERS.value]},
@@ -71,7 +75,8 @@ default_expected_command = {
                 "pick_list": ["1", "2", "3", "4"],
                 "weight_list": [1 / 4, 1 / 4, 1 / 4, 1 / 4],
             },
-            "['1', '2', '3', '4']",
+            "New users added: 4.",
+            None,
         ),
         (
             {"remove_from_pick_list": ["2"]},
@@ -80,47 +85,54 @@ default_expected_command = {
                 "pick_list": ["1", "3"],
                 "weight_list": [1 / 2, 1 / 2],
             },
-            "['1', '3']",
+            "Users removed: 2.",
+            None,
         ),
         (
-            {},
-            default_expected_command,
-            "User using the slash command excluded.",
+            {"remove_from_pick_list": ["2", "3"]},
+            {
+                **default_expected_command,
+                "pick_list": ["1"],
+                "weight_list": [1],
+            },
+            "Users removed: 2 and 3.",
+            None,
         ),
         (
             {"self_exclude": True},
             {**default_expected_command, "self_exclude": True},
-            "User using the slash command excluded.",
+            None,
+            "User running the command is now",
         ),
         (
             {"self_exclude": False},
             {**default_expected_command, "self_exclude": False},
-            "User using the slash command not excluded.",
-        ),
-        (
-            {},
-            default_expected_command,
-            "All items are selected when using the slash command.",
+            "User running the command is now included in the pick.",
+            None,
         ),
         (
             {"only_active_users": True},
             {**default_expected_command, "only_active_users": True},
-            "Only active users are selected when using the slash command.",
+            "Only active users are now picked",
+            None,
         ),
         (
             {"only_active_users": False},
             {**default_expected_command, "only_active_users": False},
-            "All items are selected when using the slash command.",
+            None,
+            "active",
         ),
         (
             {"strategy": Strategy.uniform.name},
             {**default_expected_command, "strategy": Strategy.uniform.name},
-            "Strategy: uniform.",
+            None,
+            "Strategy changed to",
         ),
         (
             {"strategy": Strategy.smooth.name},
             {**default_expected_command, "strategy": Strategy.smooth.name},
-            "Strategy: smooth.",
+            "Strategy changed to smooth.",
+            None,
         ),
         (
             {"strategy": Strategy.round_robin.name},
@@ -129,11 +141,14 @@ default_expected_command = {
                 "strategy": Strategy.round_robin.name,
                 "weight_list": [1, 0, 0],
             },
-            "Strategy: round_robin.",
+            "Strategy changed to round_robin.",
+            None,
         ),
     ],
 )
-def test_update(input_data, expected_command, expected_message, client):
+def test_update(
+    input_data, expected_command, expected_message, non_expected_message, client
+):
     Command.create(**default_expected_command)
     response = update_command_processor(
         user_id=user_id,
@@ -145,8 +160,11 @@ def test_update(input_data, expected_command, expected_message, client):
 
     message = response.get("message")
 
-    assert expected_message in message.content
-    assert message.status == MessageStatus.SUCCESS
+    if expected_message:
+        assert expected_message in message.content
+    if non_expected_message:
+        assert non_expected_message not in message.content
+    assert message.status == MessageStatus.INFO
     assert message.visibility == MessageVisibility.NORMAL
 
     updated_command = (
