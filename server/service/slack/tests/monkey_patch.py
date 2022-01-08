@@ -13,6 +13,10 @@ def monkey_patch_client_conversations_members(self, *args, **kwargs):
     return {"members": ["1234", "2345", "3456"]}
 
 
+def monkey_patch_client_users_info(self, *, user: str, **kwargs):
+    return {"user": {"profile": {"display_name": user}}}
+
+
 def monkey_patch_client_users_getPresence(self, *, user: str, **kwargs):
     return {"presence": "active" if user == "1234" else "away"}
 
@@ -67,6 +71,7 @@ get_web_client.__code__ = monkey_patch_get_web_client.__code__
 WebClient.conversations_members.__code__ = (
     monkey_patch_client_conversations_members.__code__
 )
+WebClient.users_info.__code__ = monkey_patch_client_users_info.__code__
 WebClient.users_getPresence.__code__ = monkey_patch_client_users_getPresence.__code__
 WebClient.chat_delete.__code__ = monkey_patch_client_chat_delete.__code__
 WebClient.chat_postEphemeral.__code__ = monkey_patch_client_chat_postEphemeral.__code__

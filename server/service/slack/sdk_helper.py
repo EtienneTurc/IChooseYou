@@ -34,6 +34,14 @@ def get_users_in_channel(
 
 
 @create_slack_sdk_web_client
+def get_user_info(
+    client: WebClient, *, user_id: str, team_id: str, **kwargs
+) -> list[str]:
+    result = client.users_info(user=user_id)
+    return result["user"]
+
+
+@create_slack_sdk_web_client
 def is_user_of_team_active(
     client: WebClient, *, user_id: str, team_id: str, **kwargs
 ) -> bool:

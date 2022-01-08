@@ -7,7 +7,7 @@ from server.service.command.update.helper import (assert_pick_list_can_be_update
                                                   get_values_to_update)
 from server.service.command.update.schema import UpdateCommandProcessorSchema
 from server.service.slack.message import Message, MessageStatus, MessageVisibility
-from server.service.slack.message_formatting import format_custom_command_help
+from server.service.slack.message_formatting import format_updated_fields_mesage
 from server.service.strategy.helper import get_strategy
 from server.service.validator.decorator import validate_schema
 
@@ -52,13 +52,18 @@ def update_command_processor(
         new_command_name or command_to_update, new_channel_id or channel_id
     )
 
-    message_content = f"Command {updated_command.name} successfully updated.\n"
-    message_content += format_custom_command_help(updated_command)
+    fields_updated = compute_fields_updated(command, updated_command)
+    message_content = format_updated_fields_mesage(
+        command_name=updated_command.name,
+        team_id=team_id,
+        fields_updated=fields_updated,
+        current_user_id=user_id,
+    )
 
     return {
         "message": Message(
             content=message_content,
-            status=MessageStatus.SUCCESS,
+            status=MessageStatus.INFO,
             visibility=MessageVisibility.NORMAL,
         )
     }
@@ -144,3 +149,59 @@ def compute_new_pick_list_and_weight_list(
     )
 
     return new_pick_list, new_weight_list
+
+
+def compute_fields_updated(
+    previous_command: Command, new_command: Command
+) -> dict[str, any]:
+    return {
+        **compute_fields_updated_for_standard_fields(previous_command, new_command),
+        **compute_fields_updated_for_pick_list(previous_command, new_command),
+    }
+
+
+def compute_fields_updated_for_standard_fields(
+    previous_command: Command, new_command: Command
+) -> dict[str, any]:
+    standard_fields_to_track = [
+        "name",
+        "label",
+        "description",
+        "self_exclude",
+        "only_active_users",
+        "strategy",
+    ]
+
+    fields_updated = {}
+    previous_command_dict, new_command_dict = (
+        previous_command.to_son(),
+        new_command.to_son(),
+    )
+    for field in standard_fields_to_track:
+        if previous_command_dict[field] != new_command_dict[field]:
+            fields_updated[field] = new_command_dict[field]
+
+    return fields_updated
+
+
+def compute_fields_updated_for_pick_list(
+    previous_command: Command, new_command: Command
+) -> dict[str, any]:
+    fields_updated = {}
+    new_items_in_pick_list = [
+        new_item
+        for new_item in new_command.pick_list
+        if new_item not in previous_command.pick_list
+    ]
+    if len(new_items_in_pick_list):
+        fields_updated["added_to_pick_list"] = new_items_in_pick_list
+
+    items_removed_from_pick_list = [
+        removed_item
+        for removed_item in previous_command.pick_list
+        if removed_item not in new_command.pick_list
+    ]
+    if len(items_removed_from_pick_list):
+        fields_updated["removed_from_pick_list"] = items_removed_from_pick_list
+
+    return fields_updated

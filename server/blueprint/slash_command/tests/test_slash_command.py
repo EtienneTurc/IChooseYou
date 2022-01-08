@@ -138,7 +138,7 @@ def test_slash_command_update(text, expected, client):
     response, slack_message = call_webhook(client, text)
 
     assert response.status_code == 200
-    assert "Command test_update successfully updated." in slack_message
+    assert "4321 updated *test_update*." in slack_message
 
     updated_command = (
         Command.find_one_by_name_and_chanel("test_update", "1234").to_son().to_dict()

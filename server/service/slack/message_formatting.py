@@ -1,6 +1,8 @@
 import re
 
 from server.blueprint.interactivity.action import BlueprintInteractivityAction
+from server.service.helper.dict_helper import get_by_path
+from server.service.slack.sdk_helper import get_user_info
 
 
 def format_custom_command_message(
@@ -81,3 +83,69 @@ def format_command_sent(slash_command, command_name, text):
             }
         ]
     }
+
+
+def format_updated_fields_mesage(
+    *,
+    command_name: str,
+    team_id: str,
+    fields_updated: dict[str, any],
+    current_user_id: str,
+) -> str:
+    current_user_name = get_by_path(
+        get_user_info(team_id=team_id, user_id=current_user_id), "profile.display_name"
+    )
+    message = f"{current_user_name} updated *{command_name}*."
+
+    messages_for_each_field = [
+        ("name", (lambda name: f"Command name changed to {name}.")),
+        (
+            "added_to_pick_list",
+            (
+                lambda added_to_pick_list: f"New users added: {format_users_for_pick_list_diff(added_to_pick_list, team_id)}."  # noqa E501
+            ),
+        ),
+        (
+            "removed_from_pick_list",
+            lambda removed_from_pick_list: f"Users removed: {format_users_for_pick_list_diff(removed_from_pick_list, team_id)}.",  # noqa E501
+        ),
+        (
+            "label",
+            (
+                lambda label: f'Command message changed to: {format_custom_command_message(None, ["<selected_item>"], label)}'  # noqa E501
+            ),
+        ),
+        (
+            "self_exclude",
+            (
+                lambda self_exclude: f'User running the command is now {"excluded" if self_exclude else "included"} in the pick.'  # noqa E501
+            ),
+        ),
+        (
+            "only_active_users",
+            (
+                lambda only_active_users: "Only active users are now picked."
+                if only_active_users
+                else "All users are now picked (whether or not they are active)."
+            ),
+        ),
+        ("strategy", (lambda strategy: f"Strategy changed to {strategy}.")),
+    ]
+
+    for (field, message_function) in messages_for_each_field:
+        if fields_updated.get(field) is not None:
+            message += f"\n• {message_function(fields_updated.get(field))}"
+
+    return message
+
+
+def format_users_for_pick_list_diff(users_mention: list[str], team_id: str) -> str:
+    user_infos = [
+        get_by_path(
+            get_user_info(team_id=team_id, user_id=get_user_id_from_mention(user)),
+            "profile.display_name",
+        )
+        or user
+        for user in users_mention
+    ]
+    return format_custom_selected_items(user_infos)
