@@ -37,22 +37,23 @@ def get_user_id_from_mention(text: str) -> str:
     return re.sub(r"<@(U[A-Z0-9]*)(\|.*)*>", r"\1", text)
 
 
-def format_custom_command_help(custom_command):
-    self_exclude = "not " if not custom_command.self_exclude else ""
-    only_active_users = (
-        "Only active users" if custom_command.only_active_users else "All items"
+def format_new_command_message(
+    *,
+    command_name: str,
+    team_id: str,
+    command_description: str,
+    pick_list: list[str],
+    current_user_id: str,
+):
+    current_user_name = get_by_path(
+        get_user_info(team_id=team_id, user_id=current_user_id), "profile.display_name"
     )
-    slack_message_from_command = format_custom_command_message(
-        None, ["<selected_item>"], custom_command.label
+    message = f"{current_user_name} created *{command_name}*."
+    if command_description:
+        message += f"\n{command_description}"
+    message += (
+        f"\nUsers in the pick list are: {format_pick_list_users(pick_list, team_id)}."
     )
-
-    message = f"*{custom_command.name}*: {custom_command.description}"
-    message += f"\n• Message: {slack_message_from_command}"
-    message += f"\n• Pick list: {custom_command.pick_list}"
-    message += f"\n• Strategy: {custom_command.strategy}."
-    message += f"\n• User using the slash command {self_exclude}excluded."
-    message += f"\n• {only_active_users} are selected when using the slash command."
-
     return message
 
 
@@ -102,12 +103,12 @@ def format_updated_fields_mesage(
         (
             "added_to_pick_list",
             (
-                lambda added_to_pick_list: f"New users added: {format_users_for_pick_list_diff(added_to_pick_list, team_id)}."  # noqa E501
+                lambda added_to_pick_list: f"New users added: {format_pick_list_users(added_to_pick_list, team_id)}."  # noqa E501
             ),
         ),
         (
             "removed_from_pick_list",
-            lambda removed_from_pick_list: f"Users removed: {format_users_for_pick_list_diff(removed_from_pick_list, team_id)}.",  # noqa E501
+            lambda removed_from_pick_list: f"Users removed: {format_pick_list_users(removed_from_pick_list, team_id)}.",  # noqa E501
         ),
         (
             "label",
@@ -139,7 +140,7 @@ def format_updated_fields_mesage(
     return message
 
 
-def format_users_for_pick_list_diff(users_mention: list[str], team_id: str) -> str:
+def format_pick_list_users(users_mention: list[str], team_id: str) -> str:
     user_infos = [
         get_by_path(
             get_user_info(team_id=team_id, user_id=get_user_id_from_mention(user)),
