@@ -125,6 +125,7 @@ To create a new command, those are the fields to fill in:
 | Only active users    | -o          | --only-active-users | Whether to pick only active users, i.e users that appears active on Slack. Warning: It is discouraged to use that feature in order to exclude users that are in holidays, as users that are taking a short break may not be picked.                                                                                                            |
 
 **Example:**
+
 <img src="https://github.com/EtienneTurc/IChooseYou/blob/master/assets/documentation/create_command.gif" alt="Create command gif"/>
 
 The same result can be obtained with:
@@ -151,6 +152,7 @@ The command line interface have two additional optional options to help updating
 Note: The command line interface does not support changing channel.
 
 **Example:**
+
 <img src="https://github.com/EtienneTurc/IChooseYou/blob/master/assets/documentation/update_command.gif" alt="Update command gif"/>
 
 The same result can be obtained with:
@@ -184,6 +186,7 @@ To run a command, those are the fields to fill in:
 | Number of users to select | -n          | --number-of-items-to-select | Number of users to select. It must be greater or equal than 1 and lower or equal than the number of items in the pick list.                                                                |
 
 **Example:**
+
 <img src="https://github.com/EtienneTurc/IChooseYou/blob/master/assets/documentation/run_command.gif" alt="Run command gif"/>
 
 The same result can be obtained with:
@@ -205,7 +208,8 @@ Click on the 3 dotted point on the pick message and then click on the shortcut `
 
 **Note**: Only the user that triggered the pick can delete the associated pick message with this method.
 
-**Example**:
+**Example:**
+
 <img src="https://github.com/EtienneTurc/IChooseYou/blob/master/assets/documentation/delete_pick_message.gif" alt="Delete pick message gif"/>
 
 ### Deleting a command
@@ -229,7 +233,8 @@ The form asks for those fields:
 | Slash command   | Slash command to execute. It is the same as running a command with the cli. For more information on that topic, check out the [running a command section](#running-a-command).                                                                                                                                                                                                                 |
 | Send to slack ? | Whether *I choose you* should send the pick message in the selected channel. It can be used to add other steps with the response of the command. If so, the following step will be able to access the variable ```selected item n°i``` which is the i*th* user selected by the command and the variable ```selection message``` which is the message that would have been sent to the channel. |
 
-**Example**
+**Example:**
+
 <img src="https://github.com/EtienneTurc/IChooseYou/blob/master/assets/documentation/workflow.gif" alt="Workflow gif"/>
 
 <!-- ### Inspecting strategy randomness
@@ -257,7 +262,8 @@ To run an instant command, those are the fields to fill in:
 | Number of users to select | -n          | --number-of-items-to-select | Number of users to select. It must be greater or equal than 1 and lower or equal than the number of items in the pick list. For the time being, the modal system only allows for 1 pick.                                                                   |
 | Only active users         | -o          | --only-active-users         | Whether to pick only active users, i.e users that appears active on Slack. Warning: It is discouraged to use that feature in order to exclude users that are in holidays because users taking a short break may not be picked.                             |
 
-**Example**
+**Example:**
+
 <img src="https://github.com/EtienneTurc/IChooseYou/blob/master/assets/documentation/instant_command.gif" alt="Instant command gif"/>
 
 The same result can be obtained with:
