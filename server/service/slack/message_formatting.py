@@ -1,6 +1,5 @@
 import re
 
-from server.blueprint.interactivity.action import BlueprintInteractivityAction
 from server.service.helper.dict_helper import get_by_path
 from server.service.slack.sdk_helper import get_user_info
 
@@ -55,35 +54,6 @@ def format_new_command_message(
         f"\nUsers in the pick list are: {format_pick_list_users(pick_list, team_id)}."
     )
     return message
-
-
-def format_command_sent(slash_command, command_name, text):
-    command = f"{command_name} {text}"
-    return {
-        "attachments": [
-            {
-                "blocks": [
-                    {
-                        "type": "section",
-                        "text": {
-                            "type": "mrkdwn",
-                            "text": slash_command + " " + command,
-                        },
-                        "accessory": {
-                            "type": "button",
-                            "text": {
-                                "type": "plain_text",
-                                "text": "Resubmit command",
-                                "emoji": True,
-                            },
-                            "value": command,
-                            "action_id": BlueprintInteractivityAction.RESUBMIT_COMMAND.value,  # noqa E501
-                        },
-                    }
-                ]
-            }
-        ]
-    }
 
 
 def format_updated_fields_mesage(

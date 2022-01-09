@@ -17,7 +17,7 @@ def send_message_to_channel_with_resubmit_button(
     number_of_items_to_select: int,
     **kwargs
 ):
-    send_message_to_channel(
+    message_response = send_message_to_channel(
         message=message, channel_id=channel_id, user_id=user_id, team_id=team_id
     )
 
@@ -26,6 +26,8 @@ def send_message_to_channel_with_resubmit_button(
         command_name=command_name,
         additional_text=additional_text,
         number_of_items_to_select=number_of_items_to_select,
+        message_text=message.content,
+        ts=message_response.data.get("ts"),
     )
     send_built_message_to_channel(
         payload=resubmit_payload,
@@ -37,15 +39,18 @@ def send_message_to_channel_with_resubmit_button(
 
 
 def build_resubmit_payload_payload(
-    *, command_name: str, additional_text: str, number_of_items_to_select: int
+    *,
+    command_name: str,
+    additional_text: str,
+    number_of_items_to_select: int,
+    message_text: str,
+    ts: str
 ):
-    button_value = json.dumps(
-        {
-            "command_name": command_name,
-            "additional_text": additional_text,
-            "number_of_items_to_select": number_of_items_to_select,
-        }
-    )
+    button_value = {
+        "command_name": command_name,
+        "additional_text": additional_text,
+        "number_of_items_to_select": number_of_items_to_select,
+    }
 
     blocks = [
         {
@@ -59,7 +64,7 @@ def build_resubmit_payload_payload(
                         "emoji": True,
                     },
                     "action_id": SlackResubmitButtonsActionId.UPDATE_AND_RESUBMIT_COMMAND.value,  # noqa E501
-                    "value": button_value,
+                    "value": json.dumps(button_value),
                 },
                 {
                     "type": "button",
@@ -69,7 +74,19 @@ def build_resubmit_payload_payload(
                         "emoji": True,
                     },
                     "action_id": SlackResubmitButtonsActionId.RESUBMIT_COMMAND.value,
-                    "value": button_value,
+                    "value": json.dumps(button_value),
+                },
+                {
+                    "type": "button",
+                    "text": {
+                        "type": "plain_text",
+                        "text": "Resubmit & Delete message",
+                        "emoji": True,
+                    },
+                    "action_id": SlackResubmitButtonsActionId.RESUBMIT_COMMAND_AND_DELETE_MESSAGE.value,  # noqa E501
+                    "value": json.dumps(
+                        {**button_value, "message_text": message_text, "ts": ts}
+                    ),
                 },
             ],
         }
