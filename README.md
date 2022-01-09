@@ -1,6 +1,6 @@
-<img src="https://github.com/EtienneTurc/IChooseYou/blob/master/assets/I_choose_you_banner_centered.png" alt="I choose you banner"/>
-
 # I choose you
+
+<img src="https://github.com/EtienneTurc/IChooseYou/blob/master/assets/I_choose_you_banner_centered.png" alt="I choose you banner"/>
 
 Making the right decision is hard, even more when relationships are involved. *I choose you* takes that burden off by transforming the power of randomness into fairness. It enables users to randomly pick any user directly in Slack. It can be used to pick a colleague to select the lunch place, a reviewer for your pr, an animator for your scrum rituals and much more.
 
