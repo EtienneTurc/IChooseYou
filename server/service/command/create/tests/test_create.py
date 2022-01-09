@@ -37,7 +37,7 @@ default_expected_command = {
         (
             {"label": "my label"},
             {**default_expected_command, "label": "my label"},
-            "Command test_create successfully created.",
+            f"{user_id} created *{command_name}*.",
         ),
         (
             {"description": "my super awesome description"},
@@ -51,7 +51,7 @@ default_expected_command = {
                 "pick_list": ["1", "2"],
                 "weight_list": [1 / 2, 1 / 2],
             },
-            "['1', '2']",
+            "Users in the pick list are: 1 and 2.",
         ),
         (
             {"pick_list": [PickListSpecialArg.ALL_MEMBERS.value]},
@@ -59,32 +59,32 @@ default_expected_command = {
                 **default_expected_command,
                 "pick_list": ["<@1234>", "<@2345>", "<@3456>"],
             },
-            "['<@1234>', '<@2345>', '<@3456>']",
+            "Users in the pick list are: <@1234>, <@2345> and <@3456>.",
         ),
         (
             {"self_exclude": True},
             {**default_expected_command, "self_exclude": True},
-            "User using the slash command excluded.",
+            None,
         ),
         (
             {"only_active_users": True},
             {**default_expected_command, "only_active_users": True},
-            "Only active users are selected when using the slash command.",
+            None,
         ),
         (
             {"only_active_users": False},
             {**default_expected_command, "only_active_users": False},
-            "All items are selected when using the slash command.",
+            None,
         ),
         (
             {"strategy": Strategy.uniform.name},
             {**default_expected_command, "strategy": Strategy.uniform.name},
-            "Strategy: uniform.",
+            None,
         ),
         (
             {"strategy": Strategy.smooth.name},
             {**default_expected_command, "strategy": Strategy.smooth.name},
-            "Strategy: smooth.",
+            None,
         ),
         (
             {"strategy": Strategy.round_robin.name},
@@ -93,7 +93,7 @@ default_expected_command = {
                 "strategy": Strategy.round_robin.name,
                 "weight_list": [1, 0, 0],
             },
-            "Strategy: round_robin.",
+            None,
         ),
     ],
 )
@@ -110,7 +110,8 @@ def test_create(input_data, expected_command, expected_message, client):
     )
 
     message = response.get("message")
-    assert expected_message in message.content
+    if expected_message:
+        assert expected_message in message.content
     assert message.status == MessageStatus.SUCCESS
     assert message.visibility == MessageVisibility.NORMAL
 

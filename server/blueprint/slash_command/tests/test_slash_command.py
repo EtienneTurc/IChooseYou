@@ -55,7 +55,7 @@ def mock_slack_api_data(
 def test_slash_command_create(text, client):
     response, slack_message = call_webhook(client, text)
     assert response.status_code == 200
-    assert "Command test_create successfully created." in slack_message
+    assert "4321 created *test_create*." in slack_message
 
 
 @pytest.mark.parametrize(
