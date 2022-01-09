@@ -7,6 +7,9 @@ from server.service.slack.responder.enum import SlackResubmitButtonsActionId
 
 class BlueprintInteractivityAction(Enum):
     RESUBMIT_COMMAND = SlackResubmitButtonsActionId.RESUBMIT_COMMAND.value
+    RESUBMIT_COMMAND_AND_DELETE_MESSAGE = (
+        SlackResubmitButtonsActionId.RESUBMIT_COMMAND_AND_DELETE_MESSAGE.value
+    )
     UPDATE_AND_RESUBMIT_COMMAND = (
         SlackResubmitButtonsActionId.UPDATE_AND_RESUBMIT_COMMAND.value
     )

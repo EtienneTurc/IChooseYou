@@ -15,7 +15,8 @@ from server.service.formatter.interactivity import (
     format_main_modal_run_instant_command_payload,
     format_main_modal_select_command_payload, format_run_custom_command_payload,
     format_run_instant_command_payload, format_update_command_payload)
-from server.service.slack.interactivity.processor import delete_message_processor
+from server.service.slack.interactivity.processor import (
+    delete_message_processor, resubmit_command_and_delete_message_processor)
 from server.service.slack.modal.enum import SlackModalSubmitAction
 from server.service.slack.modal.processor import (build_custom_command_modal_processor,
                                                   build_instant_command_modal_processor,
@@ -24,8 +25,7 @@ from server.service.slack.modal.processor import (build_custom_command_modal_pro
                                                   main_modal_update_command_processor)
 from server.service.slack.responder.message import \
     send_message_to_channel_with_resubmit_button
-from server.service.slack.response.api_response import (delete_message_in_channel,
-                                                        open_view_modal, push_view_modal,
+from server.service.slack.response.api_response import (open_view_modal, push_view_modal,
                                                         save_workflow,
                                                         send_message_to_channel)
 from server.service.slack.workflow.processor import (edit_workflow_processor,
@@ -36,7 +36,7 @@ BLUEPRINT_INTERACTIVITY_ACTION_TO_DATA_FLOW = {
     BlueprintInteractivityAction.DELETE_MESSAGE.value: DataFlow(
         formatter=format_interactivity_delete_message_payload,
         processor=delete_message_processor,
-        responder=delete_message_in_channel,
+        responder=(lambda **kwargs: None),
         error_handler=on_error_handled_send_message,
     ),
     BlueprintInteractivityAction.EDIT_WORKFLOW.value: DataFlow(
@@ -87,6 +87,12 @@ BLUEPRINT_INTERACTIVITY_ACTION_TO_DATA_FLOW = {
         processor=functools.partial(
             custom_command_processor, should_update_weight_list=True
         ),
+        responder=send_message_to_channel_with_resubmit_button,
+        error_handler=on_error_handled_send_message,
+    ),
+    BlueprintInteractivityAction.RESUBMIT_COMMAND_AND_DELETE_MESSAGE.value: DataFlow(
+        formatter=format_interactivity_resubmit_payload,
+        processor=resubmit_command_and_delete_message_processor,
         responder=send_message_to_channel_with_resubmit_button,
         error_handler=on_error_handled_send_message,
     ),
