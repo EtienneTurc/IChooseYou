@@ -1,4 +1,5 @@
 from marshmallow import EXCLUDE, Schema, ValidationError, fields, validates
+
 from server.service.validator.command import validate_number_of_items_to_select
 
 

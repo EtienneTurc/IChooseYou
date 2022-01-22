@@ -2,10 +2,8 @@ import random
 
 import pytest
 
-from server.service.selection.selection import (
-    select_from_pick_list,
-    select_one_from_pick_list,
-)
+from server.service.selection.selection import (select_from_pick_list,
+                                                select_one_from_pick_list)
 from server.service.slack.tests.monkey_patch import *  # noqa: F401, F403
 from server.service.strategy.enum import Strategy
 from server.tests.test_fixture import *  # noqa: F401, F403

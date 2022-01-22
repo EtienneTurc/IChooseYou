@@ -1,11 +1,10 @@
 import traceback
 
+from marshmallow import ValidationError
+
 from server.service.slack.message import Message, MessageStatus, MessageVisibility
 from server.service.slack.response.api_response import (
-    send_message_to_channel,
-    send_message_to_channel_via_response_url,
-)
-from marshmallow import ValidationError
+    send_message_to_channel, send_message_to_channel_via_response_url)
 
 
 def on_error_handled_send_message(
