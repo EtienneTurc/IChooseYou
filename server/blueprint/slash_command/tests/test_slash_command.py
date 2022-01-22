@@ -61,14 +61,17 @@ def test_slash_command_create(text, client):
 @pytest.mark.parametrize(
     "text, expected_message",
     [
-        ("create test_create", "{'pick_list': ['Missing data for required field.']}"),
+        (
+            "create test_create",
+            "Field 'pick_list' is not valid. Failed with error: ['Missing data for required field.']",  # noqa E501
+        ),
         (
             "create test_create --label 1 2 3",
-            "{'pick_list': ['Missing data for required field.']}",
+            "Field 'pick_list' is not valid. Failed with error: ['Missing data for required field.']",  # noqa E501
         ),
         (
             "create --pick-list 1 2 3 --label 1 2 3",
-            "{'new_command_name': ['Missing data for required field.']}",
+            "Field 'new_command_name' is not valid. Failed with error: ['Missing data for required field.']",  # noqa E501
         ),
     ],
 )
@@ -87,7 +90,10 @@ def test_slash_command_create_fail(text, expected_message, client):
 def test_slash_command_create_fail_unrecognized_element(text, client):
     response, slack_message = call_webhook(client, text)
     assert response.status_code == 200
-    assert "{'new_command_name': ['Missing data for required field.']}" in slack_message
+    assert (
+        "Field 'new_command_name' is not valid. Failed with error: ['Missing data for required field.']"  # noqa E501
+        in slack_message
+    )
 
 
 @pytest.mark.parametrize(

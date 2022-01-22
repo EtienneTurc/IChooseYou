@@ -141,7 +141,7 @@ def test_create_fail_if_command_name_empty(client):
 
 
 def test_create_fail_if_number_of_items_to_select_is_0(client):
-    error_message = "Field may be greater or equal to 1."
+    error_message = "Must select at least 1 item."
     with pytest.raises(ValidationError, match=error_message):
         custom_command_processor(
             user_id=user_id,
@@ -149,4 +149,16 @@ def test_create_fail_if_number_of_items_to_select_is_0(client):
             channel_id="1",
             command_name="sqd",
             number_of_items_to_select=0,
+        )
+
+
+def test_create_fail_if_number_of_items_to_select_is_too_high(client):
+    error_message = "Selecting more than 50 at once is prohibited."
+    with pytest.raises(ValidationError, match=error_message):
+        custom_command_processor(
+            user_id=user_id,
+            team_id=team_id,
+            channel_id="1",
+            command_name="sqd",
+            number_of_items_to_select=51,
         )

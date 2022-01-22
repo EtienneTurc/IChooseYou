@@ -26,7 +26,12 @@ def create_heat_map(command_name: str, channel_id: str) -> tuple[any, str]:
     for i in range(img.size[0]):
         for j in range(img.size[1]):
             [selected_item] = select_from_pick_list(
-                command.pick_list, strategy.weight_list, command.strategy
+                initial_pick_list=command.pick_list,
+                initial_weight_list=strategy.weight_list,
+                strategy_name=command.strategy,
+                number_of_items_to_select=1,
+                team_id=None,
+                only_active_users=False,
             )
             pixels[i, j] = (
                 item_to_color[selected_item],

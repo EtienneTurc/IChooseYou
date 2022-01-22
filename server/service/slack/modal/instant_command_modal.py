@@ -8,7 +8,7 @@ class SlackInstantCommandModalActionId(Enum):
     CHANNEL_SELECT = "channel_select"
     LABEL_INPUT = "label_input"
     PICK_LIST_INPUT = "pick_list_input"
-    NUMBER_OF_ITEMS_SELECT = "number_of_items_select"
+    NUMBER_OF_ITEMS_INPUT = "number_of_items_input"
     ONLY_ACTIVE_USERS_CHECKBOX = "only_active_users_checkbox"
 
 
@@ -24,7 +24,7 @@ SLACK_INSTANT_COMMAND_MODAL_VALUE_PATH = {
     SlackInstantCommandModalActionId.CHANNEL_SELECT.value: f"{SlackInstantCommandModalBlockId.CHANNEL_BLOCK_ID.value}.{SlackInstantCommandModalActionId.CHANNEL_SELECT.value}.selected_channel",  # noqa E501
     SlackInstantCommandModalActionId.LABEL_INPUT.value: f"{SlackInstantCommandModalBlockId.LABEL_BLOCK_ID.value}.{SlackInstantCommandModalActionId.LABEL_INPUT.value}.value",  # noqa E501
     SlackInstantCommandModalActionId.PICK_LIST_INPUT.value: f"{SlackInstantCommandModalBlockId.PICK_LIST_BLOCK_ID.value}.{SlackInstantCommandModalActionId.PICK_LIST_INPUT.value}.selected_users",  # noqa E501
-    SlackInstantCommandModalActionId.NUMBER_OF_ITEMS_SELECT.value: f"{SlackInstantCommandModalBlockId.NUMBER_OF_ITEMS_BLOCK_ID.value}.{SlackInstantCommandModalActionId.NUMBER_OF_ITEMS_SELECT.value}.selected_option.value",  # noqa E501
+    SlackInstantCommandModalActionId.NUMBER_OF_ITEMS_INPUT.value: f"{SlackInstantCommandModalBlockId.NUMBER_OF_ITEMS_BLOCK_ID.value}.{SlackInstantCommandModalActionId.NUMBER_OF_ITEMS_INPUT.value}.value",  # noqa E501
     SlackInstantCommandModalActionId.ONLY_ACTIVE_USERS_CHECKBOX.value: f"{SlackInstantCommandModalBlockId.CHECK_BOXES_BLOCK_ID.value}.{SlackInstantCommandModalActionId.ONLY_ACTIVE_USERS_CHECKBOX.value}.selected_options",  # noqa E501
 }
 
@@ -32,7 +32,7 @@ SLACK_INSTANT_COMMAND_ACTION_ID_TO_VARIABLE_NAME = {
     SlackInstantCommandModalActionId.CHANNEL_SELECT.value: "channel_id",
     SlackInstantCommandModalActionId.LABEL_INPUT.value: "label",
     SlackInstantCommandModalActionId.PICK_LIST_INPUT.value: "pick_list",
-    SlackInstantCommandModalActionId.NUMBER_OF_ITEMS_SELECT.value: "number_of_items_to_select",  # noqa E501
+    SlackInstantCommandModalActionId.NUMBER_OF_ITEMS_INPUT.value: "number_of_items_to_select",  # noqa E501
     SlackInstantCommandModalActionId.ONLY_ACTIVE_USERS_CHECKBOX.value: "only_active_users",  # noqa E501
 }
 
@@ -120,26 +120,7 @@ def build_pick_list_input(pick_list: list[str]) -> dict[str, any]:
     }
 
 
-def build_number_of_elements_select(
-    size_of_pick_list: int, number_of_items_to_select: int
-):
-    options = [
-        {
-            "text": {
-                "type": "plain_text",
-                "text": f"{i}",
-                "emoji": True,
-            },
-            "value": f"{i}",
-        }
-        for i in range(1, size_of_pick_list + 1)
-    ]
-    initial_option = (
-        options[number_of_items_to_select - 1]
-        if number_of_items_to_select
-        else options[0]
-    )
-
+def build_number_of_elements_input(number_of_items_to_select: int):
     return {
         "type": "input",
         "block_id": SlackInstantCommandModalBlockId.NUMBER_OF_ITEMS_BLOCK_ID.value,
@@ -149,15 +130,16 @@ def build_number_of_elements_select(
             "emoji": True,
         },
         "element": {
-            "type": "static_select",
+            "type": "plain_text_input",
             "placeholder": {
                 "type": "plain_text",
-                "text": "Select an item",
+                "text": "Number between 1 and 50",
                 "emoji": True,
             },
-            "options": options,
-            "initial_option": initial_option,
-            "action_id": SlackInstantCommandModalActionId.NUMBER_OF_ITEMS_SELECT.value,
+            "initial_value": number_of_items_to_select
+            if number_of_items_to_select
+            else "1",
+            "action_id": SlackInstantCommandModalActionId.NUMBER_OF_ITEMS_INPUT.value,
         },
         "dispatch_action": False,
     }
@@ -210,7 +192,7 @@ def build_instant_command_modal(
         build_channel_select(channel_id),
         build_label_input(label),
         build_pick_list_input(pick_list),
-        build_number_of_elements_select(1, number_of_items_to_select),
+        build_number_of_elements_input(number_of_items_to_select),
         build_check_boxes(only_active_users=only_active_users),
     ]
 

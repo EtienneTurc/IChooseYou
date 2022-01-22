@@ -15,10 +15,10 @@ def clean_and_select_from_pick_list(
     weight_list: list[float],
     user_id: str,
     strategy_name: str,
-    number_of_items_to_select: int = 1,
-    team_id: str = None,
-    only_active_users: bool = False,
-    self_exclude: bool = False,
+    number_of_items_to_select: int,
+    team_id: str,
+    only_active_users: bool,
+    self_exclude: bool,
 ) -> list[str]:
     initial_pick = pick_list[:]
     pick_list, weight_list = exclude_user_from_pick_list(
@@ -31,9 +31,9 @@ def clean_and_select_from_pick_list(
     assert_pick_list(pick_list, len(pick_list) != len(initial_pick))
 
     return select_from_pick_list(
-        pick_list,
-        weight_list,
-        strategy_name,
+        initial_pick_list=pick_list,
+        initial_weight_list=weight_list,
+        strategy_name=strategy_name,
         number_of_items_to_select=number_of_items_to_select,
         team_id=team_id,
         only_active_users=only_active_users,
@@ -41,14 +41,18 @@ def clean_and_select_from_pick_list(
 
 
 def select_from_pick_list(
-    pick_list: list[str],
-    weight_list: list[float],
+    *,
+    initial_pick_list: list[str],
+    initial_weight_list: list[float],
     strategy_name: str,
-    number_of_items_to_select: int = 1,
-    team_id: str = None,
-    only_active_users: bool = False,
+    number_of_items_to_select: int,
+    team_id: str,
+    only_active_users: bool,
 ) -> list[str]:
     selected_items = []
+    pick_list = initial_pick_list[:]
+    weight_list = initial_weight_list[:]
+
     for _ in range(number_of_items_to_select):
         selected_item, new_pick_list, new_weight_list = select_one_from_pick_list(
             pick_list, weight_list, team_id, only_active_users
@@ -63,7 +67,10 @@ def select_from_pick_list(
             new_pick_list, new_weight_list = remove_item(
                 selected_item, new_pick_list, new_weight_list
             )
+
         pick_list, weight_list = new_pick_list, new_weight_list
+        if not len(pick_list) or not len(weight_list):
+            pick_list, weight_list = initial_pick_list, initial_weight_list
 
     return selected_items
 
