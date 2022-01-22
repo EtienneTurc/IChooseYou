@@ -182,7 +182,7 @@ To run a command, those are the fields to fill in:
 | Field                     | Short (cli) | Long (cli)                  | Description                                                                                                                                                                                |
 | ------------------------- | ----------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | Additional text           | ∅           | ∅                           | Additional text that will be added at the end of the pick message (after the label). For the command line, all the text that lies after the options will be considered as additional text. |
-| Number of users to select | -n          | --number-of-items-to-select | Number of users to select. It must be greater or equal than 1 and lower or equal than the number of items in the pick list.                                                                |
+| Number of users to select | -n          | --number-of-items-to-select | Number of users to select. It must be greater or equal than 1 and lower.                                                                                                                   |
 
 **Example:**
 
@@ -258,7 +258,7 @@ To run an instant command, those are the fields to fill in:
 | Channel (*required*)      | ∅           | ∅                           | Channel in which the pick message will be sent. This option does not exists for command line because it uses the channel in which *I choose you* is called.                                                                                                |
 | Label                     | -l          | --label                     | Extra text to add when running the command. The message that will be issued after running the command will be: ```Hey ! <Name of the user that ran the command> choose <User the has been picked> <extra text of the command filled in the label field>``` |
 | Pick list                 | -p          | --pick-list                 | List of users to pick from. Unfortunately, slack does not propose a select all button... (A custom solution is on its way).                                                                                                                                |
-| Number of users to select | -n          | --number-of-items-to-select | Number of users to select. It must be greater or equal than 1 and lower or equal than the number of items in the pick list. For the time being, the modal system only allows for 1 pick.                                                                   |
+| Number of users to select | -n          | --number-of-items-to-select | Number of users to select. It must be greater or equal than 1 and lower.                                                                                                                                                                                   |
 | Only active users         | -o          | --only-active-users         | Whether to pick only active users, i.e users that appears active on Slack. Warning: It is discouraged to use that feature in order to exclude users that are in holidays because users taking a short break may not be picked.                             |
 
 **Example:**
