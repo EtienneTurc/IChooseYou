@@ -6,7 +6,7 @@ from server.service.slack.modal.enum import SlackModalSubmitAction
 
 class SlackCustomCommandModalActionId(Enum):
     ADDITIONAL_TEXT_INPUT = "additional_text_input"
-    NUMBER_OF_ITEMS_SELECT = "number_of_items_select"
+    NUMBER_OF_ITEMS_INPUT = "number_of_items_input"
 
 
 class SlackCustomCommandModalBlockId(Enum):
@@ -16,12 +16,12 @@ class SlackCustomCommandModalBlockId(Enum):
 
 SLACK_CUSTOM_COMMAND_MODAL_VALUE_PATH = {
     SlackCustomCommandModalActionId.ADDITIONAL_TEXT_INPUT.value: f"{SlackCustomCommandModalBlockId.ADDITIONAL_TEXT_BLOCK_ID.value}.{SlackCustomCommandModalActionId.ADDITIONAL_TEXT_INPUT.value}.value",  # noqa E501
-    SlackCustomCommandModalActionId.NUMBER_OF_ITEMS_SELECT.value: f"{SlackCustomCommandModalBlockId.NUMBER_OF_ITEMS_BLOCK_ID.value}.{SlackCustomCommandModalActionId.NUMBER_OF_ITEMS_SELECT.value}.selected_option.value",  # noqa E501
+    SlackCustomCommandModalActionId.NUMBER_OF_ITEMS_INPUT.value: f"{SlackCustomCommandModalBlockId.NUMBER_OF_ITEMS_BLOCK_ID.value}.{SlackCustomCommandModalActionId.NUMBER_OF_ITEMS_INPUT.value}.value",  # noqa E501
 }
 
 SLACK_CUSTOM_COMMAND_ACTION_ID_TO_VARIABLE_NAME = {
     SlackCustomCommandModalActionId.ADDITIONAL_TEXT_INPUT.value: "additional_text",
-    SlackCustomCommandModalActionId.NUMBER_OF_ITEMS_SELECT.value: "number_of_items_to_select",  # noqa E501
+    SlackCustomCommandModalActionId.NUMBER_OF_ITEMS_INPUT.value: "number_of_items_to_select",  # noqa E501
 }
 
 
@@ -50,7 +50,7 @@ def build_additional_text_input(additional_text: str):
                 "text": "Hey ! I choose you to ...",
             },
             "action_id": SlackCustomCommandModalActionId.ADDITIONAL_TEXT_INPUT.value,
-            "initial_value": additional_text if additional_text else ""
+            "initial_value": additional_text if additional_text else "",
         },
         "label": {
             "type": "plain_text",
@@ -62,44 +62,28 @@ def build_additional_text_input(additional_text: str):
     }
 
 
-def build_number_of_elements_select(
+def build_number_of_elements_input(
     size_of_pick_list: int, number_of_items_to_select: int
 ):
-    options = [
-        {
-            "text": {
-                "type": "plain_text",
-                "text": f"{i}",
-                "emoji": True,
-            },
-            "value": f"{i}",
-        }
-        for i in range(1, size_of_pick_list + 1)
-    ]
-    initial_option = (
-        options[number_of_items_to_select - 1]
-        if number_of_items_to_select
-        else options[0]
-    )
-
     return {
         "type": "input",
         "block_id": SlackCustomCommandModalBlockId.NUMBER_OF_ITEMS_BLOCK_ID.value,
         "label": {
             "type": "plain_text",
-            "text": "Number of elements to pick",
+            "text": f"Number of elements to pick ({size_of_pick_list} elements in the pick list)",  # noqa E501
             "emoji": True,
         },
         "element": {
-            "type": "static_select",
+            "type": "plain_text_input",
             "placeholder": {
                 "type": "plain_text",
-                "text": "Select an item",
+                "text": "Number between 1 and 50",
                 "emoji": True,
             },
-            "options": options,
-            "initial_option": initial_option,
-            "action_id": SlackCustomCommandModalActionId.NUMBER_OF_ITEMS_SELECT.value,
+            "initial_value": number_of_items_to_select
+            if number_of_items_to_select
+            else "1",
+            "action_id": SlackCustomCommandModalActionId.NUMBER_OF_ITEMS_INPUT.value,
         },
         "dispatch_action": False,
     }
@@ -117,7 +101,7 @@ def build_custom_command_modal(
     modal_header = build_header(command_name)
     blocks = [
         build_additional_text_input(additional_text),
-        build_number_of_elements_select(size_of_pick_list, number_of_items_to_select),
+        build_number_of_elements_input(size_of_pick_list, number_of_items_to_select),
     ]
     callback_id = format_callback_id(
         SlackModalSubmitAction.RUN_CUSTOM_COMMAND.value, command_id
