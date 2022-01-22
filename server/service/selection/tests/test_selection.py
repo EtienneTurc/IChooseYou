@@ -2,8 +2,10 @@ import random
 
 import pytest
 
-from server.service.selection.selection import (select_from_pick_list,
-                                                select_one_from_pick_list)
+from server.service.selection.selection import (
+    select_from_pick_list,
+    select_one_from_pick_list,
+)
 from server.service.slack.tests.monkey_patch import *  # noqa: F401, F403
 from server.service.strategy.enum import Strategy
 from server.tests.test_fixture import *  # noqa: F401, F403
@@ -121,7 +123,7 @@ def test_select_one_from_pick_list(
             Strategy.round_robin.name,
             4,
             False,
-            ["2", "3", "1", None],
+            ["2", "3", "1", "2"],
         ),
         (
             ["1", "2", "3"],
@@ -129,7 +131,7 @@ def test_select_one_from_pick_list(
             Strategy.uniform.name,
             5,
             False,
-            ["1", "3", "2", None, None],
+            ["1", "3", "2", "1", "2"],
         ),
         (
             [f"<@{user_id_inactive}>", f"<@{user_id_active}>"],
@@ -137,7 +139,7 @@ def test_select_one_from_pick_list(
             Strategy.uniform.name,
             2,
             True,
-            [f"<@{user_id_active}>", None],
+            [f"<@{user_id_active}>", f"<@{user_id_active}>"],
         ),
         (
             [user_id_inactive, f"<@{user_id_active}>"],
@@ -145,7 +147,7 @@ def test_select_one_from_pick_list(
             Strategy.round_robin.name,
             3,
             True,
-            [user_id_inactive, f"<@{user_id_active}>", None],
+            [user_id_inactive, f"<@{user_id_active}>", user_id_inactive],
         ),
     ],
 )
@@ -160,9 +162,9 @@ def test_select_from_pick_list(
 ):
     assert (
         select_from_pick_list(
-            pick_list,
-            weight_list,
-            strategy_name,
+            initial_pick_list=pick_list,
+            initial_weight_list=weight_list,
+            strategy_name=strategy_name,
             number_of_items_to_select=number_of_items_to_select,
             team_id=team_id,
             only_active_users=only_active_users,

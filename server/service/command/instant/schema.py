@@ -1,4 +1,5 @@
 from marshmallow import EXCLUDE, Schema, ValidationError, fields, validates
+from server.service.validator.command import validate_number_of_items_to_select
 
 
 class InstantCommandProcessorSchema(Schema):
@@ -19,6 +20,6 @@ class InstantCommandProcessorSchema(Schema):
             raise ValidationError("Field may not be empty.")
 
     @validates("number_of_items_to_select")
-    def valid_number_of_items_to_select(self, value):
-        if value is not None and value < 1:
-            raise ValidationError("Field may be greater or equal to 1.")
+    def valid_number_of_items_to_select(self, number_of_items_to_select: int) -> None:
+        if number_of_items_to_select is not None:
+            validate_number_of_items_to_select(number_of_items_to_select)
