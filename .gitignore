@@ -11,3 +11,7 @@ assets/*
 !assets/documentation
 !assets/font
 *.gif
+
+*.so
+*.c
+*.o
