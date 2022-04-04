@@ -111,12 +111,32 @@ def format_updated_fields_mesage(
 
 
 def format_pick_list_users(users_mention: list[str], team_id: str) -> str:
-    user_infos = [
-        get_by_path(
-            get_user_info(team_id=team_id, user_id=get_user_id_from_mention(user)),
-            "profile.display_name",
+    user_infos = get_user_names_from_ids(users_mention, team_id)
+    return format_custom_selected_items(user_infos)
+
+
+def get_user_names_from_ids(users: list[str], team_id: str) -> list[str]:
+    return [
+        get_name_from_user(
+            get_user_info(team_id=team_id, user_id=get_user_id_from_mention(user))
         )
         or user
-        for user in users_mention
+        for user in users
     ]
-    return format_custom_selected_items(user_infos)
+
+
+def get_name_from_user(user: dict[str, any]) -> str:
+    possible_path_names = [
+        "profile.display_name",
+        "profile.display_name_normalized",
+        "profile.real_name",
+        "profile.real_name_normalized",
+        "real_name",
+    ]
+
+    for possible_path_name in possible_path_names:
+        name = get_by_path(user, possible_path_name)
+        if name:
+            return name
+
+    return None

@@ -8,5 +8,12 @@ NAMED_ARGS = [
         short="n",
         nargs="?",
         type=int,
-    )
+    ),
+    Arg(
+        name="with-wheel",
+        short="w",
+        nargs="?",
+        const="True",
+        type=bool,
+    ),
 ]

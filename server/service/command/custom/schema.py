@@ -14,6 +14,7 @@ class CustomCommandProcessorSchema(Schema):
     additional_text = fields.Str(required=False)
     number_of_items_to_select = fields.Int(required=False)
     should_update_weight_list = fields.Bool(required=False)
+    with_wheel = fields.Bool(required=False)
 
     @validates("command_name")
     def valid_command_name(self, value):

@@ -4,9 +4,11 @@ from server.service.command.custom.helper import (assert_selected_items,
 from server.service.command.custom.schema import CustomCommandProcessorSchema
 from server.service.selection.selection import clean_and_select_from_pick_list
 from server.service.slack.message import Message, MessageVisibility
-from server.service.slack.message_formatting import format_custom_command_message
+from server.service.slack.message_formatting import (format_custom_command_message,
+                                                     get_user_names_from_ids)
 from server.service.strategy.helper import get_strategy
 from server.service.validator.decorator import validate_schema
+from server.service.wheel.builder import build_wheel
 
 
 @validate_schema(CustomCommandProcessorSchema)
@@ -19,6 +21,7 @@ def custom_command_processor(
     additional_text: str = "",
     number_of_items_to_select: int = 1,
     should_update_weight_list: bool = False,
+    with_wheel: bool = False,
 ) -> dict[str, any]:
     command = Command.find_one_by_name_and_chanel(command_name, channel_id)
     pick_list = command.pick_list[:]
@@ -36,6 +39,12 @@ def custom_command_processor(
     )
     assert_selected_items(selected_items, command.only_active_users, command_name)
 
+    gif_frames = None
+    if with_wheel:
+        users_names = get_user_names_from_ids(pick_list, team_id)
+        gif_frames = build_wheel(
+            weight_list, users_names, users_names[pick_list.index(selected_items[0])]
+        )
     label = create_custom_command_label(command.label, additional_text)
 
     if should_update_weight_list:
@@ -50,6 +59,8 @@ def custom_command_processor(
         "selected_items": selected_items,
         "additional_text": additional_text,
         "number_of_items_to_select": number_of_items_to_select,
+        "gif_frames": gif_frames,
+        "with_wheel": with_wheel,
     }
 
 
