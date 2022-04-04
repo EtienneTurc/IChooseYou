@@ -2,10 +2,11 @@ import math
 
 import numpy as np
 
-from create_frame import create_frame  # type: ignore
 from server.service.wheel.constant import (COLORS, NB_FRAMES, TRIANGLE_SIZE, WHEEL_CENTER,
                                            WHEEL_HEIGHT, WHEEL_RADIUS, WHEEL_WIDTH)
 from server.service.wheel.image_helper import build_legend
+
+from create_frame import create_frame  # type: ignore  # isort:skip
 
 FILE_NAME = "main.gif"
 
