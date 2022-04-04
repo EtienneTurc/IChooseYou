@@ -36,7 +36,7 @@ test-cov:
 
 test-quality: flake8 isort
 
-test-all: test-quality test
+test-all: test-quality build test
 
 build-dev:
 	BUILD_HTML_FILE=True $(BUILD_CYTHON)
