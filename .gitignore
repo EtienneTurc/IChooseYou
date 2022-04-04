@@ -9,3 +9,5 @@ assets/*
 !assets/I_choose_you_logo.png
 !assets/I_choose_you_banner_centered.png
 !assets/documentation
+!assets/font
+*.gif

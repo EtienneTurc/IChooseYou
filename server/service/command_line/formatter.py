@@ -66,7 +66,11 @@ def parse_named_args(
     parser = create_named_arg_parser(expected_named_args)
     options, _ = parser.parse_known_args(named_arg)
 
-    return options_to_dict(options.__dict__, expected_named_args)
+    parsed_named_args = options_to_dict(options.__dict__, expected_named_args)
+    for arg in expected_named_args:
+        if arg.type is bool and parsed_named_args.get(arg.variable_name):
+            parsed_named_args[arg.variable_name] = True
+    return parsed_named_args
 
 
 def create_named_arg_parser(
@@ -83,14 +87,19 @@ def extract_additional_text(
 ) -> str:
     additional_text = " ".join(text_as_list)
     for arg in expected_named_args:
-        if values.get(arg.name):
+        if values.get(arg.variable_name):
             additional_text = additional_text.replace(
-                f"{arg.prefix}{arg.name} {values.get(arg.name)}",
+                f"{arg.prefix}{arg.name} {values.get(arg.variable_name)}",
                 "",
             )
             additional_text = additional_text.replace(
-                f"-{arg.short} {values.get(arg.name)}", ""
+                f"-{arg.short} {values.get(arg.variable_name)}", ""
             )
+
+            if arg.type is bool:
+                additional_text = additional_text.replace(f"{arg.prefix}{arg.name}", "")
+                additional_text = additional_text.replace(f"-{arg.short}", "")
+
             additional_text = additional_text.strip()
             additional_text = additional_text.replace("  ", " ")
     return additional_text

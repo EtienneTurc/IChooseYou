@@ -80,7 +80,7 @@ def build_number_of_elements_input(
                 "text": "Number between 1 and 50",
                 "emoji": True,
             },
-            "initial_value": number_of_items_to_select
+            "initial_value": str(number_of_items_to_select)
             if number_of_items_to_select
             else "1",
             "action_id": SlackCustomCommandModalActionId.NUMBER_OF_ITEMS_INPUT.value,

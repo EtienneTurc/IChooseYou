@@ -48,6 +48,16 @@ def send_built_message_to_channel(
 
 
 @create_slack_sdk_web_client
+def send_file_to_channel(
+    client: WebhookClient, *, channel_id: str, file_pointer, team_id: str, **kwargs
+) -> None:
+    return client.files_upload(
+        channels=channel_id,
+        file=file_pointer,
+    )
+
+
+@create_slack_sdk_web_client
 def delete_message_in_channel(
     client: WebClient, *, channel_id: str, ts: str, team_id: str, **kwargs
 ) -> None:

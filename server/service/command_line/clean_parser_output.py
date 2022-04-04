@@ -13,7 +13,11 @@ def get_as_string(value) -> str:
 def get_as_bool(value: bool) -> str:
     if value is None:
         return None
-    return value is True or str(value).lower() == "true"
+
+    if type(value) is bool:
+        return value
+
+    return False if value is False or str.lower(value) == "false" else True
 
 
 def get_as_list(value, *, clean_mentions):
