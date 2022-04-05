@@ -35,8 +35,11 @@ def send_message_and_gif_to_channel_with_resubmit_button(
             message_response = send_file_to_channel(
                 channel_id=channel_id, file_pointer=file_pointer.name, team_id=team_id
             )
-            wheel_ts = get_by_path(
-                message_response.data, f"file.shares.public.{channel_id}"
+            wheel_ts = (
+                get_by_path(message_response.data, f"file.shares.public.{channel_id}")
+                or get_by_path(
+                    message_response.data, f"file.shares.private.{channel_id}"
+                )
             )[0]["ts"]
             time.sleep(5)  # Sleep for 5 seconds
 
