@@ -20,6 +20,7 @@ def resubmit_command_and_delete_message_processor(
     wheel_ts: str = None, *, ts: str, **kwargs
 ) -> dict[str, any]:
     delete_message_processor(ts=ts, **kwargs)
-    delete_message_processor(ts=wheel_ts, **kwargs)
+    if wheel_ts:
+        delete_message_processor(ts=wheel_ts, **kwargs)
 
     return custom_command_processor(**kwargs, should_update_weight_list=True)
