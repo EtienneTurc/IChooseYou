@@ -43,15 +43,12 @@ def send_message_and_gif_to_channel_with_resubmit_button(
             )[0]["ts"]
             time.sleep(5)  # Sleep for 5 seconds
 
-    if kwargs.get("wheel_ts"):
-        del kwargs["wheel_ts"]
-
+    kwargs["wheel_ts"] = wheel_ts  # Overwrite previous value
     send_message_to_channel_with_resubmit_button(
         channel_id=channel_id,
         team_id=team_id,
         with_wheel=with_wheel,
         user_id=user_id,
-        wheel_ts=wheel_ts,
         **kwargs,
     )
 
