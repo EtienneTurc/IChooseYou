@@ -97,7 +97,9 @@ def extract_additional_text(
             )
 
             if arg.type is bool:
-                additional_text = additional_text.replace(f"{arg.prefix}{arg.name}", "")
+                additional_text = additional_text.replace(
+                    f"{arg.prefix}{arg.name}", "", 1
+                )
                 additional_text = additional_text.replace(f"-{arg.short}", "")
 
             additional_text = additional_text.strip()
