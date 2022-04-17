@@ -4,32 +4,44 @@ import time
 from server.service.helper.dict_helper import get_by_path
 from server.service.slack.message import Message, MessageStatus, MessageVisibility
 from server.service.slack.responder.enum import SlackResubmitButtonsActionId
-from server.service.slack.response.api_response import (send_built_message_to_channel,
+from server.service.slack.response.api_response import (complete_workflow,
+                                                        send_built_message_to_channel,
                                                         send_file_to_channel,
                                                         send_message_to_channel)
 from server.service.wheel.image_helper import save_gif
 
 
+def send_message_and_complete_workflow(send_to_slack: bool, **kwargs):
+    if send_to_slack:
+        send_message_and_gif_to_channel_with_resubmit_button(
+            with_ephemeral=False, **kwargs
+        )
+    complete_workflow(**kwargs)
+
+
 def send_message_and_gif_to_channel_with_resubmit_button(
     *,
+    message: Message,
     channel_id: str,
     team_id: str,
     user_id: str,
     gif_frames: list[any],
     with_wheel: bool,
+    with_ephemeral: bool = True,
     **kwargs,
 ):
     wheel_ts = None
     if with_wheel:
-        send_message_to_channel(
-            message=Message(
-                content="Spin that wheel :ferris_wheel:",
-                visibility=MessageVisibility.HIDDEN,
-            ),
-            channel_id=channel_id,
-            user_id=user_id,
-            team_id=team_id,
-        )
+        if with_ephemeral:
+            send_message_to_channel(
+                message=Message(
+                    content="Spin that wheel :ferris_wheel:",
+                    visibility=MessageVisibility.HIDDEN,
+                ),
+                channel_id=channel_id,
+                user_id=user_id,
+                team_id=team_id,
+            )
         with open("wheel.gif", "wb") as file_pointer:
             save_gif(file_pointer, gif_frames)
             message_response = send_file_to_channel(
@@ -44,13 +56,19 @@ def send_message_and_gif_to_channel_with_resubmit_button(
             time.sleep(5)  # Sleep for 5 seconds
 
     kwargs["wheel_ts"] = wheel_ts  # Overwrite previous value
-    send_message_to_channel_with_resubmit_button(
-        channel_id=channel_id,
-        team_id=team_id,
-        with_wheel=with_wheel,
-        user_id=user_id,
-        **kwargs,
-    )
+    if with_ephemeral:
+        send_message_to_channel_with_resubmit_button(
+            message=message,
+            channel_id=channel_id,
+            team_id=team_id,
+            with_wheel=with_wheel,
+            user_id=user_id,
+            **kwargs,
+        )
+    else:
+        send_message_to_channel(
+            message=message, channel_id=channel_id, user_id=user_id, team_id=team_id
+        )
 
 
 def send_message_to_channel_with_resubmit_button(
