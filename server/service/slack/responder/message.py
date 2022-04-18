@@ -45,7 +45,9 @@ def send_message_and_gif_to_channel_with_resubmit_button(
         with open("wheel.gif", "wb") as file_pointer:
             save_gif(file_pointer, gif_frames)
             message_response = send_file_to_channel(
-                channel_id=channel_id, file_pointer=file_pointer.name, team_id=team_id
+                channel_id=channel_id,
+                file_pointer_name=file_pointer.name,
+                team_id=team_id,
             )
             wheel_ts = (
                 get_by_path(message_response.data, f"file.shares.public.{channel_id}")

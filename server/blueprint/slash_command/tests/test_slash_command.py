@@ -279,3 +279,25 @@ def test_slash_command_custom_multi_select(client):
         name=command_name, channel_id=channel_id
     )
     assert command.weight_list == [1, 0]
+
+
+def test_slash_command_custom_with_wheel(client):
+    Command.create(
+        name="test_custom",
+        channel_id="1234",
+        label="label",
+        description="description",
+        pick_list=["pick_1", "pick_2"],
+        weight_list=[1 / 2, 1 / 2],
+        strategy=Strategy.uniform.name,
+        self_exclude=False,
+        only_active_users=False,
+        created_by_user_id="4321",
+    )
+    text = "test_custom -w"
+    response, slack_message = call_webhook(client, text)
+
+    assert response.status_code == 200
+    assert "Spin that wheel :ferris_wheel:" in slack_message
+    assert "File wheel.gif uploaded" in slack_message
+    assert "Hey !" in slack_message
