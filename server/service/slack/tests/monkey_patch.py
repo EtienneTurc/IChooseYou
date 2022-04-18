@@ -66,6 +66,18 @@ def monkey_patch_workflows_stepFailed(
     print(error)
 
 
+def monkey_patch_files_upload(self, *, file: str, channels, **kwargs):
+    print(f"File {file} uploaded")
+
+    from dataclasses import dataclass
+
+    @dataclass
+    class Data:
+        data: any
+
+    return Data(data={"file": {"shares": {"public": {channels: [{"ts": "1234"}]}}}})
+
+
 get_web_client.__code__ = monkey_patch_get_web_client.__code__
 
 WebClient.conversations_members.__code__ = (
@@ -82,6 +94,7 @@ WebClient.workflows_stepCompleted.__code__ = (
     monkey_patch_workflows_stepCompleted.__code__
 )
 WebClient.workflows_stepFailed.__code__ = monkey_patch_workflows_stepFailed.__code__
+WebClient.files_upload.__code__ = monkey_patch_files_upload.__code__
 
 WebhookClient.send.__code__ = monkey_patch_webhook_client_send.__code__
 

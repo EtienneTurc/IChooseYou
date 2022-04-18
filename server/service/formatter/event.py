@@ -1,3 +1,8 @@
+from server.service.command.custom.command_line_args import \
+    NAMED_ARGS as CUSTOM_NAMED_ARGS
+from server.service.command.custom.command_line_args import \
+    POSITIONAL_ARG as CUSTOM_POSITIONAL_ARGS
+from server.service.command_line.formatter import parse_command_line
 from server.service.formatter.interactivity import extract_inputs_from_workflow_payload
 from server.service.formatter.slash_command import extract_command_from_text
 from server.service.helper.dict_helper import get_by_path
@@ -41,7 +46,6 @@ def format_event_complete_workflow_payload(payload):
 
     return {
         "command_name": command_name,
-        "text": text,
         "workflow_step_execute_id": workflow_step_execute_id,
         "channel_id": inputs.get(
             WORKFLOW_ACTION_ID_TO_VARIABLE_NAME[WorkflowActionId.CHANNEL_INPUT.value]
@@ -51,5 +55,6 @@ def format_event_complete_workflow_payload(payload):
                 WorkflowActionId.SEND_TO_SLACK_CHECKBOX.value
             ]
         ),
+        **parse_command_line(text, CUSTOM_POSITIONAL_ARGS, CUSTOM_NAMED_ARGS),
         **format_event_basic_payload(payload),
     }

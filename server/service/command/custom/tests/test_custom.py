@@ -7,6 +7,8 @@ from server.service.command.custom.tests.command_fixture import *  # noqa: F401,
 from server.service.error.type.bad_request_error import BadRequestError
 from server.service.error.type.missing_element_error import MissingElementError
 from server.service.slack.message import MessageVisibility
+from server.service.wheel.constant import (LEGEND_WIDTH, NB_FRAMES, WHEEL_HEIGHT,
+                                           WHEEL_WIDTH)
 from server.tests.test_fixture import *  # noqa: F401, F403
 
 user_id = "1234"
@@ -162,3 +164,39 @@ def test_create_fail_if_number_of_items_to_select_is_too_high(client):
             command_name="sqd",
             number_of_items_to_select=51,
         )
+
+
+def test_custom_command_with_no_wheel(basic_command):
+    response = custom_command_processor(
+        command_name=basic_command.name,
+        additional_text="",
+        number_of_items_to_select=1,
+        channel_id=basic_command.channel_id,
+        team_id=team_id,
+        user_id=user_id,
+        with_wheel=False,
+    )
+
+    with_wheel = response.get("with_wheel")
+    assert with_wheel is False
+
+    gif_frames = response.get("gif_frames")
+    assert gif_frames is None
+
+
+def test_custom_command_with_wheel(basic_command):
+    response = custom_command_processor(
+        command_name=basic_command.name,
+        additional_text="",
+        number_of_items_to_select=1,
+        channel_id=basic_command.channel_id,
+        team_id=team_id,
+        user_id=user_id,
+        with_wheel=True,
+    )
+
+    with_wheel = response.get("with_wheel")
+    assert with_wheel is True
+
+    gif_frames = response.get("gif_frames")
+    assert gif_frames.shape == (NB_FRAMES, WHEEL_HEIGHT, WHEEL_WIDTH + LEGEND_WIDTH, 3)

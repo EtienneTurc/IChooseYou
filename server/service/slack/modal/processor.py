@@ -23,6 +23,7 @@ def build_custom_command_modal_processor(
     channel_id: str,
     additional_text: str = None,
     number_of_items_to_select: int = None,
+    with_wheel: bool = False,
     **kwargs,
 ) -> dict[str, any]:
     command = Command.find_one_by_name_and_chanel(command_name, channel_id)
@@ -32,6 +33,7 @@ def build_custom_command_modal_processor(
         size_of_pick_list=len(command.pick_list),
         additional_text=additional_text,
         number_of_items_to_select=number_of_items_to_select,
+        with_wheel=with_wheel,
     )
     return {"modal": modal}
 

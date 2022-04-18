@@ -67,7 +67,6 @@ def workflow_step_execute_processor(
     team_id: str,
     user_id: str,
     channel_id: str,
-    text: str,
     **kwargs,
 ) -> dict[str, any]:
     custom_command_response = custom_command_processor(
@@ -76,7 +75,7 @@ def workflow_step_execute_processor(
         team_id=team_id,
         user_id=user_id,
         should_update_weight_list=True,
-        **parse_command_line(text, CUSTOM_POSITIONAL_ARGS, CUSTOM_NAMED_ARGS),
+        **kwargs,
     )
 
     outputs = {}
@@ -92,5 +91,5 @@ def workflow_step_execute_processor(
 
     return {
         "outputs": outputs,
-        "message": custom_command_response.get("message"),
+        **custom_command_response,
     }
