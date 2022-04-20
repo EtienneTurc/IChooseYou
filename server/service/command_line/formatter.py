@@ -100,7 +100,7 @@ def extract_additional_text(
                 additional_text = additional_text.replace(
                     f"{arg.prefix}{arg.name}", "", 1
                 )
-                additional_text = additional_text.replace(f"-{arg.short}", "")
+                additional_text = additional_text.replace(f"-{arg.short}", "", 1)
 
             additional_text = additional_text.strip()
             additional_text = additional_text.replace("  ", " ")
