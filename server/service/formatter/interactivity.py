@@ -4,7 +4,8 @@ from enum import Enum
 from server.blueprint.interactivity.action import BlueprintInteractivityAction
 from server.orm.command import Command
 from server.service.helper.dict_helper import clean_none_values, get_by_path
-from server.service.slack.helper import get_callback_action, get_id_from_callback_id
+from server.service.slack.helper import (get_callback_action, get_id_from_callback_id,
+                                         get_index_from_free_pick_list_block_id)
 from server.service.slack.message_formatting import format_mention_user
 from server.service.slack.modal.custom_command_modal import (
     SLACK_CUSTOM_COMMAND_ACTION_ID_TO_VARIABLE_NAME,
@@ -14,7 +15,8 @@ from server.service.slack.modal.instant_command_modal import (
     SLACK_INSTANT_COMMAND_MODAL_VALUE_PATH, SlackInstantCommandModalActionId)
 from server.service.slack.modal.upsert_command_modal import (
     SLACK_UPSERT_COMMAND_ACTION_ID_TO_VARIABLE_NAME,
-    SLACK_UPSERT_COMMAND_MODAL_VALUE_PATH, SlackUpsertCommandModalActionId)
+    SLACK_UPSERT_COMMAND_MODAL_VALUE_PATH, SlackUpsertCommandModalActionId,
+    SlackUpsertCommandModalBlockId)
 from server.service.slack.workflow.enum import (WORKFLOW_ACTION_ID_TO_VARIABLE_NAME,
                                                 WORKFLOW_VALUE_PATH, WorkflowActionId)
 
@@ -130,6 +132,23 @@ def extract_inputs_from_view_values_payload(
     return inputs
 
 
+def extract_free_pick_list_input(input_payload: dict[str, any]) -> dict[str, any]:
+    for block_id in input_payload:
+        if SlackUpsertCommandModalBlockId.FREE_PICK_LIST_BLOCK_ID.value in block_id:
+            value = get_by_path(
+                input_payload.get(block_id),
+                SLACK_UPSERT_COMMAND_MODAL_VALUE_PATH[
+                    SlackUpsertCommandModalActionId.FREE_PICK_LIST_INPUT.value
+                ],
+            )
+
+            return {
+                "free_pick_list_item": value,
+                "free_pick_list_input_block_id": block_id,
+            }
+    return {}
+
+
 def extract_data_from_metadata(private_metadata: str) -> dict[str, any]:
     data = json.loads(private_metadata)
     return clean_none_values(data)
@@ -171,6 +190,16 @@ def format_main_modal_manage_command_payload(payload: dict[str, any]) -> dict[st
     }
 
 
+def get_pick_list(
+    only_users_in_pick_list: bool, user_pick_list: list[str], free_pick_list: list[str]
+) -> list[str]:
+    if only_users_in_pick_list:
+        if user_pick_list is None:
+            return []
+        return [format_mention_user(user) for user in user_pick_list]
+    return free_pick_list
+
+
 def format_create_command_payload(payload: dict[str, any]) -> dict[str, any]:
     extracted_value = extract_inputs_from_view_values_payload(
         get_by_path(payload, "view.state.values"),
@@ -178,9 +207,15 @@ def format_create_command_payload(payload: dict[str, any]) -> dict[str, any]:
         SLACK_UPSERT_COMMAND_MODAL_VALUE_PATH,
         SLACK_UPSERT_COMMAND_ACTION_ID_TO_VARIABLE_NAME,
     )
-    extracted_value["pick_list"] = [
-        format_mention_user(user) for user in extracted_value["pick_list"]
-    ]
+    metadata = extract_data_from_metadata(get_by_path(payload, "view.private_metadata"))
+
+    extracted_value["user_pick_list"] = extracted_value.get("user_pick_list")
+    extracted_value["free_pick_list"] = metadata.get("free_pick_list")
+    extracted_value["pick_list"] = get_pick_list(
+        extracted_value.get("only_users_in_pick_list"),
+        extracted_value["user_pick_list"],
+        extracted_value["free_pick_list"],
+    )
 
     return {
         **extracted_value,
@@ -195,19 +230,27 @@ def format_update_command_payload(payload: dict[str, any]) -> dict[str, any]:
         SLACK_UPSERT_COMMAND_MODAL_VALUE_PATH,
         SLACK_UPSERT_COMMAND_ACTION_ID_TO_VARIABLE_NAME,
     )
-    extracted_value["pick_list"] = [
-        format_mention_user(user) for user in extracted_value["pick_list"]
-    ]
-
     metadata = extract_data_from_metadata(get_by_path(payload, "view.private_metadata"))
-    extracted_value["command_to_update"] = metadata["command_name"]
+
+    extracted_value["command_to_update"] = metadata.get("command_name")
     extracted_value["channel_id"], extracted_value["new_channel_id"] = (
-        metadata["channel_id"],
+        metadata.get("channel_id"),
         extracted_value["channel_id"],
+    )
+    extracted_value["user_pick_list"] = extracted_value.get(
+        "user_pick_list"
+    ) or metadata.get("user_pick_list")
+
+    extracted_value["free_pick_list"] = metadata.get("free_pick_list")
+    extracted_value["pick_list"] = get_pick_list(
+        extracted_value.get("only_users_in_pick_list"),
+        extracted_value["user_pick_list"],
+        extracted_value["free_pick_list"],
     )
 
     return {
         **extracted_value,
+        **extract_free_pick_list_input(get_by_path(payload, "view.state.values")),
         **format_interactivity_basic_payload(payload),
     }
 
@@ -274,4 +317,23 @@ def get_basic_data_from_command_id(command_id: str):
     return {
         "channel_id": command.channel_id,
         "command_name": command.name,
+    }
+
+
+def format_upsert_modal_block_action(payload: dict[str, any]):
+    return {
+        "view_id": get_by_path(payload, "view.id"),
+        "callback_id": get_by_path(payload, "view.callback_id"),
+        **format_update_command_payload(payload),
+        **format_interactivity_basic_payload(payload),
+    }
+
+
+def format_remove_element_from_pick_list_payload(payload: dict[str, any]):
+    action = payload.get("actions")[0]
+    block_id = action.get("block_id")
+    index_item_to_remove = get_index_from_free_pick_list_block_id(block_id)
+    return {
+        "index_item_to_remove": index_item_to_remove,
+        **format_upsert_modal_block_action(payload),
     }

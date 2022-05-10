@@ -89,6 +89,13 @@ def open_view_modal(
 
 
 @create_slack_sdk_web_client
+def update_view_modal(
+    client: WebClient, *, modal: str, view_id: str, team_id: str, **kwargs
+) -> None:
+    client.views_update(view_id=view_id, view=modal)
+
+
+@create_slack_sdk_web_client
 def push_view_modal(
     client: WebClient, *, modal: str, trigger_id: str, team_id: str, **kwargs
 ) -> None:

@@ -2,7 +2,8 @@ from server.orm.command import Command
 from server.service.command.create.schema import CreateCommandProcessorSchema
 from server.service.command.helper import format_pick_list
 from server.service.slack.message import Message, MessageStatus, MessageVisibility
-from server.service.slack.message_formatting import format_new_command_message
+from server.service.slack.message_formatting import (are_only_users_in_pick_list,
+                                                     format_new_command_message)
 from server.service.strategy.enum import Strategy
 from server.service.validator.decorator import validate_schema
 
@@ -17,11 +18,16 @@ def create_command_processor(
     label: str = "",
     description: str = "",
     pick_list: list[str],
+    only_users_in_pick_list: bool = None,
     strategy: str = Strategy.uniform.name,
     self_exclude: bool = False,
     only_active_users: bool = False,
 ) -> dict[str, any]:
     pick_list = format_pick_list(pick_list, team_id, channel_id)
+
+    if only_users_in_pick_list is None:
+        only_users_in_pick_list = are_only_users_in_pick_list(pick_list)
+
     strategy_enum = Strategy[strategy]
     weight_list = strategy_enum.value.create_weight_list(len(pick_list))
 
@@ -31,6 +37,7 @@ def create_command_processor(
         label=label,
         description=description,
         pick_list=pick_list,
+        only_users_in_pick_list=only_users_in_pick_list,
         self_exclude=self_exclude,
         only_active_users=only_active_users,
         weight_list=weight_list,
@@ -45,6 +52,7 @@ def create_command_processor(
         pick_list=created_command.pick_list,
         command_description=created_command.description,
         current_user_id=user_id,
+        only_users_in_pick_list=only_users_in_pick_list,
     )
 
     return {

@@ -20,6 +20,7 @@ def test_delete(client):
         label="label",
         description="description",
         pick_list=["1", "2"],
+        only_users_in_pick_list=False,
         weight_list=[1 / 2, 1 / 2],
         strategy=Strategy.uniform.name,
         self_exclude=True,

@@ -17,3 +17,7 @@ def get_callback_action(callback_id: str) -> str:
 
 def get_id_from_callback_id(callback_id: str) -> str:
     return callback_id.split(".")[1]
+
+
+def get_index_from_free_pick_list_block_id(free_pick_list_block_id: str) -> int:
+    return int(free_pick_list_block_id.split("_")[-1])

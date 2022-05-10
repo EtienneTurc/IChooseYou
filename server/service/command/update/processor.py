@@ -24,6 +24,7 @@ def update_command_processor(
     label: str = None,
     description: str = None,
     pick_list: list[str] = None,
+    only_users_in_pick_list: bool = None,
     strategy: str = None,
     add_to_pick_list: list[str] = None,
     remove_from_pick_list: list[str] = None,
@@ -39,6 +40,7 @@ def update_command_processor(
         description=description,
         strategy=strategy,
         pick_list=pick_list,
+        only_users_in_pick_list=only_users_in_pick_list,
         add_to_pick_list=add_to_pick_list,
         remove_from_pick_list=remove_from_pick_list,
         self_exclude=self_exclude,
@@ -58,6 +60,7 @@ def update_command_processor(
         team_id=team_id,
         fields_updated=fields_updated,
         current_user_id=user_id,
+        only_users_in_pick_list=updated_command.only_users_in_pick_list,
     )
 
     return {
@@ -77,6 +80,7 @@ def compute_new_values(command: Command, **payload: dict[str, any]) -> dict[str,
             "label",
             "description",
             "self_exclude",
+            "only_users_in_pick_list",
             "only_active_users",
             "strategy",
         ],

@@ -10,6 +10,7 @@ default_command = {
     "label": "basic command label",
     "description": "basic command description",
     "pick_list": ["1", "2", "3"],
+    "only_users_in_pick_list": False,
     "self_exclude": False,
     "only_active_users": False,
     "weight_list": [1 / 3, 1 / 3, 1 / 3],

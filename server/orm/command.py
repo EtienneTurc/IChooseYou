@@ -13,6 +13,7 @@ class Command(MongoModel):
     label = fields.CharField(blank=True)
     description = fields.CharField(blank=True)
     pick_list = fields.ListField()
+    only_users_in_pick_list = fields.BooleanField()
     self_exclude = fields.BooleanField()
     only_active_users = fields.BooleanField()
     weight_list = fields.ListField()
@@ -50,6 +51,7 @@ class Command(MongoModel):
         label,
         description,
         pick_list,
+        only_users_in_pick_list,
         self_exclude,
         only_active_users,
         weight_list,
@@ -66,6 +68,7 @@ class Command(MongoModel):
                 label,
                 description,
                 pick_list,
+                only_users_in_pick_list,
                 self_exclude,
                 only_active_users,
                 weight_list,

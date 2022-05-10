@@ -16,6 +16,7 @@ class UpdateCommandProcessorSchema(Schema):
     label = fields.Str(required=False)
     description = fields.Str(required=False)
     pick_list = fields.List(fields.Str(required=False))
+    only_users_in_pick_list = fields.Bool(required=False)
     add_to_pick_list = fields.List(fields.Str(required=False))
     remove_from_pick_list = fields.List(fields.Str(required=False))
     strategy = fields.Str(required=False)
