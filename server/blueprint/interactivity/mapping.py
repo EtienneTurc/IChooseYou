@@ -16,8 +16,8 @@ from server.service.formatter.interactivity import (
     format_main_modal_run_instant_command_payload,
     format_main_modal_select_command_payload,
     format_remove_element_from_pick_list_payload, format_run_custom_command_payload,
-    format_run_instant_command_payload, format_update_command_payload,
-    format_upsert_modal_block_action)
+    format_run_instant_command_modal_block_action, format_run_instant_command_payload,
+    format_update_command_payload, format_upsert_modal_block_action)
 from server.service.slack.interactivity.processor import (
     delete_message_processor, resubmit_command_and_delete_message_processor)
 from server.service.slack.modal.enum import SlackModalSubmitAction
@@ -145,21 +145,61 @@ BLUEPRINT_INTERACTIVITY_ACTION_TO_DATA_FLOW = {
     # -------------------------------------------------------------------------
     # --------------- BLUEPRINT INTERACTIVITY BLOCK ACTIONS -------------------
     # -------------------------------------------------------------------------
+    # Upsert command modal
     BlueprintInteractivityBlockAction.UPSERT_MODAL_SWITCH_PICK_LIST_INPUT.value: DataFlow(
         formatter=format_upsert_modal_block_action,
-        processor=switch_pick_list_processor,
+        processor=lambda **kwargs: switch_pick_list_processor(False, **kwargs),
         responder=update_view_modal,
         error_handler=on_error_handled_send_message,
     ),
-    BlueprintInteractivityBlockAction.UPSERT_MODAL_ADD_ELEMENT_TO_PICK_LIST.value: DataFlow(  # noqa E501
+    BlueprintInteractivityBlockAction.UPSERT_MODAL_ADD_FREE_ELEMENT_TO_PICK_LIST.value: DataFlow(  # noqa E501
         formatter=format_upsert_modal_block_action,
-        processor=add_element_to_pick_list_processor,
+        processor=lambda **kwargs: add_element_to_pick_list_processor(False, **kwargs),
+        responder=update_view_modal,
+        error_handler=on_error_handled_send_message,
+    ),
+    BlueprintInteractivityBlockAction.UPSERT_MODAL_ADD_USER_TO_PICK_LIST.value: DataFlow(
+        formatter=format_upsert_modal_block_action,
+        processor=lambda **kwargs: add_element_to_pick_list_processor(False, **kwargs),
         responder=update_view_modal,
         error_handler=on_error_handled_send_message,
     ),
     BlueprintInteractivityBlockAction.UPSERT_MODAL_REMOVE_ELEMENT_FROM_PICK_LIST.value: DataFlow(  # noqa E501
-        formatter=format_remove_element_from_pick_list_payload,
-        processor=remove_element_from_pick_list_processor,
+        formatter=lambda *args: format_remove_element_from_pick_list_payload(
+            False, *args
+        ),
+        processor=lambda **kwargs: remove_element_from_pick_list_processor(
+            False, **kwargs
+        ),
+        responder=update_view_modal,
+        error_handler=on_error_handled_send_message,
+    ),
+    # Instant command modal
+    BlueprintInteractivityBlockAction.INSTANT_COMMAND_MODAL_SWITCH_PICK_LIST_INPUT.value: DataFlow(  # noqa E501
+        formatter=format_run_instant_command_modal_block_action,
+        processor=lambda **kwargs: switch_pick_list_processor(True, **kwargs),
+        responder=update_view_modal,
+        error_handler=on_error_handled_send_message,
+    ),
+    BlueprintInteractivityBlockAction.INSTANT_COMMAND_MODAL_ADD_FREE_ELEMENT_TO_PICK_LIST.value: DataFlow(  # noqa E501
+        formatter=format_run_instant_command_modal_block_action,
+        processor=lambda **kwargs: add_element_to_pick_list_processor(True, **kwargs),
+        responder=update_view_modal,
+        error_handler=on_error_handled_send_message,
+    ),
+    BlueprintInteractivityBlockAction.INSTANT_COMMAND_MODAL_ADD_USER_TO_PICK_LIST.value: DataFlow(  # noqa E501
+        formatter=format_run_instant_command_modal_block_action,
+        processor=lambda **kwargs: add_element_to_pick_list_processor(True, **kwargs),
+        responder=update_view_modal,
+        error_handler=on_error_handled_send_message,
+    ),
+    BlueprintInteractivityBlockAction.INSTANT_COMMAND_MODAL_REMOVE_ELEMENT_FROM_PICK_LIST.value: DataFlow(  # noqa E501
+        formatter=lambda *args: format_remove_element_from_pick_list_payload(
+            True, *args
+        ),
+        processor=lambda **kwargs: remove_element_from_pick_list_processor(
+            True, **kwargs
+        ),
         responder=update_view_modal,
         error_handler=on_error_handled_send_message,
     ),

@@ -1,21 +1,29 @@
+import json
 from enum import Enum
 
 from server.service.slack.message_formatting import get_user_id_from_mention
 from server.service.slack.modal.enum import SlackModalSubmitAction
+from server.service.slack.modal.pick_list_blocks import PickListBlocksFactory
 
 
 class SlackInstantCommandModalActionId(Enum):
-    CHANNEL_SELECT = "channel_select"
-    LABEL_INPUT = "label_input"
-    PICK_LIST_INPUT = "pick_list_input"
-    NUMBER_OF_ITEMS_INPUT = "number_of_items_input"
-    ONLY_ACTIVE_USERS_CHECKBOX = "only_active_users_checkbox"
+    CHANNEL_SELECT = "instant_command_channel_select"
+    LABEL_INPUT = "instant_command_label_input"
+    USER_SELECT_ENABLED_BUTTON = "instant_command_user_select_enabled_button"
+    FREE_PICK_LIST_INPUT = "instant_command_free_pick_list_input"
+    USER_PICK_LIST_INPUT = "instant_command_user_pick_list_input"
+    REMOVE_FROM_PICK_LIST_BUTTON = "instant_command_remove_from_pick_list_button"
+    NUMBER_OF_ITEMS_INPUT = "instant_command_number_of_items_input"
+    ONLY_ACTIVE_USERS_CHECKBOX = "instant_command_only_active_users_checkbox"
 
 
 class SlackInstantCommandModalBlockId(Enum):
     CHANNEL_BLOCK_ID = "channel_block_id"
     LABEL_BLOCK_ID = "label_block_id"
-    PICK_LIST_BLOCK_ID = "pick_list_block_id"
+    USER_SELECT_ENABLED_BLOCK_ID = "user_select_enabled_block_id"
+    FREE_PICK_LIST_BLOCK_ID = "free_pick_list_block_id"
+    USER_PICK_LIST_BLOCK_ID = "user_pick_list_block_id"
+    REMOVE_FROM_PICK_LIST_BLOCK_ID = "remove_from_pick_list_block_id"
     NUMBER_OF_ITEMS_BLOCK_ID = "number_of_items_block_id"
     CHECK_BOXES_BLOCK_ID = "check_boxes_block_id"
 
@@ -23,7 +31,10 @@ class SlackInstantCommandModalBlockId(Enum):
 SLACK_INSTANT_COMMAND_MODAL_VALUE_PATH = {
     SlackInstantCommandModalActionId.CHANNEL_SELECT.value: f"{SlackInstantCommandModalBlockId.CHANNEL_BLOCK_ID.value}.{SlackInstantCommandModalActionId.CHANNEL_SELECT.value}.selected_channel",  # noqa E501
     SlackInstantCommandModalActionId.LABEL_INPUT.value: f"{SlackInstantCommandModalBlockId.LABEL_BLOCK_ID.value}.{SlackInstantCommandModalActionId.LABEL_INPUT.value}.value",  # noqa E501
-    SlackInstantCommandModalActionId.PICK_LIST_INPUT.value: f"{SlackInstantCommandModalBlockId.PICK_LIST_BLOCK_ID.value}.{SlackInstantCommandModalActionId.PICK_LIST_INPUT.value}.selected_users",  # noqa E501
+    SlackInstantCommandModalActionId.USER_SELECT_ENABLED_BUTTON.value: "",  # noqa E501
+    SlackInstantCommandModalActionId.FREE_PICK_LIST_INPUT.value: f"{SlackInstantCommandModalActionId.FREE_PICK_LIST_INPUT.value}.value",  # noqa E501
+    SlackInstantCommandModalActionId.USER_PICK_LIST_INPUT.value: f"{SlackInstantCommandModalActionId.USER_PICK_LIST_INPUT.value}.selected_user",  # noqa E501
+    SlackInstantCommandModalActionId.REMOVE_FROM_PICK_LIST_BUTTON.value: f"{SlackInstantCommandModalBlockId.REMOVE_FROM_PICK_LIST_BLOCK_ID.value}.{SlackInstantCommandModalActionId.REMOVE_FROM_PICK_LIST_BUTTON.value}.value",  # noqa E501
     SlackInstantCommandModalActionId.NUMBER_OF_ITEMS_INPUT.value: f"{SlackInstantCommandModalBlockId.NUMBER_OF_ITEMS_BLOCK_ID.value}.{SlackInstantCommandModalActionId.NUMBER_OF_ITEMS_INPUT.value}.value",  # noqa E501
     SlackInstantCommandModalActionId.ONLY_ACTIVE_USERS_CHECKBOX.value: f"{SlackInstantCommandModalBlockId.CHECK_BOXES_BLOCK_ID.value}.{SlackInstantCommandModalActionId.ONLY_ACTIVE_USERS_CHECKBOX.value}.selected_options",  # noqa E501
 }
@@ -31,10 +42,17 @@ SLACK_INSTANT_COMMAND_MODAL_VALUE_PATH = {
 SLACK_INSTANT_COMMAND_ACTION_ID_TO_VARIABLE_NAME = {
     SlackInstantCommandModalActionId.CHANNEL_SELECT.value: "channel_id",
     SlackInstantCommandModalActionId.LABEL_INPUT.value: "label",
-    SlackInstantCommandModalActionId.PICK_LIST_INPUT.value: "pick_list",
+    SlackInstantCommandModalActionId.USER_SELECT_ENABLED_BUTTON.value: "user_select_enabled",  # noqa E501
+    SlackInstantCommandModalActionId.FREE_PICK_LIST_INPUT.value: "free_pick_list_item",
+    SlackInstantCommandModalActionId.USER_PICK_LIST_INPUT.value: "user_pick_list_item",
+    SlackInstantCommandModalActionId.REMOVE_FROM_PICK_LIST_BUTTON.value: "remove_from_pick_list_button",  # noqa E501
     SlackInstantCommandModalActionId.NUMBER_OF_ITEMS_INPUT.value: "number_of_items_to_select",  # noqa E501
     SlackInstantCommandModalActionId.ONLY_ACTIVE_USERS_CHECKBOX.value: "only_active_users",  # noqa E501
 }
+
+pick_list_blocks_factory = PickListBlocksFactory(
+    SlackInstantCommandModalActionId, SlackInstantCommandModalBlockId
+)
 
 
 def build_header() -> dict[str, any]:
@@ -173,15 +191,14 @@ def build_check_boxes(*, only_active_users: bool) -> dict[str, any]:
     }
 
 
-def build_metadata(channel_id: str, command_name: str) -> str:
-    return f'{{"channel_id": "{channel_id}", "command_name": "{command_name}"}}'
-
-
 def build_instant_command_modal(
     *,
+    team_id: str,
     channel_id: str = None,
-    command_name: str = None,
     label: str = None,
+    user_select_enabled: bool = True,
+    free_pick_list_item: str = None,
+    free_pick_list_input_block_id: str = None,
     pick_list: list[str] = None,
     only_active_users: bool = None,
     number_of_items_to_select: int = None,
@@ -191,7 +208,13 @@ def build_instant_command_modal(
     blocks = [
         build_channel_select(channel_id),
         build_label_input(label),
-        build_pick_list_input(pick_list),
+        *pick_list_blocks_factory.buld_pick_list_blocks(
+            team_id=team_id,
+            user_select_enabled=user_select_enabled,
+            free_pick_list_item=free_pick_list_item,
+            free_pick_list_input_block_id=free_pick_list_input_block_id,
+            pick_list=pick_list,
+        ),
         build_number_of_elements_input(number_of_items_to_select),
         build_check_boxes(only_active_users=only_active_users),
     ]
@@ -200,5 +223,11 @@ def build_instant_command_modal(
         **modal_header,
         "blocks": blocks,
         "callback_id": SlackModalSubmitAction.RUN_INSTANT_COMMAND.value,
-        "private_metadata": build_metadata(channel_id, command_name),
+        "private_metadata": json.dumps(
+            {
+                "channel_id": channel_id,
+                "pick_list": pick_list,
+                "user_select_enabled": user_select_enabled,
+            }
+        ),
     }
