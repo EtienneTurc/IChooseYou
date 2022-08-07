@@ -23,7 +23,7 @@ def instant_command_processor(
     strategy = Strategy.uniform
     weight_list = strategy.value.create_weight_list(len(pick_list))
 
-    selected_items = clean_and_select_from_pick_list(
+    selected_items, _, _ = clean_and_select_from_pick_list(
         pick_list=pick_list,
         weight_list=weight_list,
         user_id=user_id,

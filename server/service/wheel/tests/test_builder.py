@@ -11,7 +11,7 @@ from server.service.wheel.constant import (LEGEND_WIDTH, NB_FRAMES, WHEEL_HEIGHT
 @pytest.mark.parametrize(
     "proportions, initial_angle, expected_sections",
     [
-        ([1], 0, [[0, 0]]),
+        ([1], 0, [[0, 2 * math.pi]]),
         (
             [0.25, 0.25, 0.5],
             0,

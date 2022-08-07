@@ -61,6 +61,9 @@ def compute_angle_matrix():
 
 def proportions_to_sections(proportions, initial_angle):
     sections = []
+    if len(proportions) == 1:
+        return np.array([[0.0, 2 * np.pi]])
+
     for proportion in proportions:
         last_angle = initial_angle % (2 * np.pi)
         if len(sections):
