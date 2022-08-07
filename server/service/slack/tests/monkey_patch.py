@@ -2,6 +2,7 @@ from slack_sdk import WebClient
 from slack_sdk.webhook.client import WebhookClient
 
 from server.service.slack.decorator import is_signature_valid
+from server.service.slack.modal.pick_list_blocks import build_pick_list_id_input
 from server.service.slack.sdk_helper import get_web_client
 
 
@@ -78,6 +79,18 @@ def monkey_patch_files_upload(self, *, file: str, channels, **kwargs):
     return Data(data={"file": {"shares": {"public": {channels: [{"ts": "1234"}]}}}})
 
 
+def monkey_patch_views_push(self, *, view: str, **kwargs):
+    print(view)
+
+
+def monkey_patch_views_update(self, *, view: str, **kwargs):
+    print(view)
+
+
+def monkey_patch_build_pick_list_id_input(block_id):
+    return block_id
+
+
 get_web_client.__code__ = monkey_patch_get_web_client.__code__
 
 WebClient.conversations_members.__code__ = (
@@ -95,7 +108,10 @@ WebClient.workflows_stepCompleted.__code__ = (
 )
 WebClient.workflows_stepFailed.__code__ = monkey_patch_workflows_stepFailed.__code__
 WebClient.files_upload.__code__ = monkey_patch_files_upload.__code__
+WebClient.views_push.__code__ = monkey_patch_views_push.__code__
+WebClient.views_update.__code__ = monkey_patch_views_update.__code__
 
 WebhookClient.send.__code__ = monkey_patch_webhook_client_send.__code__
 
 is_signature_valid.__code__ = (lambda x: True).__code__
+build_pick_list_id_input.__code__ = monkey_patch_build_pick_list_id_input.__code__

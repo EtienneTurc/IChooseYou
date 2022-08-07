@@ -2,7 +2,8 @@ import json
 
 from flask import Blueprint, make_response, request
 
-from server.blueprint.interactivity.action import BlueprintInteractivityAction
+from server.blueprint.interactivity.action import (BlueprintInteractivityAction,
+                                                   BlueprintInteractivityBlockAction)
 from server.service.formatter.interactivity import extract_interactivity_actions
 from server.service.slack.decorator import validate_signature
 from server.service.slack.modal.enum import SlackModalSubmitAction
@@ -34,6 +35,11 @@ def proccess_interactivity_for_response(payload: dict[str, any]) -> str:
     for action in slack_modal_actions_to_ignore:
         if action.value in actions:
             return "Action ignored"
+
+    if "block_actions" in actions:
+        for action in BlueprintInteractivityBlockAction:
+            if action.value in actions:
+                return transform_process_respond(action.value, payload)
 
     if callback_action in slack_modal_actions:
         return transform_process_respond(callback_action, payload)

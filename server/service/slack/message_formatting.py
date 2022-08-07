@@ -44,15 +44,16 @@ def format_new_command_message(
     pick_list: list[str],
     current_user_id: str,
 ):
-    current_user_name = get_by_path(
-        get_user_info(team_id=team_id, user_id=current_user_id), "profile.display_name"
+    current_user_name = get_name_from_user(
+        get_user_info(team_id=team_id, user_id=current_user_id),
     )
     message = f"{current_user_name} created *{command_name}*."
     if command_description:
         message += f"\n{command_description}"
-    message += (
-        f"\nUsers in the pick list are: {format_pick_list_users(pick_list, team_id)}."
-    )
+
+    message += "Items in the pick list are: "
+
+    message += format_pick_list(pick_list, team_id) + "."
     return message
 
 
@@ -63,8 +64,8 @@ def format_updated_fields_mesage(
     fields_updated: dict[str, any],
     current_user_id: str,
 ) -> str:
-    current_user_name = get_by_path(
-        get_user_info(team_id=team_id, user_id=current_user_id), "profile.display_name"
+    current_user_name = get_name_from_user(
+        get_user_info(team_id=team_id, user_id=current_user_id),
     )
     message = f"{current_user_name} updated *{command_name}*."
 
@@ -73,12 +74,18 @@ def format_updated_fields_mesage(
         (
             "added_to_pick_list",
             (
-                lambda added_to_pick_list: f"New users added: {format_pick_list_users(added_to_pick_list, team_id)}."  # noqa E501
+                lambda added_to_pick_list: f"New items added: {format_pick_list(added_to_pick_list, team_id)}."  # noqa E501
             ),
         ),
         (
             "removed_from_pick_list",
-            lambda removed_from_pick_list: f"Users removed: {format_pick_list_users(removed_from_pick_list, team_id)}.",  # noqa E501
+            lambda removed_from_pick_list: f"Items removed: {format_pick_list(removed_from_pick_list, team_id)}.",  # noqa E501
+        ),
+        (
+            "description",
+            (
+                lambda description: f"Command description changed to: {description}."
+            ),
         ),
         (
             "label",
@@ -110,19 +117,13 @@ def format_updated_fields_mesage(
     return message
 
 
-def format_pick_list_users(users_mention: list[str], team_id: str) -> str:
-    user_infos = get_user_names_from_ids(users_mention, team_id)
-    return format_custom_selected_items(user_infos)
+def format_pick_list(pick_list: list[str], team_id: str):
+    labels = extract_label_from_pick_list(pick_list, team_id=team_id)
+    return format_custom_selected_items(labels)
 
 
-def get_user_names_from_ids(users: list[str], team_id: str) -> list[str]:
-    return [
-        get_name_from_user(
-            get_user_info(team_id=team_id, user_id=get_user_id_from_mention(user))
-        )
-        or user
-        for user in users
-    ]
+def is_a_user(item: str) -> bool:
+    return item is not None and item.startswith("<@U") and item.endswith(">")
 
 
 def get_name_from_user(user: dict[str, any]) -> str:
@@ -137,6 +138,24 @@ def get_name_from_user(user: dict[str, any]) -> str:
     for possible_path_name in possible_path_names:
         name = get_by_path(user, possible_path_name)
         if name:
-            return name
+            return name.capitalize()
 
     return None
+
+
+def extract_label_from_pick_list(pick_list: list[str], *, team_id: str) -> list[str]:
+    if pick_list is None:
+        return []
+    return [
+        transform_pick_list_item_to_label(item, team_id=team_id) for item in pick_list
+    ]
+
+
+def transform_pick_list_item_to_label(item: str, *, team_id: str) -> str:
+    if is_a_user(item):
+        user_name = get_name_from_user(
+            get_user_info(team_id=team_id, user_id=get_user_id_from_mention(item))
+        )
+        return user_name
+
+    return item

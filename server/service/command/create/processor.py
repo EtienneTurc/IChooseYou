@@ -22,6 +22,7 @@ def create_command_processor(
     only_active_users: bool = False,
 ) -> dict[str, any]:
     pick_list = format_pick_list(pick_list, team_id, channel_id)
+
     strategy_enum = Strategy[strategy]
     weight_list = strategy_enum.value.create_weight_list(len(pick_list))
 

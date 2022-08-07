@@ -1,86 +1,14 @@
-import io
-from contextlib import redirect_stdout
-
 import pytest
 
 import server.service.slack.tests.monkey_patch as monkey_patch  # noqa: F401
 from server.blueprint.interactivity.action import BlueprintInteractivityAction
+from server.blueprint.interactivity.tests.helper import call_webhook
 from server.service.slack.workflow.enum import (OutputVariable, WorkflowActionId,
                                                 WorkflowBlockId)
 from server.service.slack.workflow.helper import create_select_item_name
 from server.tests.test_app import *  # noqa: F401, F403
 
 user_id = "4321"
-
-
-def call_webhook(
-    client,
-    text="1234",
-    callback_id=None,
-    action_id=None,
-    type=None,
-    inputs=None,
-    view_state_inputs=None,
-):
-    f = io.StringIO()
-    with redirect_stdout(f):
-        response = client.post(
-            "/interactivity",
-            data=mock_slack_api_data(
-                text=text,
-                user_id=user_id,
-                callback_id=callback_id,
-                action_id=action_id,
-                type=type,
-                inputs=inputs,
-                view_state_inputs=view_state_inputs,
-            ),
-            follow_redirects=True,
-        )
-
-    slack_message = f.getvalue()
-    return response, slack_message
-
-
-def mock_slack_api_data(
-    team_id="1337",
-    channel_id="1234",
-    channel_name="youplaboom",
-    user_id="4321",
-    user_name="patoche",
-    text="1234",
-    ts="1624201203.000200",
-    response_url="https://whatever.com",
-    trigger_id="1234",
-    workflow_step_edit_id="1234",
-    inputs=None,
-    callback_id=None,
-    action_id=None,
-    type=None,
-    view_state_inputs=None,
-):
-    payload = {
-        "team": {"id": team_id},
-        "user": {"id": user_id, "name": user_name},
-        "channel": {"id": channel_id, "name": channel_name},
-        "message": {"text": text, "ts": ts},
-        "actions": [{"value": text}],
-        "response_url": response_url,
-        "trigger_id": trigger_id,
-        "workflow_step": {"workflow_step_edit_id": workflow_step_edit_id},
-    }
-    if callback_id:
-        payload["callback_id"] = callback_id
-    if action_id:
-        payload["actions"][0]["action_id"] = action_id
-    if type:
-        payload["type"] = type
-    if inputs:
-        payload["workflow_step"]["inputs"] = inputs
-    if view_state_inputs:
-        payload["view"] = {"state": {"values": view_state_inputs}}
-
-    return {"payload": str(payload).replace("'", '"')}
 
 
 # @pytest.mark.parametrize(
@@ -104,7 +32,10 @@ def mock_slack_api_data(
 def test_interactivity_delete_message(client):
     text = f"Hey ! <@{user_id}>"
     response, slack_message = call_webhook(
-        client, text, callback_id=BlueprintInteractivityAction.DELETE_MESSAGE.value
+        client,
+        text=text,
+        user_id=user_id,
+        callback_id=BlueprintInteractivityAction.DELETE_MESSAGE.value,
     )
     assert response.status_code == 200
     assert "" == slack_message
@@ -126,7 +57,10 @@ def test_interactivity_delete_message(client):
 )
 def test_interactivity_delete_message_error(text, expected_error_message, client):
     response, slack_message = call_webhook(
-        client, text, callback_id=BlueprintInteractivityAction.DELETE_MESSAGE.value
+        client,
+        text=text,
+        user_id=user_id,
+        callback_id=BlueprintInteractivityAction.DELETE_MESSAGE.value,
     )
     assert response.status_code == 200
     assert expected_error_message in slack_message

@@ -60,7 +60,7 @@ class Command(MongoModel):
             Command.find_one_by_name_and_chanel(name, channel_id, catch=False)
             raise BadRequestError(f"Command {name} already exists.")
         except Command.DoesNotExist:
-            Command(
+            return Command(
                 name,
                 channel_id,
                 label,

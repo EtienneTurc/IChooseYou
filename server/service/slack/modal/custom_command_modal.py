@@ -5,9 +5,9 @@ from server.service.slack.modal.enum import SlackModalSubmitAction
 
 
 class SlackCustomCommandModalActionId(Enum):
-    ADDITIONAL_TEXT_INPUT = "additional_text_input"
-    NUMBER_OF_ITEMS_INPUT = "number_of_items_input"
-    WITH_WHEEL_CHECKBOX = "with_wheel_checkbox"
+    ADDITIONAL_TEXT_INPUT = "custom_command_additional_text_input"
+    NUMBER_OF_ITEMS_INPUT = "custom_command_number_of_items_input"
+    WITH_WHEEL_CHECKBOX = "custom_command_with_wheel_checkbox"
 
 
 class SlackCustomCommandModalBlockId(Enum):

@@ -31,6 +31,14 @@ def basic_command(client):
 
 
 @pytest.fixture
+def command_with_duplicates_in_pick_list(client):
+    input = {**default_command, "pick_list": ["1", "2", "2"]}
+    command = create_and_return_command(**input)
+    yield command
+    Command.delete_command(command)
+
+
+@pytest.fixture
 def command_for_self_exclude(client):
     input = {
         **default_command,
