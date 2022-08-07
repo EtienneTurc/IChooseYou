@@ -1,5 +1,6 @@
 from server.orm.command import Command
 from server.service.command.delete.processor import delete_command_processor
+from server.service.slack.message_formatting import format_mention_user
 from server.service.slack.modal.custom_command_modal import build_custom_command_modal
 from server.service.slack.modal.enum import SlackModalSubmitAction
 from server.service.slack.modal.instant_command_modal import build_instant_command_modal
@@ -39,40 +40,32 @@ def build_custom_command_modal_processor(
     return {"modal": modal}
 
 
-def build_instant_command_modal_processor(**kwargs) -> dict[str, any]:
-    modal = build_instant_command_modal(**kwargs)
-    return {"modal": modal}
-
-
 def build_create_command_modal_processor(
     *,
+    team_id: str,
     channel_id: str = "",
     **kwargs,
 ) -> dict[str, any]:
-    modal = build_upsert_command_modal(False, channel_id=channel_id)
+    modal = build_upsert_command_modal(False, team_id=team_id, channel_id=channel_id)
     return {"modal": modal}
 
 
 def build_update_command_modal_processor(
     *,
     command_id: str,
+    team_id: str,
     **kwargs,
 ) -> dict[str, any]:
     command = Command.find_by_id(command_id)
 
-    only_users_in_pick_list = command.only_users_in_pick_list
-    user_pick_list = command.pick_list if only_users_in_pick_list else None
-    free_pick_list = command.pick_list if not only_users_in_pick_list else None
-
     modal = build_upsert_command_modal(
         True,
+        team_id=team_id,
         channel_id=command.channel_id,
         command_name=command.name,
         description=command.description,
         label=command.label,
-        user_pick_list=user_pick_list,
-        free_pick_list=free_pick_list,
-        only_users_in_pick_list=command.only_users_in_pick_list,
+        pick_list=command.pick_list,
         strategy=command.strategy,
         self_exclude=command.self_exclude,
         only_active_users=command.only_active_users,
@@ -102,34 +95,9 @@ def update_upsert_modal_view_processor(
     return {"modal": build_upsert_command_modal(False, channel_id=channel_id, **kwargs)}
 
 
-def switch_pick_list_processor(**kwargs):
-    return update_upsert_modal_view_processor(**kwargs)
-
-
-def add_element_to_pick_list_processor(
-    *,
-    free_pick_list: list[str],
-    free_pick_list_item: str,
-    free_pick_list_input_block_id: str,  # to reset block
-    **kwargs,
-):
-    if free_pick_list_item is None:
-        return update_upsert_modal_view_processor(
-            free_pick_list=free_pick_list, **kwargs
-        )
-
-    new_pick_list = (free_pick_list or []) + [free_pick_list_item]
-    return update_upsert_modal_view_processor(
-        free_pick_list=new_pick_list, free_pick_list_item="", **kwargs
-    )
-
-
-def remove_element_from_pick_list_processor(
-    *, free_pick_list: list[str], index_item_to_remove: int, **kwargs
-):
-    new_pick_list = free_pick_list[:]
-    del new_pick_list[index_item_to_remove]
-    return update_upsert_modal_view_processor(free_pick_list=new_pick_list, **kwargs)
+def build_instant_command_modal_processor(**kwargs) -> dict[str, any]:
+    modal = build_instant_command_modal(**kwargs)
+    return {"modal": modal}
 
 
 def build_delete_command_processor(
@@ -144,3 +112,57 @@ def build_delete_command_processor(
         channel_id=channel_id,
         command_to_delete=command.name,
     )
+
+
+# -------------------------------------------------------------------------
+# ------------------------- ACTION PROCESSORS -----------------------------
+# -------------------------------------------------------------------------
+
+
+def switch_pick_list_processor(
+    instant_modal: bool, *, user_select_enabled: bool, **kwargs
+):
+    new_user_select_enabled_value = not user_select_enabled
+
+    if instant_modal:
+        return build_instant_command_modal_processor(
+            user_select_enabled=new_user_select_enabled_value, **kwargs
+        )
+
+    return update_upsert_modal_view_processor(
+        user_select_enabled=new_user_select_enabled_value, **kwargs
+    )
+
+
+def add_element_to_pick_list_processor(
+    instant_modal: bool,
+    *,
+    pick_list: list[str],
+    free_pick_list_item: str = None,
+    user_pick_list_item: str = None,
+    free_pick_list_input_block_id: str = None,  # to reset block
+    **kwargs,
+):
+    new_item = free_pick_list_item or (
+        user_pick_list_item and format_mention_user(user_pick_list_item)
+    )
+    new_pick_list = (
+        (pick_list or []) + [new_item] if new_item is not None else pick_list
+    )
+
+    if instant_modal:
+        return build_instant_command_modal_processor(pick_list=new_pick_list, **kwargs)
+
+    return update_upsert_modal_view_processor(pick_list=new_pick_list, **kwargs)
+
+
+def remove_element_from_pick_list_processor(
+    instant_modal: bool, *, pick_list: list[str], index_item_to_remove: int, **kwargs
+):
+    new_pick_list = pick_list[:]
+    del new_pick_list[index_item_to_remove]
+
+    if instant_modal:
+        return build_instant_command_modal_processor(pick_list=new_pick_list, **kwargs)
+
+    return update_upsert_modal_view_processor(pick_list=new_pick_list, **kwargs)

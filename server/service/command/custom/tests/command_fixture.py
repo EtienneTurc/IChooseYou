@@ -10,7 +10,6 @@ default_command = {
     "label": "basic command label",
     "description": "basic command description",
     "pick_list": ["1", "2", "3"],
-    "only_users_in_pick_list": False,
     "self_exclude": False,
     "only_active_users": False,
     "weight_list": [1 / 3, 1 / 3, 1 / 3],
@@ -27,6 +26,14 @@ def create_and_return_command(**kwargs):
 @pytest.fixture
 def basic_command(client):
     command = create_and_return_command(**default_command)
+    yield command
+    Command.delete_command(command)
+
+
+@pytest.fixture
+def command_with_duplicates_in_pick_list(client):
+    input = {**default_command, "pick_list": ["1", "2", "2"]}
+    command = create_and_return_command(**input)
     yield command
     Command.delete_command(command)
 

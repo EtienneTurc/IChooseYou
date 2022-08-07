@@ -106,7 +106,9 @@ def remove_item(
     # Update pick list and weight list
     item_to_remove_index = pick_list.index(item_to_remove)
     item_to_remove_weight = weight_list[item_to_remove_index]
-    new_pick_list = [el for el in pick_list if el != item_to_remove]
+    new_pick_list = (
+        pick_list[:item_to_remove_index] + pick_list[(item_to_remove_index + 1):]
+    )
     new_weight_list = (
         weight_list[:item_to_remove_index] + weight_list[(item_to_remove_index + 1):]
     )

@@ -131,6 +131,38 @@ def test_custom_command_multi_select(
     assert selected_items == expected_items
 
 
+@pytest.mark.parametrize(
+    "additional_text, number_of_items_to_select, expected_message, expected_items",
+    [
+        ("", 1, "choose 2", ["2"]),
+        ("", 2, "choose 2 and 2", ["2", "2"]),
+        ("", 3, "choose 2, 2 and 1", ["2", "2", "1"]),
+    ],
+)
+def test_custom_command_multi_select_with_duplicates_in_pick_list(
+    additional_text,
+    number_of_items_to_select,
+    expected_message,
+    expected_items,
+    command_with_duplicates_in_pick_list,
+    set_seed,
+):
+    response = custom_command_processor(
+        command_name=command_with_duplicates_in_pick_list.name,
+        additional_text=additional_text,
+        number_of_items_to_select=number_of_items_to_select,
+        channel_id=command_with_duplicates_in_pick_list.channel_id,
+        team_id=team_id,
+        user_id=user_id,
+    )
+
+    message = response.get("message")
+    assert expected_message in message.content
+
+    selected_items = response.get("selected_items")
+    assert selected_items == expected_items
+
+
 def test_create_fail_if_command_name_empty(client):
     error_message = "Field may not be empty."
     with pytest.raises(ValidationError, match=error_message):

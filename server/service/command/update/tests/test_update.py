@@ -21,7 +21,6 @@ default_expected_command = {
     "label": "label",
     "description": "my super description",
     "pick_list": default_pick_list,
-    "only_users_in_pick_list": False,
     "self_exclude": True,
     "only_active_users": False,
     "weight_list": [1 / 3, 1 / 3, 1 / 3],
@@ -48,8 +47,8 @@ default_expected_command = {
         (
             {"description": "my new description"},
             {**default_expected_command, "description": "my new description"},
-            None,
             "my new description",
+            None,
         ),
         (
             {"pick_list": ["1", "2"]},
@@ -58,7 +57,7 @@ default_expected_command = {
                 "pick_list": ["1", "2"],
                 "weight_list": [1 / 2, 1 / 2],
             },
-            "Elements removed: 3.",
+            "Items removed: 3.",
             None,
         ),
         # (
@@ -76,7 +75,7 @@ default_expected_command = {
                 "pick_list": ["1", "2", "3", "4"],
                 "weight_list": [1 / 4, 1 / 4, 1 / 4, 1 / 4],
             },
-            "New elements added: 4.",
+            "New items added: 4.",
             None,
         ),
         (
@@ -86,7 +85,7 @@ default_expected_command = {
                 "pick_list": ["1", "3"],
                 "weight_list": [1 / 2, 1 / 2],
             },
-            "Elements removed: 2.",
+            "Items removed: 2.",
             None,
         ),
         (
@@ -96,7 +95,7 @@ default_expected_command = {
                 "pick_list": ["1"],
                 "weight_list": [1],
             },
-            "Elements removed: 2 and 3.",
+            "Items removed: 2 and 3.",
             None,
         ),
         (

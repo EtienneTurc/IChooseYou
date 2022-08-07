@@ -4,8 +4,8 @@ from server.service.command.custom.helper import (assert_selected_items,
 from server.service.command.custom.schema import CustomCommandProcessorSchema
 from server.service.selection.selection import clean_and_select_from_pick_list
 from server.service.slack.message import Message, MessageVisibility
-from server.service.slack.message_formatting import (format_custom_command_message,
-                                                     get_user_names_from_ids)
+from server.service.slack.message_formatting import (extract_label_from_pick_list,
+                                                     format_custom_command_message)
 from server.service.strategy.helper import get_strategy
 from server.service.validator.decorator import validate_schema
 from server.service.wheel.builder import build_wheel
@@ -41,9 +41,9 @@ def custom_command_processor(
 
     gif_frames = None
     if with_wheel:
-        users_names = get_user_names_from_ids(pick_list, team_id)
+        labels = extract_label_from_pick_list(pick_list, team_id=team_id)
         gif_frames = build_wheel(
-            weight_list, users_names, users_names[pick_list.index(selected_items[0])]
+            weight_list, labels, labels[pick_list.index(selected_items[0])]
         )
     label = create_custom_command_label(command.label, additional_text)
 

@@ -14,7 +14,6 @@ class CreateCommandProcessorSchema(Schema):
     label = fields.Str(required=False)
     description = fields.Str(required=False)
     pick_list = fields.List(fields.Str(required=True), required=True)
-    only_users_in_pick_list = fields.Bool(required=False)
     strategy = fields.Str(required=False)
     self_exclude = fields.Bool(required=False)
     only_active_users = fields.Bool(required=False)
