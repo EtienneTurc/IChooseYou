@@ -68,9 +68,9 @@ def mock_slack_api_data(
 )
 def test_event_workflow_complete(expected_text, client, test_command):
     inputs = {
-        WorkflowActionId.CHANNEL_INPUT.value: {"value": TEST_COMMAND_CHANNEL_ID},
+        WorkflowActionId.CHANNEL_INPUT.value: {"value": test_command.channel_id},
         WorkflowActionId.COMMAND_INPUT.value: {
-            "value": f"/ichu {TEST_COMMAND_NAME} {extra_text}"
+            "value": f"/ichu {test_command.name} {extra_text}"
         },
         WorkflowActionId.SEND_TO_SLACK_CHECKBOX.value: {"value": "true"},
     }
@@ -107,7 +107,7 @@ def test_event_workflow_complete_output(
     command, expected_text, client, test_command, set_seed
 ):
     inputs = {
-        WorkflowActionId.CHANNEL_INPUT.value: {"value": TEST_COMMAND_CHANNEL_ID},
+        WorkflowActionId.CHANNEL_INPUT.value: {"value": test_command.channel_id},
         WorkflowActionId.COMMAND_INPUT.value: {"value": command},
         WorkflowActionId.SEND_TO_SLACK_CHECKBOX.value: {"value": ""},
     }
