@@ -5,7 +5,6 @@ from server.service.strategy.enum import Strategy
 
 TEST_COMMAND_NAME = "test_command_name"
 TEST_COMMAND_PICK_LIST = ["first element", "second element", "third one"]
-TEST_COMMAND_ONLY_USERS_IN_PICK_LIST = False
 TEST_COMMAND_WEIGHT_LIST = [1 / 3, 1 / 3, 1 / 3]
 TEST_COMMAND_STRATEGY = Strategy.uniform.name
 TEST_COMMAND_LABEL = "label of the command"
@@ -22,7 +21,6 @@ def test_command() -> Command:
         label=TEST_COMMAND_LABEL,
         description=TEST_COMMAND_DESCRIPTION,
         pick_list=TEST_COMMAND_PICK_LIST,
-        only_users_in_pick_list=TEST_COMMAND_ONLY_USERS_IN_PICK_LIST,
         weight_list=TEST_COMMAND_WEIGHT_LIST,
         strategy=TEST_COMMAND_STRATEGY,
         self_exclude=False,
