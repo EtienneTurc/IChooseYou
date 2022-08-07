@@ -29,14 +29,20 @@ def clean_and_select_from_pick_list(
     )
 
     assert_pick_list(pick_list, len(pick_list) != len(initial_pick))
+    if only_active_users:
+        pick_list, weight_list = remove_inactive_users_from_pick_list(
+            team_id=team_id, pick_list=pick_list, weight_list=weight_list
+        )
 
-    return select_from_pick_list(
-        initial_pick_list=pick_list,
-        initial_weight_list=weight_list,
-        strategy_name=strategy_name,
-        number_of_items_to_select=number_of_items_to_select,
-        team_id=team_id,
-        only_active_users=only_active_users,
+    return (
+        select_from_pick_list(
+            initial_pick_list=pick_list[:],
+            initial_weight_list=weight_list[:],
+            strategy_name=strategy_name,
+            number_of_items_to_select=number_of_items_to_select,
+        ),
+        pick_list,
+        weight_list,
     )
 
 
@@ -46,8 +52,6 @@ def select_from_pick_list(
     initial_weight_list: list[float],
     strategy_name: str,
     number_of_items_to_select: int,
-    team_id: str,
-    only_active_users: bool,
 ) -> list[str]:
     selected_items = []
     pick_list = initial_pick_list[:]
@@ -55,7 +59,7 @@ def select_from_pick_list(
 
     for _ in range(number_of_items_to_select):
         selected_item, new_pick_list, new_weight_list = select_one_from_pick_list(
-            pick_list, weight_list, team_id, only_active_users
+            pick_list, weight_list
         )
         selected_items.append(selected_item)
 
@@ -78,26 +82,11 @@ def select_from_pick_list(
 def select_one_from_pick_list(
     pick_list: list[str],
     weight_list: list[float],
-    team_id: str = None,
-    only_active_users: bool = False,
 ) -> tuple[str, list[str], list[float]]:
     if not pick_list or not len(pick_list) or not weight_list or not len(weight_list):
         return None, [], []
-
     [selected_item] = random.choices(pick_list, weights=weight_list)
-
-    if not only_active_users or not is_mention(selected_item):
-        return selected_item, pick_list, weight_list
-
-    user_mentionned = get_user_id_in_mention(selected_item)
-    if is_user_of_team_active(team_id=team_id, user_id=user_mentionned):
-        return selected_item, pick_list, weight_list
-
-    new_pick_list, new_weight_list = remove_item(selected_item, pick_list, weight_list)
-
-    return select_one_from_pick_list(
-        new_pick_list, new_weight_list, team_id, only_active_users=only_active_users
-    )
+    return selected_item, pick_list, weight_list
 
 
 def remove_item(
@@ -145,3 +134,21 @@ def exclude_user_from_pick_list(
         ]
     )
     return pick_list, weight_list
+
+
+def remove_inactive_users_from_pick_list(
+    *, team_id: str, pick_list: list[str], weight_list: list[str]
+):
+    new_pick_list = pick_list[:]
+    new_weight_list = weight_list[:]
+
+    for item in pick_list:
+        user_mentionned = get_user_id_in_mention(item)
+        if is_mention(item) and not is_user_of_team_active(
+            team_id=team_id, user_id=user_mentionned
+        ):
+            new_pick_list, new_weight_list = remove_item(
+                item, new_pick_list, new_weight_list
+            )
+
+    return new_pick_list, new_weight_list

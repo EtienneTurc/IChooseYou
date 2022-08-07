@@ -30,8 +30,6 @@ def create_heat_map(command_name: str, channel_id: str) -> tuple[any, str]:
                 initial_weight_list=strategy.weight_list,
                 strategy_name=command.strategy,
                 number_of_items_to_select=1,
-                team_id=None,
-                only_active_users=False,
             )
             pixels[i, j] = (
                 item_to_color[selected_item],

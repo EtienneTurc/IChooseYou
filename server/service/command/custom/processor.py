@@ -27,7 +27,11 @@ def custom_command_processor(
     pick_list = command.pick_list[:]
     weight_list = command.weight_list[:]
 
-    selected_items = clean_and_select_from_pick_list(
+    (
+        selected_items,
+        cleaned_pick_list,
+        cleaned_weight_list,
+    ) = clean_and_select_from_pick_list(
         pick_list=pick_list,
         weight_list=weight_list,
         user_id=user_id,
@@ -41,9 +45,11 @@ def custom_command_processor(
 
     gif_frames = None
     if with_wheel:
-        labels = extract_label_from_pick_list(pick_list, team_id=team_id)
+        labels = extract_label_from_pick_list(cleaned_pick_list, team_id=team_id)
         gif_frames = build_wheel(
-            weight_list, labels, labels[pick_list.index(selected_items[0])]
+            cleaned_weight_list,
+            labels,
+            labels[cleaned_pick_list.index(selected_items[0])],
         )
     label = create_custom_command_label(command.label, additional_text)
 
