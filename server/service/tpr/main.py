@@ -40,5 +40,15 @@ def transform_process_respond(blueprint_action: str, payload: dict[str, any]) ->
 def run_processor_and_respond_in_thread(
     *, processor: any, responder: any, data: dict[str, any], **kwargs
 ) -> None:
-    processor_response_data = processor(**data)
-    responder(**{**data, **processor_response_data})
+    processor_response_data = {}
+    if isinstance(processor, list):
+        for proc in processor:
+            processor_response_data = {**processor_response_data, **proc(**data)}
+    else:
+        processor_response_data = processor(**data)
+
+    if isinstance(responder, list):
+        for resp in responder:
+            resp(**{**data, **processor_response_data})
+    else:
+        responder(**{**data, **processor_response_data})

@@ -27,6 +27,7 @@ from server.service.slack.modal.processor import (add_element_to_pick_list_proce
                                                   build_delete_command_processor,
                                                   build_instant_command_modal_processor,
                                                   build_update_command_modal_processor,
+                                                  open_main_modal_processor,
                                                   remove_element_from_pick_list_processor,
                                                   switch_pick_list_processor)
 from server.service.slack.responder.message import \
@@ -84,8 +85,8 @@ BLUEPRINT_INTERACTIVITY_ACTION_TO_DATA_FLOW = {
     ),
     BlueprintInteractivityAction.MAIN_MODAL_DELETE_COMMAND.value: DataFlow(
         formatter=format_main_modal_manage_command_payload,
-        processor=build_delete_command_processor,
-        responder=send_message_to_channel,
+        processor=[build_delete_command_processor, open_main_modal_processor],
+        responder=[send_message_to_channel, update_view_modal],
         fast_responder=(lambda **kwargs: {"response_action": "clear"}),  # TODO clean
         error_handler=on_error_handled_send_message,
     ),
