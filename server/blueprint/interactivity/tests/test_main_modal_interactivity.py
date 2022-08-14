@@ -1,5 +1,7 @@
 import json
 
+from flask import current_app
+
 import server.service.slack.tests.monkey_patch as monkey_patch  # noqa: F401
 from server.blueprint.event.tests.conftest import *  # noqa: F401, F403
 from server.blueprint.interactivity.action import BlueprintInteractivityAction
@@ -113,3 +115,9 @@ def test_interactivity_main_modal_delete_command(client, test_command):
     )
     assert response.status_code == 200
     assert f"Command {test_command.name} successfully deleted." in slack_message
+    assert "'type': 'modal'" in slack_message
+    assert (
+        "'title': {'type': 'plain_text', 'text': "
+        + f"'{current_app.config['APP_NAME']}'"
+        in slack_message
+    )

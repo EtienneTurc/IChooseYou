@@ -223,6 +223,7 @@ def format_main_modal_manage_command_payload(payload: dict[str, any]) -> dict[st
         "command_id": extract_command_id_from_main_modal_manage_command_payload(
             payload
         ),
+        "view_id": get_by_path(payload, "view.id"),
         **extract_data_from_metadata(get_by_path(payload, "view.private_metadata")),
         **format_interactivity_basic_payload(payload),
     }
