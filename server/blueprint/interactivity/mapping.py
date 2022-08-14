@@ -30,8 +30,8 @@ from server.service.slack.modal.processor import (add_element_to_pick_list_proce
                                                   open_main_modal_processor,
                                                   remove_element_from_pick_list_processor,
                                                   switch_pick_list_processor)
-from server.service.slack.responder.message import \
-    send_message_and_gif_to_channel_with_resubmit_button
+from server.service.slack.responder.message import (
+    send_message_and_gif_to_channel, send_message_and_gif_to_channel_with_resubmit_button)
 from server.service.slack.response.api_response import (open_view_modal, push_view_modal,
                                                         save_workflow,
                                                         send_message_to_channel,
@@ -139,7 +139,7 @@ BLUEPRINT_INTERACTIVITY_ACTION_TO_DATA_FLOW = {
     SlackModalSubmitAction.RUN_INSTANT_COMMAND.value: DataFlow(
         formatter=format_run_instant_command_payload,
         processor=instant_command_processor,
-        responder=send_message_to_channel,
+        responder=send_message_and_gif_to_channel,
         fast_responder=(lambda **kwargs: {"response_action": "clear"}),  # TODO clean
         error_handler=on_error_handled_send_message,
     ),

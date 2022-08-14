@@ -3,6 +3,7 @@ from slack_sdk.webhook.client import WebhookClient
 
 from server.service.slack.decorator import is_signature_valid
 from server.service.slack.modal.pick_list_blocks import build_pick_list_id_input
+from server.service.slack.responder.message import wait_for_wheel_to_finish
 from server.service.slack.sdk_helper import get_web_client
 
 
@@ -91,6 +92,10 @@ def monkey_patch_build_pick_list_id_input(block_id):
     return block_id
 
 
+def monkey_patch_sleep():
+    pass
+
+
 get_web_client.__code__ = monkey_patch_get_web_client.__code__
 
 WebClient.conversations_members.__code__ = (
@@ -115,3 +120,4 @@ WebhookClient.send.__code__ = monkey_patch_webhook_client_send.__code__
 
 is_signature_valid.__code__ = (lambda x: True).__code__
 build_pick_list_id_input.__code__ = monkey_patch_build_pick_list_id_input.__code__
+wait_for_wheel_to_finish.__code__ = monkey_patch_sleep.__code__

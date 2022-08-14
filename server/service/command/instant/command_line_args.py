@@ -24,4 +24,11 @@ NAMED_ARGS = [
         const="True",
         type=bool,
     ),
+    Arg(
+        name="with-wheel",
+        short="w",
+        nargs="?",
+        const="True",
+        type=bool,
+    ),
 ]

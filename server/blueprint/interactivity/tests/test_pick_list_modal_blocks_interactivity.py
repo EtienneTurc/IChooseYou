@@ -87,7 +87,6 @@ def test_interactivity_switch_pick_list(
             "channel_id": channel_id,
         },
     )
-    print(slack_message)
     assert response.status_code == 200
     assert "'type': 'modal'" in slack_message
     assert (

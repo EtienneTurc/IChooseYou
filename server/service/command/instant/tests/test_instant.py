@@ -78,6 +78,28 @@ def test_custom_command_only_active_users():
     assert selected_items == [f"<@{user_id}|name>"]
 
 
+def test_custom_command_with_wheel():
+    response = instant_command_processor(
+        user_id=user_id,
+        team_id=team_id,
+        channel_id=channel_id,
+        label=label,
+        pick_list=[f"<@{user_id}|name>"],
+        number_of_items_to_select=number_of_items_to_select,
+        self_exclude=self_exclude,
+        with_wheel=True,
+    )
+
+    message = response.get("message")
+    assert f"<@{user_id}|name>" in message.content
+
+    selected_items = response.get("selected_items")
+    assert selected_items == [f"<@{user_id}|name>"]
+
+    gif_frames = response.get("gif_frames")
+    assert len(gif_frames) != 0
+
+
 def test_custom_only_active_users_error():
     error_message = "No active users to select found."
     with pytest.raises(MissingElementError, match=error_message):

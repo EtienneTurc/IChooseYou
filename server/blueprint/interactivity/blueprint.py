@@ -7,6 +7,8 @@ from server.blueprint.interactivity.action import (BlueprintInteractivityAction,
 from server.service.formatter.interactivity import extract_interactivity_actions
 from server.service.slack.decorator import validate_signature
 from server.service.slack.modal.enum import SlackModalSubmitAction
+from server.service.slack.modal.instant_command_modal import \
+    SlackInstantCommandModalActionId
 from server.service.slack.modal.upsert_command_modal import \
     SlackUpsertCommandModalActionId
 from server.service.tpr.main import transform_process_respond
@@ -18,6 +20,8 @@ slack_modal_actions = [action.value for action in SlackModalSubmitAction]
 slack_modal_actions_to_ignore = [
     SlackUpsertCommandModalActionId.SELF_EXCLUDE_CHECKBOX,
     SlackUpsertCommandModalActionId.ONLY_ACTIVE_USERS_CHECKBOX,
+    SlackInstantCommandModalActionId.ONLY_ACTIVE_USERS_CHECKBOX,
+    SlackInstantCommandModalActionId.WITH_WHEEL_CHECKBOX,
 ]
 
 

@@ -19,9 +19,12 @@ def send_message_and_complete_workflow(send_to_slack: bool, **kwargs):
     complete_workflow(**kwargs)
 
 
-def send_message_and_gif_to_channel_with_resubmit_button(
+def wait_for_wheel_to_finish():
+    time.sleep(5)
+
+
+def send_gif_to_channel(
     *,
-    message: Message,
     channel_id: str,
     team_id: str,
     user_id: str,
@@ -55,22 +58,26 @@ def send_message_and_gif_to_channel_with_resubmit_button(
                     message_response.data, f"file.shares.private.{channel_id}"
                 )
             )[0]["ts"]
-            time.sleep(5)  # Sleep for 5 seconds
+            wait_for_wheel_to_finish()
 
-    kwargs["wheel_ts"] = wheel_ts  # Overwrite previous value
+    return wheel_ts
+
+
+def send_message_and_gif_to_channel(with_ephemeral: bool = True, **kwargs):
+    send_gif_to_channel(with_ephemeral=with_ephemeral, **kwargs)
+    send_message_to_channel(**kwargs)
+
+
+def send_message_and_gif_to_channel_with_resubmit_button(
+    with_ephemeral: bool = True,
+    **kwargs,
+):
+    wheel_ts = send_gif_to_channel(with_ephemeral=with_ephemeral, **kwargs)
+    kwargs["wheel_ts"] = wheel_ts  # overwrite wheel_ts
     if with_ephemeral:
-        send_message_to_channel_with_resubmit_button(
-            message=message,
-            channel_id=channel_id,
-            team_id=team_id,
-            with_wheel=with_wheel,
-            user_id=user_id,
-            **kwargs,
-        )
+        send_message_to_channel_with_resubmit_button(**kwargs)
     else:
-        send_message_to_channel(
-            message=message, channel_id=channel_id, user_id=user_id, team_id=team_id
-        )
+        send_message_to_channel(**kwargs)
 
 
 def send_message_to_channel_with_resubmit_button(
