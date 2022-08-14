@@ -15,6 +15,7 @@ class SlackInstantCommandModalActionId(Enum):
     REMOVE_FROM_PICK_LIST_BUTTON = "instant_command_remove_from_pick_list_button"
     NUMBER_OF_ITEMS_INPUT = "instant_command_number_of_items_input"
     ONLY_ACTIVE_USERS_CHECKBOX = "instant_command_only_active_users_checkbox"
+    WITH_WHEEL_CHECKBOX = "with_wheel_checkbox"
 
 
 class SlackInstantCommandModalBlockId(Enum):
@@ -37,6 +38,7 @@ SLACK_INSTANT_COMMAND_MODAL_VALUE_PATH = {
     SlackInstantCommandModalActionId.REMOVE_FROM_PICK_LIST_BUTTON.value: f"{SlackInstantCommandModalBlockId.REMOVE_FROM_PICK_LIST_BLOCK_ID.value}.{SlackInstantCommandModalActionId.REMOVE_FROM_PICK_LIST_BUTTON.value}.value",  # noqa E501
     SlackInstantCommandModalActionId.NUMBER_OF_ITEMS_INPUT.value: f"{SlackInstantCommandModalBlockId.NUMBER_OF_ITEMS_BLOCK_ID.value}.{SlackInstantCommandModalActionId.NUMBER_OF_ITEMS_INPUT.value}.value",  # noqa E501
     SlackInstantCommandModalActionId.ONLY_ACTIVE_USERS_CHECKBOX.value: f"{SlackInstantCommandModalBlockId.CHECK_BOXES_BLOCK_ID.value}.{SlackInstantCommandModalActionId.ONLY_ACTIVE_USERS_CHECKBOX.value}.selected_options",  # noqa E501
+    SlackInstantCommandModalActionId.WITH_WHEEL_CHECKBOX.value: f"{SlackInstantCommandModalBlockId.CHECK_BOXES_BLOCK_ID.value}.{SlackInstantCommandModalActionId.WITH_WHEEL_CHECKBOX.value}.selected_options",  # noqa E501
 }
 
 SLACK_INSTANT_COMMAND_ACTION_ID_TO_VARIABLE_NAME = {
@@ -48,6 +50,7 @@ SLACK_INSTANT_COMMAND_ACTION_ID_TO_VARIABLE_NAME = {
     SlackInstantCommandModalActionId.REMOVE_FROM_PICK_LIST_BUTTON.value: "remove_from_pick_list_button",  # noqa E501
     SlackInstantCommandModalActionId.NUMBER_OF_ITEMS_INPUT.value: "number_of_items_to_select",  # noqa E501
     SlackInstantCommandModalActionId.ONLY_ACTIVE_USERS_CHECKBOX.value: "only_active_users",  # noqa E501
+    SlackInstantCommandModalActionId.WITH_WHEEL_CHECKBOX.value: "with_wheel",  # noqa E501
 }
 
 pick_list_blocks_factory = PickListBlocksFactory(
@@ -163,11 +166,19 @@ def build_number_of_elements_input(number_of_items_to_select: int):
     }
 
 
-def build_check_boxes(*, only_active_users: bool) -> dict[str, any]:
+def build_check_boxes(*, only_active_users: bool, with_wheel: bool) -> dict[str, any]:
     only_active_users_option = {
         "text": {
             "type": "plain_text",
             "text": "Should only pick active users in the pick list ?",
+            "emoji": True,
+        },
+        "value": "True",
+    }
+    with_wheel_option = {
+        "text": {
+            "type": "plain_text",
+            "text": "Spin the wheel :ferris_wheel: ?",
             "emoji": True,
         },
         "value": "True",
@@ -187,6 +198,12 @@ def build_check_boxes(*, only_active_users: bool) -> dict[str, any]:
                 ),
                 "action_id": SlackInstantCommandModalActionId.ONLY_ACTIVE_USERS_CHECKBOX.value,  # noqa E501
             },
+            {
+                "type": "checkboxes",
+                "options": [with_wheel_option],
+                **({"initial_options": [with_wheel_option]} if with_wheel else {}),
+                "action_id": SlackInstantCommandModalActionId.WITH_WHEEL_CHECKBOX.value,  # noqa E501
+            },
         ],
     }
 
@@ -202,6 +219,7 @@ def build_instant_command_modal(
     pick_list: list[str] = None,
     only_active_users: bool = None,
     number_of_items_to_select: int = None,
+    with_wheel: bool = False,
     **kwargs,
 ):
     modal_header = build_header()
@@ -216,7 +234,7 @@ def build_instant_command_modal(
             pick_list=pick_list,
         ),
         build_number_of_elements_input(number_of_items_to_select),
-        build_check_boxes(only_active_users=only_active_users),
+        build_check_boxes(only_active_users=only_active_users, with_wheel=with_wheel),
     ]
 
     return {

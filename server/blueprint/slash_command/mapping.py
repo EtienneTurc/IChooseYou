@@ -35,8 +35,8 @@ from server.service.error.handler.generic import on_error_handled_send_message
 from server.service.formatter.slash_command import (format_slash_command_basic_payload,
                                                     format_slash_command_payload)
 from server.service.slack.modal.processor import open_main_modal_processor
-from server.service.slack.responder.message import \
-    send_message_and_gif_to_channel_with_resubmit_button
+from server.service.slack.responder.message import (
+    send_message_and_gif_to_channel, send_message_and_gif_to_channel_with_resubmit_button)
 from server.service.slack.response.api_response import (open_view_modal,
                                                         send_message_to_channel)
 from server.service.tpr.enum import DataFlow
@@ -89,7 +89,7 @@ BLUEPRINT_SLASH_COMMAND_ACTION_TO_DATA_FLOW = {
             expected_named_args=INSTANT_NAMED_ARGS,
         ),
         processor=instant_command_processor,
-        responder=send_message_to_channel,
+        responder=send_message_and_gif_to_channel,
         error_handler=on_error_handled_send_message,
     ),
     BlueprintSlashCommandAction.CUSTOM.value: DataFlow(

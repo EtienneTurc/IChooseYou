@@ -17,6 +17,7 @@ default_instant_input_data = {
     "free_pick_list_item": "Yo",
     "number_of_items_to_select": 2,
     "only_active_users": True,
+    "with_wheel": True,
 }
 
 
@@ -262,6 +263,11 @@ default_instant_input_data = {
                         "options": [{"value": "True"}],
                         "action_id": SlackInstantCommandModalActionId.ONLY_ACTIVE_USERS_CHECKBOX.value,  # noqa E501
                     },
+                    {
+                        "type": "checkboxes",
+                        "options": [{"value": "True"}],
+                        "action_id": SlackInstantCommandModalActionId.WITH_WHEEL_CHECKBOX.value,  # noqa E501
+                    },
                 ],
             },
         ),
@@ -277,6 +283,12 @@ default_instant_input_data = {
                         "options": [{"value": "True"}],
                         "initial_options": [{"value": "True"}],
                         "action_id": SlackInstantCommandModalActionId.ONLY_ACTIVE_USERS_CHECKBOX.value,  # noqa E501
+                    },
+                    {
+                        "type": "checkboxes",
+                        "options": [{"value": "True"}],
+                        "initial_options": [{"value": "True"}],
+                        "action_id": SlackInstantCommandModalActionId.WITH_WHEEL_CHECKBOX.value,  # noqa E501
                     },
                 ],
             },

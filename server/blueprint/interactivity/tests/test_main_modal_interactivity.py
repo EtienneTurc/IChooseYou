@@ -35,7 +35,6 @@ def test_interactivity_main_modal_create_new_command(client):
         action_id=BlueprintInteractivityAction.MAIN_MODAL_CREATE_NEW_COMMAND.value,
         view_metadata={"channel_id": "1234"},
     )
-    print(slack_message)
     assert response.status_code == 200
     assert "'type': 'modal'" in slack_message
     assert (
@@ -62,7 +61,6 @@ def test_interactivity_main_modal_update_command(client, test_command):
         action_value=f"{SlackMainModalOverflowActionId.UPDATE_COMMAND.value}.{test_command._id}",  # noqa E501
         view_metadata={"channel_id": "1234"},
     )
-    print(slack_message)
     assert response.status_code == 200
     assert "'type': 'modal'" in slack_message
     assert (

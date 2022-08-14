@@ -301,3 +301,19 @@ def test_slash_command_custom_with_wheel(client):
     assert "Spin that wheel :ferris_wheel:" in slack_message
     assert "File wheel.gif uploaded" in slack_message
     assert "Hey !" in slack_message
+
+
+@pytest.mark.parametrize(
+    "text, expected",
+    [
+        ("instant --pick-list 1", "Hey ! "),
+        ("instant --pick-list 1", "choose 1"),
+        ("instant --pick-list 1 -n 2", "choose 1 and 1"),
+        ("instant --pick-list 1 -w", "Spin that wheel :ferris_wheel:"),
+        ("instant --pick-list 1 -w", "File wheel.gif uploaded"),
+    ],
+)
+def test_slash_command_instant(text, expected, client):
+    response, slack_message = call_webhook(client, text)
+    assert response.status_code == 200
+    assert expected in slack_message
