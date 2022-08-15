@@ -83,9 +83,7 @@ def format_updated_fields_mesage(
         ),
         (
             "description",
-            (
-                lambda description: f"Command description changed to: {description}."
-            ),
+            (lambda description: f"Command description changed to: {description}."),
         ),
         (
             "label",
@@ -115,6 +113,19 @@ def format_updated_fields_mesage(
             message += f"\n• {message_function(fields_updated.get(field))}"
 
     return message
+
+
+def format_clean_deleted_users_message(*, current_user_id: str, team_id: str):
+    current_user_name = get_name_from_user(
+        get_user_info(team_id=team_id, user_id=current_user_id),
+    )
+    return (
+        f"{current_user_name} cleaned up the deleted users from the pick lists :broom:"
+    )
+
+
+def format_no_deleted_users_to_clean_message():
+    return "No deleted users found. All pick commands are up to date."
 
 
 def format_pick_list(pick_list: list[str], team_id: str):
