@@ -25,6 +25,7 @@ class BlueprintInteractivityAction(Enum):
     MAIN_MODAL_SELECT_COMMAND = SlackMainModalActionId.SELECT_COMMAND.value
     MAIN_MODAL_CREATE_NEW_COMMAND = SlackMainModalActionId.CREATE_NEW_COMMAND.value
     MAIN_MODAL_RUN_INSTANT_COMMAND = SlackMainModalActionId.RUN_INSTANT_COMMAND.value
+    MAIN_MODAL_CLEAN_DELETED_USERS = SlackMainModalActionId.CLEAN_DELETED_USERS.value
     MAIN_MODAL_UPDATE_COMMAND = SlackMainModalOverflowActionId.UPDATE_COMMAND.value
     MAIN_MODAL_DELETE_COMMAND = SlackMainModalOverflowActionId.DELETE_COMMAND.value
 
