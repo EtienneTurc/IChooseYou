@@ -9,6 +9,7 @@ class BlueprintSlashCommandAction(Enum):
     INSTANT = "instant"
     CUSTOM = "custom"
     OPEN_MAIN_MODAl = "open_main_modal"
+    CLEAN_DELETED_USERS = "clean_deleted_users"
 
 
 KNOWN_SLASH_COMMANDS_ACTIONS = [
@@ -21,5 +22,6 @@ KNOWN_SLASH_COMMANDS_ACTIONS = [
         BlueprintSlashCommandAction.DELETE,
         BlueprintSlashCommandAction.INSTANT,
         BlueprintSlashCommandAction.RANDOMNESS,
+        BlueprintSlashCommandAction.CLEAN_DELETED_USERS,
     ]
 ]

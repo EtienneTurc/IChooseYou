@@ -317,3 +317,24 @@ def test_slash_command_instant(text, expected, client):
     response, slack_message = call_webhook(client, text)
     assert response.status_code == 200
     assert expected in slack_message
+
+
+def test_slash_command_clean_deleted_users(client):
+    Command.create(
+        name="test_delete",
+        channel_id="1234",
+        label="label",
+        description="description",
+        pick_list=["<@1234>", "<@deleted>"],
+        weight_list=[1 / 2, 1 / 2],
+        strategy=Strategy.uniform.name,
+        self_exclude=True,
+        only_active_users=False,
+        created_by_user_id="4321",
+    )
+
+    text = "clean_deleted_users"
+    response, slack_message = call_webhook(client, text)
+
+    assert response.status_code == 200
+    assert "cleaned up the deleted users from the pick lists :broom:" in slack_message

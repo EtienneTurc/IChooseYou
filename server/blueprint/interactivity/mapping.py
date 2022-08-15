@@ -2,19 +2,19 @@ import functools
 
 from server.blueprint.interactivity.action import (BlueprintInteractivityAction,
                                                    BlueprintInteractivityBlockAction)
+from server.service.command.clean_deleted_users.processor import \
+    clean_deleted_users_command_processor
 from server.service.command.create.processor import create_command_processor
 from server.service.command.custom.processor import custom_command_processor
 from server.service.command.instant.processor import instant_command_processor
 from server.service.command.update.processor import update_command_processor
 from server.service.error.handler.generic import on_error_handled_send_message
 from server.service.formatter.interactivity import (
-    format_create_command_payload, format_interactivity_delete_message_payload,
+    fomat_main_modal_clean_deleted_users_payload, format_create_command_payload,
+    format_interactivity_delete_message_payload,
     format_interactivity_edit_workflow_payload, format_interactivity_resubmit_payload,
-    format_interactivity_save_workflow_payload,
-    format_main_modal_create_new_command_payload,
-    format_main_modal_manage_command_payload,
-    format_main_modal_run_instant_command_payload,
-    format_main_modal_select_command_payload,
+    format_interactivity_save_workflow_payload, format_main_modal_base_payload,
+    format_main_modal_manage_command_payload, format_main_modal_select_command_payload,
     format_remove_element_from_pick_list_payload, format_run_custom_command_payload,
     format_run_instant_command_modal_block_action, format_run_instant_command_payload,
     format_update_command_payload, format_upsert_modal_block_action)
@@ -66,15 +66,21 @@ BLUEPRINT_INTERACTIVITY_ACTION_TO_DATA_FLOW = {
         error_handler=on_error_handled_send_message,
     ),
     BlueprintInteractivityAction.MAIN_MODAL_CREATE_NEW_COMMAND.value: DataFlow(
-        formatter=format_main_modal_create_new_command_payload,
+        formatter=format_main_modal_base_payload,
         processor=build_create_command_modal_processor,
         responder=push_view_modal,
         error_handler=on_error_handled_send_message,
     ),
     BlueprintInteractivityAction.MAIN_MODAL_RUN_INSTANT_COMMAND.value: DataFlow(
-        formatter=format_main_modal_run_instant_command_payload,
+        formatter=format_main_modal_base_payload,
         processor=build_instant_command_modal_processor,
         responder=push_view_modal,
+        error_handler=on_error_handled_send_message,
+    ),
+    BlueprintInteractivityAction.MAIN_MODAL_CLEAN_DELETED_USERS.value: DataFlow(
+        formatter=fomat_main_modal_clean_deleted_users_payload,
+        processor=[clean_deleted_users_command_processor, open_main_modal_processor],
+        responder=[send_message_to_channel, update_view_modal],
         error_handler=on_error_handled_send_message,
     ),
     BlueprintInteractivityAction.MAIN_MODAL_UPDATE_COMMAND.value: DataFlow(

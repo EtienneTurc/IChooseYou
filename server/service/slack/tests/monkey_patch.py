@@ -16,7 +16,12 @@ def monkey_patch_client_conversations_members(self, *args, **kwargs):
 
 
 def monkey_patch_client_users_info(self, *, user: str, **kwargs):
-    return {"user": {"profile": {"display_name": user}}}
+    return {
+        "user": {
+            "profile": {"display_name": user},
+            "deleted": True if user == "deleted" else False,
+        }
+    }
 
 
 def monkey_patch_client_users_getPresence(self, *, user: str, **kwargs):

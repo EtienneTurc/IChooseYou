@@ -1,6 +1,8 @@
 import functools
 
 from server.blueprint.slash_command.action import BlueprintSlashCommandAction
+from server.service.command.clean_deleted_users.processor import \
+    clean_deleted_users_command_processor
 from server.service.command.create.command_line_args import \
     NAMED_ARGS as CREATE_NAMED_ARGS
 from server.service.command.create.command_line_args import \
@@ -108,6 +110,12 @@ BLUEPRINT_SLASH_COMMAND_ACTION_TO_DATA_FLOW = {
         formatter=format_slash_command_basic_payload,
         processor=open_main_modal_processor,
         responder=open_view_modal,
+        error_handler=on_error_handled_send_message,
+    ),
+    BlueprintSlashCommandAction.CLEAN_DELETED_USERS.value: DataFlow(
+        formatter=format_slash_command_basic_payload,
+        processor=clean_deleted_users_command_processor,
+        responder=send_message_to_channel,
         error_handler=on_error_handled_send_message,
     ),
 }

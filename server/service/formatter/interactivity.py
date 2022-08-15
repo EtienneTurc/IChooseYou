@@ -200,21 +200,20 @@ def format_main_modal_select_command_payload(payload: dict[str, any]) -> dict[st
     }
 
 
-def format_main_modal_create_new_command_payload(
-    payload: dict[str, any]
-) -> dict[str, any]:
+def format_main_modal_base_payload(payload: dict[str, any]) -> dict[str, any]:
     return {
         **extract_data_from_metadata(get_by_path(payload, "view.private_metadata")),
         **format_interactivity_basic_payload(payload),
     }
 
 
-def format_main_modal_run_instant_command_payload(
+def fomat_main_modal_clean_deleted_users_payload(
     payload: dict[str, any]
 ) -> dict[str, any]:
     return {
-        **extract_data_from_metadata(get_by_path(payload, "view.private_metadata")),
-        **format_interactivity_basic_payload(payload),
+        "cleaned": True,
+        "view_id": get_by_path(payload, "view.id"),
+        **format_main_modal_base_payload(payload),
     }
 
 
