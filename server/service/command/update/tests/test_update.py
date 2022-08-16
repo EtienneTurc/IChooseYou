@@ -23,8 +23,8 @@ default_expected_command = {
     "pick_list": default_pick_list,
     "self_exclude": True,
     "only_active_users": False,
-    "weight_list": [1 / 3, 1 / 3, 1 / 3],
-    "strategy": Strategy.uniform.name,
+    "weight_list": [1 / 4, 1 / 4, 2 / 4],
+    "strategy": Strategy.smooth.name,
     "created_by_user_id": user_id,
 }
 
@@ -73,7 +73,7 @@ default_expected_command = {
             {
                 **default_expected_command,
                 "pick_list": ["1", "2", "3", "4"],
-                "weight_list": [1 / 4, 1 / 4, 1 / 4, 1 / 4],
+                "weight_list": [3 / 16, 3 / 16, 6 / 16, 4 / 16],
             },
             "New items added: 4.",
             None,
@@ -83,7 +83,7 @@ default_expected_command = {
             {
                 **default_expected_command,
                 "pick_list": ["1", "3"],
-                "weight_list": [1 / 2, 1 / 2],
+                "weight_list": [1 / 3, 2 / 3],
             },
             "Items removed: 2.",
             None,
@@ -124,15 +124,23 @@ default_expected_command = {
         ),
         (
             {"strategy": Strategy.uniform.name},
-            {**default_expected_command, "strategy": Strategy.uniform.name},
+            {
+                **default_expected_command,
+                "strategy": Strategy.uniform.name,
+                "weight_list": [1 / 3, 1 / 3, 1 / 3],
+            },
+            "Strategy changed to uniform.",
             None,
-            "Strategy changed to",
         ),
         (
             {"strategy": Strategy.smooth.name},
-            {**default_expected_command, "strategy": Strategy.smooth.name},
-            "Strategy changed to smooth.",
+            {
+                **default_expected_command,
+                "strategy": Strategy.smooth.name,
+                "weight_list": [1 / 4, 1 / 4, 2 / 4],
+            },
             None,
+            "Strategy changed to",
         ),
         (
             {"strategy": Strategy.round_robin.name},

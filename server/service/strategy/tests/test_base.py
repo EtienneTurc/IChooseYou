@@ -34,6 +34,7 @@ def test_base_strategy_creation_error(weight_list, error_message):
 @pytest.mark.parametrize(
     "number_of_items, value, expected_weight_list",
     [
+        (0, None, [1 / 3, 2 / 3]),
         (1, None, [2 / 9, 4 / 9, 3 / 9]),
         (1, 1, [1 / 6, 1 / 3, 1 / 2]),
         (1, 0, [1 / 3, 2 / 3, 0]),
@@ -52,6 +53,7 @@ def test_base_strategy_add_items(number_of_items, value, expected_weight_list):
 @pytest.mark.parametrize(
     "items_indices, expected_weight_list",
     [
+        ([], [1 / 6, 2 / 6, 3 / 6]),
         ([0], [2 / 5, 3 / 5]),
         ([1], [1 / 4, 3 / 4]),
         ([2], [1 / 3, 2 / 3]),
