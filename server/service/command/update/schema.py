@@ -1,6 +1,8 @@
 from marshmallow import EXCLUDE, Schema, ValidationError, fields, validates
 
+from server.blueprint.slash_command.action import KNOWN_SLASH_COMMANDS_ACTIONS
 from server.service.command.helper import assert_strategy_is_valid
+from server.service.helper.list_helper import format_list_to_string
 
 
 class UpdateCommandProcessorSchema(Schema):
@@ -26,6 +28,13 @@ class UpdateCommandProcessorSchema(Schema):
     def valid_command_name(self, value):
         if not value:
             raise ValidationError("Field may not be empty.")
+
+    @validates("new_command_name")
+    def valid_new_command_name(self, value):
+        if value in KNOWN_SLASH_COMMANDS_ACTIONS:
+            raise ValidationError(
+                f"Command name can not be one of these: {format_list_to_string(KNOWN_SLASH_COMMANDS_ACTIONS)}"  # noqa E501
+            )
 
     @validates("pick_list")
     def valid_pick_list(self, value):

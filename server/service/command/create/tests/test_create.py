@@ -2,6 +2,7 @@ import pytest
 from marshmallow import ValidationError
 
 import server.service.slack.tests.monkey_patch as monkey_patch_request  # noqa: F401, E501
+from server.blueprint.slash_command.action import KNOWN_SLASH_COMMANDS_ACTIONS
 from server.orm.command import Command
 from server.service.command.create.processor import create_command_processor
 from server.service.command.enum import PickListSpecialArg
@@ -167,6 +168,18 @@ def test_create_fail_if_command_name_in_multiple_words(client):
             channel_id=channel_id,
             new_command_name="a command",
             pick_list=default_pick_list,
+        )
+
+
+@pytest.mark.parametrize("new_command_name", KNOWN_SLASH_COMMANDS_ACTIONS)
+def test_create_fail_if_command_name_is_a_keyword(new_command_name, client):
+    error_message = "Command name can not be one of these: create, update, delete, randomness, instant and clean_deleted_users."  # noqa E501
+    with pytest.raises(ValidationError, match=error_message):
+        create_command_processor(
+            user_id=user_id,
+            team_id=team_id,
+            channel_id=channel_id,
+            new_command_name=new_command_name,
         )
 
 
