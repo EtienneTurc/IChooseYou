@@ -1,27 +1,15 @@
 import re
 
 from server.service.helper.dict_helper import get_by_path
+from server.service.helper.list_helper import format_list_to_string
 from server.service.slack.sdk_helper import get_user_info
 
 
 def format_custom_command_message(
     user_id: str, selected_items: list[str], label: str
 ) -> str:
-    selected_items_msg = format_custom_selected_items(selected_items)
+    selected_items_msg = format_list_to_string(selected_items)
     return f"Hey ! {format_mention_user(user_id)} choose {selected_items_msg} {label}"
-
-
-def format_custom_selected_items(selected_items: list[str]) -> str:
-    if len(selected_items) == 1:
-        return selected_items[0]
-
-    left_items = selected_items[:-1]
-    right_item = selected_items[-1]
-
-    left = ", ".join(left_items)
-    right = f" and {right_item}"
-
-    return left + right
 
 
 def format_mention_user(user_id: str) -> str:
@@ -130,7 +118,7 @@ def format_no_deleted_users_to_clean_message():
 
 def format_pick_list(pick_list: list[str], team_id: str):
     labels = extract_label_from_pick_list(pick_list, team_id=team_id)
-    return format_custom_selected_items(labels)
+    return format_list_to_string(labels)
 
 
 def is_a_user(item: str) -> bool:

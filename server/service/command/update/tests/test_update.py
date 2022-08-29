@@ -2,6 +2,7 @@ import pytest
 from marshmallow import ValidationError
 
 import server.service.slack.tests.monkey_patch as monkey_patch_request  # noqa: F401, E501
+from server.blueprint.slash_command.action import KNOWN_SLASH_COMMANDS_ACTIONS
 from server.orm.command import Command
 from server.service.command.update.processor import update_command_processor
 from server.service.error.type.missing_element_error import MissingElementError
@@ -197,7 +198,7 @@ def test_update_fail_if_command_does_not_exist(client):
         )
 
 
-def test_create_fail_if_command_name_empty(client):
+def test_update_fail_if_command_name_empty(client):
     error_message = "Field may not be empty."
     with pytest.raises(ValidationError, match=error_message):
         update_command_processor(
@@ -208,7 +209,20 @@ def test_create_fail_if_command_name_empty(client):
         )
 
 
-def test_create_fail_if_pick_list_is_None(client):
+@pytest.mark.parametrize("new_command_name", KNOWN_SLASH_COMMANDS_ACTIONS)
+def test_update_fail_if_command_name_is_a_keyword(new_command_name, client):
+    error_message = "Command name can not be one of these: create, update, delete, randomness, instant and clean_deleted_users."  # noqa E501
+    with pytest.raises(ValidationError, match=error_message):
+        update_command_processor(
+            user_id=user_id,
+            team_id=team_id,
+            channel_id=channel_id,
+            command_to_update=command_name,
+            new_command_name=new_command_name,
+        )
+
+
+def test_update_fail_if_pick_list_is_None(client):
     error_message = "Field may not be null."
     with pytest.raises(ValidationError, match=error_message):
         update_command_processor(
@@ -220,7 +234,7 @@ def test_create_fail_if_pick_list_is_None(client):
         )
 
 
-def test_create_fail_if_pick_list_empty(client):
+def test_update_fail_if_pick_list_empty(client):
     error_message = "Field may not be empty."
     with pytest.raises(ValidationError, match=error_message):
         update_command_processor(
@@ -232,7 +246,7 @@ def test_create_fail_if_pick_list_empty(client):
         )
 
 
-def test_create_fail_if_non_valid_strategy(client):
+def test_update_fail_if_non_valid_strategy(client):
     error_message = "boop is not a valid strategy."
     with pytest.raises(ValidationError, match=error_message):
         update_command_processor(

@@ -20,8 +20,8 @@ KNOWN_SLASH_COMMANDS_ACTIONS = [
         BlueprintSlashCommandAction.CREATE,
         BlueprintSlashCommandAction.UPDATE,
         BlueprintSlashCommandAction.DELETE,
-        BlueprintSlashCommandAction.INSTANT,
         BlueprintSlashCommandAction.RANDOMNESS,
+        BlueprintSlashCommandAction.INSTANT,
         BlueprintSlashCommandAction.CLEAN_DELETED_USERS,
     ]
 ]
