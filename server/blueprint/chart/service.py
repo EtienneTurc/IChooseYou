@@ -18,7 +18,7 @@ def create_heat_map(command_name: str, channel_id: str) -> tuple[any, str]:
     strategy = get_strategy(command.strategy, command.weight_list)
 
     n = len(command.pick_list)
-    initial_img_size = max(100 / n, math.ceil(100 / n)) * n
+    initial_img_size = int(max(100 / n, math.ceil(100 / n)) * n)
     img_final_size = 5 * initial_img_size
 
     img = Image.new("HSV", (initial_img_size, initial_img_size), "black")
