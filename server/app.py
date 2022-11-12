@@ -1,3 +1,5 @@
+import logging
+
 from flask import Flask
 
 from server.config import CONFIG
@@ -5,6 +7,10 @@ from server.config import CONFIG
 
 def create_app(config_name="prod"):
     app = Flask(__name__)
+
+    logging.basicConfig(
+        format="%(asctime)s - [%(levelname)8s] %(message)s (%(filename)s:%(lineno)s)",
+    )
 
     # Configure app
     app.config.from_object(CONFIG[config_name]())

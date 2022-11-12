@@ -1,4 +1,8 @@
+import logging
+
+
 class Config(object):
+    LOG_LEVEL = logging.INFO
     DEBUG = False
     TESTING = False
     APP_NAME = "I choose you"
@@ -14,6 +18,7 @@ class ProductionConfig(Config):
 
 
 class DevelopmentConfig(Config):
+    LOG_LEVEL = logging.DEBUG
     DEBUG = True
     TESTING = False
     APP_NAME = "I choose you dev"

@@ -6,6 +6,6 @@ from server.service.strategy.uniform import UniformStrategy
 
 
 class Strategy(Enum):
-    uniform = UniformStrategy
     smooth = SmoothStrategy
+    uniform = UniformStrategy
     round_robin = RoundRobinStrategy

@@ -61,6 +61,17 @@ SLACK_UPSERT_COMMAND_ACTION_ID_TO_VARIABLE_NAME = {
     SlackUpsertCommandModalActionId.ONLY_ACTIVE_USERS_CHECKBOX.value: "only_active_users",
 }
 
+STRATEGY_NAME = {
+    Strategy.uniform.value: "Pure random",
+    Strategy.smooth.value: "Random with memory",
+    Strategy.round_robin.value: "Round robin",
+}
+STRATEGY_DESCRIPTION = {
+    Strategy.uniform.value: "All items are equally likely to be selected",
+    Strategy.smooth.value: "Recently selected items are less likely",
+    Strategy.round_robin.value: "Items are selected in order",
+}
+
 
 pick_list_blocks_factory = PickListBlocksFactory(
     SlackUpsertCommandModalActionId, SlackUpsertCommandModalBlockId
@@ -174,8 +185,12 @@ def build_strategy_select(strategy_name: str) -> dict[str, any]:
         {
             "text": {
                 "type": "plain_text",
-                "text": strategy.name,
+                "text": STRATEGY_NAME[strategy.value],
                 "emoji": True,
+            },
+            "description": {
+                "type": "plain_text",
+                "text": STRATEGY_DESCRIPTION[strategy.value],
             },
             "value": strategy.name,
         }

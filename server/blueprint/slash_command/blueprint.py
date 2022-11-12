@@ -16,17 +16,18 @@ def process_slash_command():
 
     if command_name == "" or command_name is None:
         response = transform_process_respond(
-            BlueprintSlashCommandAction.OPEN_MAIN_MODAl.value, request.form
+            blueprint_action=BlueprintSlashCommandAction.OPEN_MAIN_MODAl.value,
+            request_payload=request.form,
         )
 
     elif command_name in KNOWN_SLASH_COMMANDS_ACTIONS:
         response = transform_process_respond(
-            BlueprintSlashCommandAction[command_name.upper()].value,
-            request.form,
+            blueprint_action=BlueprintSlashCommandAction[command_name.upper()].value,
+            request_payload=request.form,
         )
     else:
         response = transform_process_respond(
-            BlueprintSlashCommandAction.CUSTOM.value,
-            request.form,
+            blueprint_action=BlueprintSlashCommandAction.CUSTOM.value,
+            request_payload=request.form,
         )
     return make_response(response, 200)

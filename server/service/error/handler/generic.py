@@ -1,7 +1,6 @@
-import traceback
-
 from marshmallow import ValidationError
 
+from server.service.error.logger import log_error
 from server.service.slack.message import Message, MessageStatus, MessageVisibility
 from server.service.slack.response.api_response import (
     send_message_to_channel, send_message_to_channel_via_response_url)
@@ -10,13 +9,20 @@ from server.service.slack.response.api_response import (
 def on_error_handled_send_message(
     error: Exception,
     *,
+    request: dict[str, any],
     response_url: str = None,
     channel_id: str = None,
     team_id: str = None,
     user_id: str = None,
     **kwargs,
 ) -> None:
-    traceback.print_exc()  # Print stacktrace
+    log_error(
+        error=error,
+        request=request,
+        team_id=team_id,
+        user_id=user_id,
+        channel_id=channel_id,
+    )
 
     error_message = error
     if type(error) is ValidationError:

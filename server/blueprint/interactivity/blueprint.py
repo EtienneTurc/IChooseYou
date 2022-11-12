@@ -43,13 +43,19 @@ def proccess_interactivity_for_response(payload: dict[str, any]) -> str:
     if "block_actions" in actions:
         for action in BlueprintInteractivityBlockAction:
             if action.value in actions:
-                return transform_process_respond(action.value, payload)
+                return transform_process_respond(
+                    blueprint_action=action.value, request_payload=payload
+                )
 
     if callback_action in slack_modal_actions:
-        return transform_process_respond(callback_action, payload)
+        return transform_process_respond(
+            blueprint_action=callback_action, request_payload=payload
+        )
 
     for action in BlueprintInteractivityAction:
         if action.value in actions:
-            return transform_process_respond(action.value, payload)
+            return transform_process_respond(
+                blueprint_action=action.value, request_payload=payload
+            )
 
     return "Action not handled"
