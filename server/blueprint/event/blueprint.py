@@ -23,6 +23,8 @@ def process_event_for_response(payload: dict[str, any]) -> str:
 
     for action in BlueprintEventAction:
         if action.value in event_types:
-            transform_process_respond(action.value, payload)
+            transform_process_respond(
+                blueprint_action=action.value, request_payload=payload
+            )
 
     return "Event not handled"

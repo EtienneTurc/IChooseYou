@@ -1,3 +1,5 @@
+from flask import request
+
 from server.service.error.decorator import tpr_handle_error
 from server.service.flask.decorator import make_context
 from server.service.helper.thread import launch_function_in_thread
@@ -13,8 +15,10 @@ def get_tpr_error_handler_in_thread_func(*args, **kwargs) -> any:
 
 
 @tpr_handle_error(get_tpr_error_handler_func)
-def transform_process_respond(blueprint_action: str, payload: dict[str, any]) -> str:
-    data = BLUEPRINT_ACTION_TO_DATA_FLOW[blueprint_action].formatter(payload)
+def transform_process_respond(
+    *, blueprint_action: str, request_payload: dict[str, any]
+) -> str:
+    data = BLUEPRINT_ACTION_TO_DATA_FLOW[blueprint_action].formatter(request_payload)
 
     launch_function_in_thread(
         run_processor_and_respond_in_thread,
@@ -25,6 +29,11 @@ def transform_process_respond(blueprint_action: str, payload: dict[str, any]) ->
                 blueprint_action
             ].error_handler,
             "data": data,
+            "request": {
+                "route": request.path,
+                "method": request.method,
+                "payload": request_payload,
+            },
         },
     )
 
