@@ -12,7 +12,9 @@ def create_app(config_name="prod"):
     app.config.from_object(CONFIG[config_name]())
 
     logging.basicConfig(
-        format="%(asctime)s - [%(levelname)8s] %(message)s", level=logging.ERROR
+        format="%(asctime)s - [%(levelname)8s] %(message)s",
+        level=logging.ERROR,
+        force=True,
     )
 
     # Connect to DB
