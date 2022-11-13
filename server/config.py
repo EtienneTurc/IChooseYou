@@ -13,6 +13,7 @@ class Config(object):
 
 
 class ProductionConfig(Config):
+    LOG_LEVEL = logging.ERROR
     DEBUG = False
     TESTING = False
 
