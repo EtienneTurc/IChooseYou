@@ -43,7 +43,7 @@ def compute_new_weight_list(
     values_to_add_to_pick_list: list[str],
     indices_of_items_to_remove: list[int],
 ) -> list[float]:
-    strategy.add_items(len(values_to_add_to_pick_list))
+    strategy.add_items(values_to_add_to_pick_list)
     strategy.remove_items(indices_of_items_to_remove)
     return strategy.weight_list
 

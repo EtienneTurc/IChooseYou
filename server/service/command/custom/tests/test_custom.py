@@ -1,10 +1,9 @@
 import pytest
 from marshmallow import ValidationError
 
-import server.service.slack.tests.monkey_patch as monkey_patch_request  # noqa: F401, E501
+from server.orm.command import Command
 from server.service.command.custom.processor import custom_command_processor
 from server.service.command.custom.tests.command_fixture import *  # noqa: F401, F403
-from server.service.error.type.bad_request_error import BadRequestError
 from server.service.error.type.missing_element_error import MissingElementError
 from server.service.slack.message import MessageVisibility
 from server.service.wheel.constant import (LEGEND_WIDTH, NB_FRAMES, WHEEL_HEIGHT,
@@ -51,8 +50,8 @@ def test_custom_command_self_exclude(command_for_self_exclude):
 
 
 def test_custom_command_self_exclude_error(command_for_self_exclude_error):
-    error_message = "Pick list contains only the user using the command.*selfExclude.*True.*"  # noqa E501
-    with pytest.raises(BadRequestError, match=error_message):
+    error_message = "Pick list contains only the user using the command."  # noqa E501
+    with pytest.raises(MissingElementError, match=error_message):
         custom_command_processor(
             command_name=command_for_self_exclude_error.name,
             additional_text="",
@@ -81,7 +80,7 @@ def test_custom_command_only_active_users(command_for_active_users):
 
 
 def test_custom_only_active_users_error(command_with_no_active_users):
-    error_message = "No active users to select found."
+    error_message = "All users in the pick list are inactive."
     with pytest.raises(MissingElementError, match=error_message):
         custom_command_processor(
             command_name=command_with_no_active_users.name,
@@ -132,15 +131,14 @@ def test_custom_command_multi_select(
 
 
 @pytest.mark.parametrize(
-    "additional_text, number_of_items_to_select, expected_message, expected_items",
+    "number_of_items_to_select, expected_message, expected_items",
     [
-        ("", 1, "choose 2", ["2"]),
-        ("", 2, "choose 2 and 2", ["2", "2"]),
-        ("", 3, "choose 2, 2 and 1", ["2", "2", "1"]),
+        (1, "choose 2", ["2"]),
+        (2, "choose 2 and 2", ["2", "2"]),
+        (3, "choose 2, 2 and 1", ["2", "2", "1"]),
     ],
 )
 def test_custom_command_multi_select_with_duplicates_in_pick_list(
-    additional_text,
     number_of_items_to_select,
     expected_message,
     expected_items,
@@ -149,7 +147,7 @@ def test_custom_command_multi_select_with_duplicates_in_pick_list(
 ):
     response = custom_command_processor(
         command_name=command_with_duplicates_in_pick_list.name,
-        additional_text=additional_text,
+        additional_text="",
         number_of_items_to_select=number_of_items_to_select,
         channel_id=command_with_duplicates_in_pick_list.channel_id,
         team_id=team_id,
@@ -161,6 +159,28 @@ def test_custom_command_multi_select_with_duplicates_in_pick_list(
 
     selected_items = response.get("selected_items")
     assert selected_items == expected_items
+
+
+def test_custom_command_updates_round_robin_command(
+    command_with_round_robin_strategy,
+    set_seed,
+):
+    response = custom_command_processor(
+        command_name=command_with_round_robin_strategy.name,
+        additional_text="",
+        number_of_items_to_select=1,
+        channel_id=command_with_round_robin_strategy.channel_id,
+        team_id=team_id,
+        user_id=user_id,
+        should_update_command=True,
+    )
+
+    selected_items = response.get("selected_items")
+    assert selected_items == ["2"]
+
+    updated_command = Command.find_by_id(command_with_round_robin_strategy._id)
+    assert updated_command.pick_list == ["2", "3", "1"]
+    assert updated_command.weight_list == [0, 1, 0]
 
 
 def test_create_fail_if_command_name_empty(client):

@@ -74,7 +74,7 @@ def workflow_step_execute_processor(
         channel_id=channel_id,
         team_id=team_id,
         user_id=user_id,
-        should_update_weight_list=True,
+        should_update_command=True,
         **kwargs,
     )
 

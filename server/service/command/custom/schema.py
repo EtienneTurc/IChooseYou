@@ -13,7 +13,7 @@ class CustomCommandProcessorSchema(Schema):
     command_name = fields.Str(required=True)
     additional_text = fields.Str(required=False)
     number_of_items_to_select = fields.Int(required=False)
-    should_update_weight_list = fields.Bool(required=False)
+    should_update_command = fields.Bool(required=False)
     with_wheel = fields.Bool(required=False)
 
     @validates("command_name")

@@ -99,7 +99,7 @@ BLUEPRINT_INTERACTIVITY_ACTION_TO_DATA_FLOW = {
     BlueprintInteractivityAction.RESUBMIT_COMMAND.value: DataFlow(
         formatter=format_interactivity_resubmit_payload,
         processor=functools.partial(
-            custom_command_processor, should_update_weight_list=True
+            custom_command_processor, should_update_command=True
         ),
         responder=send_message_and_gif_to_channel_with_resubmit_button,
         error_handler=on_error_handled_send_message,
@@ -136,7 +136,7 @@ BLUEPRINT_INTERACTIVITY_ACTION_TO_DATA_FLOW = {
     SlackModalSubmitAction.RUN_CUSTOM_COMMAND.value: DataFlow(
         formatter=format_run_custom_command_payload,
         processor=functools.partial(
-            custom_command_processor, should_update_weight_list=True
+            custom_command_processor, should_update_command=True
         ),
         responder=send_message_and_gif_to_channel_with_resubmit_button,
         fast_responder=(lambda **kwargs: {"response_action": "clear"}),  # TODO clean

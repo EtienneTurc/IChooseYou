@@ -1,6 +1,5 @@
 import pytest
 
-import server.service.slack.tests.monkey_patch as monkey_patch_request  # noqa: F401, E501
 from server.orm.command import Command
 from server.service.command.clean_deleted_users.processor import \
     clean_deleted_users_command_processor
@@ -19,7 +18,6 @@ default_command = {
     "description": "my super description",
     "self_exclude": True,
     "only_active_users": False,
-    "weight_list": [1 / 3, 1 / 3, 1 / 3],
     "strategy": Strategy.uniform.name,
     "created_by_user_id": user_id,
 }
@@ -27,7 +25,10 @@ default_command = {
 
 def test_clean_deleted_users_update_command(client):
     pick_list = ["<@1234>", "<@deleted>"]
-    command = Command.create(**default_command, pick_list=pick_list)
+    weight_list = [1 / 2, 1 / 2]
+    command = Command.create(
+        **default_command, pick_list=pick_list, weight_list=weight_list
+    )
 
     response = clean_deleted_users_command_processor(
         user_id=user_id, team_id=team_id, channel_id=channel_id
@@ -48,7 +49,10 @@ def test_clean_deleted_users_update_command(client):
 
 def test_clean_deleted_users_delete_command(client):
     pick_list = ["<@deleted>"]
-    command = Command.create(**default_command, pick_list=pick_list)
+    weight_list = [1]
+    command = Command.create(
+        **default_command, pick_list=pick_list, weight_list=weight_list
+    )
 
     response = clean_deleted_users_command_processor(
         user_id=user_id, team_id=team_id, channel_id=channel_id
@@ -69,7 +73,10 @@ def test_clean_deleted_users_delete_command(client):
 
 def test_clean_deleted_users_nothing_to_do(client):
     pick_list = ["<@1234>", "<@2345>", "3"]
-    command = Command.create(**default_command, pick_list=pick_list)
+    weight_list = [1 / 3, 1 / 3, 1 / 3]
+    command = Command.create(
+        **default_command, pick_list=pick_list, weight_list=weight_list
+    )
 
     response = clean_deleted_users_command_processor(
         user_id=user_id, team_id=team_id, channel_id=channel_id

@@ -101,7 +101,7 @@ BLUEPRINT_SLASH_COMMAND_ACTION_TO_DATA_FLOW = {
             expected_named_args=CUSTOM_NAMED_ARGS,
         ),
         processor=functools.partial(
-            custom_command_processor, should_update_weight_list=True
+            custom_command_processor, should_update_command=True
         ),
         responder=send_message_and_gif_to_channel_with_resubmit_button,
         error_handler=on_error_handled_send_message,
