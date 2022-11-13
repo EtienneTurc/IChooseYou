@@ -2,7 +2,6 @@ import json
 
 import pytest
 
-import server.service.slack.tests.monkey_patch as monkey_patch  # noqa: F401
 from server.blueprint.event.tests.conftest import *  # noqa: F401, F403
 from server.blueprint.interactivity.action import BlueprintInteractivityBlockAction
 from server.blueprint.interactivity.tests.helper import call_webhook
@@ -10,6 +9,7 @@ from server.service.slack.modal.instant_command_modal import (
     SlackInstantCommandModalActionId, SlackInstantCommandModalBlockId)
 from server.service.slack.modal.upsert_command_modal import (
     SlackUpsertCommandModalActionId, SlackUpsertCommandModalBlockId)
+from server.service.slack.tests.monkey_patch import *  # noqa: F401, F403
 from server.tests.test_app import *  # noqa: F401, F403
 
 

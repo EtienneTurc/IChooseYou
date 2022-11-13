@@ -3,8 +3,8 @@ from contextlib import redirect_stdout
 
 import pytest
 
-import server.service.slack.tests.monkey_patch as monkey_patch  # noqa: F401
 from server.orm.command import Command
+from server.service.slack.tests.monkey_patch import *  # noqa: F401, F403
 from server.service.strategy.enum import Strategy
 from server.tests.test_app import *  # noqa: F401, F403
 
@@ -99,6 +99,11 @@ def test_slash_command_create_fail_unrecognized_element(text, client):
 @pytest.mark.parametrize(
     "text, expected",
     [
+        ("update test_update --label My label", {"label": "My label"}),
+        (
+            "update test_update --description new description",
+            {"label": "label", "description": "new description"},
+        ),
         (
             "update test_update --pick-list 1 2 3",
             {"pick_list": ["1", "2", "3"]},
@@ -111,13 +116,7 @@ def test_slash_command_create_fail_unrecognized_element(text, client):
             "update test_update --remove-from-pick-list 2 3 4",
             {"pick_list": ["1"]},
         ),
-        ("update test_update --label My label", {"label": "My label"}),
         ("update test_update --label My label", {"self_exclude": True}),
-        ("update test_update --self-exclude", {"self_exclude": True}),
-        (
-            "update test_update --self-exclude True",
-            {"self_exclude": True},
-        ),
         (
             "update test_update --self-exclude False",
             {"self_exclude": False},
@@ -155,6 +154,37 @@ def test_slash_command_update(text, expected, client):
         if type(expected[key]) == list:
             func_to_apply = sorted
         assert func_to_apply(updated_command[key]) == func_to_apply(expected[key])
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "update test_update",
+        "update test_update --pick-list 1 2",
+        "update test_update --label label",
+        "update test_update --description description",
+        "update test_update --strategy uniform",
+        "update test_update --self-exclude",
+        "update test_update --only-active-users False",
+    ],
+)
+def test_slash_command_no_changes(text, client):
+    Command.create(
+        name="test_update",
+        channel_id="1234",
+        label="label",
+        description="description",
+        pick_list=["1", "2"],
+        weight_list=[1 / 2, 1 / 2],
+        strategy=Strategy.uniform.name,
+        self_exclude=True,
+        only_active_users=False,
+        created_by_user_id="4321",
+    )
+    response, slack_message = call_webhook(client, text)
+
+    assert response.status_code == 200
+    assert "Nothing to update for command *test_update*." in slack_message
 
 
 def test_slash_command_delete(client):

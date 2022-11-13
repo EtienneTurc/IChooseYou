@@ -129,6 +129,8 @@ def extract_inputs_from_view_values_payload(
 
         if value is not None:
             inputs[action_id_to_variable_name[action.value]] = value
+        else:
+            inputs[action_id_to_variable_name[action.value]] = ""
     return inputs
 
 

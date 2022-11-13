@@ -1,13 +1,13 @@
 import pytest
 from marshmallow import ValidationError
 
-import server.service.slack.tests.monkey_patch as monkey_patch_request  # noqa: F401, E501
 from server.blueprint.slash_command.action import KNOWN_SLASH_COMMANDS_ACTIONS
 from server.orm.command import Command
 from server.service.command.create.processor import create_command_processor
 from server.service.command.enum import PickListSpecialArg
 from server.service.error.type.bad_request_error import BadRequestError
 from server.service.slack.message import MessageStatus, MessageVisibility
+from server.service.slack.tests.monkey_patch import *  # noqa: F401, F403
 from server.service.strategy.enum import Strategy
 from server.tests.test_app import *  # noqa: F401, F403
 
@@ -52,7 +52,7 @@ default_expected_command = {
                 "pick_list": ["1", "2"],
                 "weight_list": [1 / 2, 1 / 2],
             },
-            "Items in the pick list are: 1 and 2.",
+            "\nItems in the pick list are: 1 and 2.",
         ),
         (
             {"pick_list": [PickListSpecialArg.ALL_MEMBERS.value]},
@@ -60,7 +60,7 @@ default_expected_command = {
                 **default_expected_command,
                 "pick_list": ["<@1234>", "<@2345>", "<@3456>"],
             },
-            "Items in the pick list are: <@1234>, <@2345> and <@3456>.",
+            "\nItems in the pick list are: <@1234>, <@2345> and <@3456>.",
         ),
         (
             {"self_exclude": True},

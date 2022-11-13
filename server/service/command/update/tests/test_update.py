@@ -1,12 +1,12 @@
 import pytest
 from marshmallow import ValidationError
 
-import server.service.slack.tests.monkey_patch as monkey_patch_request  # noqa: F401, E501
 from server.blueprint.slash_command.action import KNOWN_SLASH_COMMANDS_ACTIONS
 from server.orm.command import Command
 from server.service.command.update.processor import update_command_processor
 from server.service.error.type.missing_element_error import MissingElementError
 from server.service.slack.message import MessageStatus, MessageVisibility
+from server.service.slack.tests.monkey_patch import *  # noqa: F401, F403
 from server.service.strategy.enum import Strategy
 from server.tests.test_app import *  # noqa: F401, F403
 
@@ -34,21 +34,27 @@ default_expected_command = {
     "input_data, expected_command, expected_message, non_expected_message",
     [
         (
-            {},
-            default_expected_command,
-            f"{user_id} updated *{command_name}*.",
-            None,
-        ),
-        (
             {"label": "my new label"},
             {**default_expected_command, "label": "my new label"},
             "Command message changed to: Hey ! <@user> choose <selected_item> my new label",  # noqa E501
             None,
         ),
         (
+            {"label": ""},
+            {**default_expected_command, "label": ""},
+            "Command message changed to: Hey ! <@user> choose <selected_item>",  # noqa E501
+            None,
+        ),
+        (
             {"description": "my new description"},
             {**default_expected_command, "description": "my new description"},
             "my new description",
+            None,
+        ),
+        (
+            {"description": ""},
+            {**default_expected_command, "description": ""},
+            "Command description removed.",
             None,
         ),
         (
@@ -100,12 +106,6 @@ default_expected_command = {
             None,
         ),
         (
-            {"self_exclude": True},
-            {**default_expected_command, "self_exclude": True},
-            None,
-            "User running the command is now",
-        ),
-        (
             {"self_exclude": False},
             {**default_expected_command, "self_exclude": False},
             "User running the command is now included in the pick.",
@@ -118,12 +118,6 @@ default_expected_command = {
             None,
         ),
         (
-            {"only_active_users": False},
-            {**default_expected_command, "only_active_users": False},
-            None,
-            "active",
-        ),
-        (
             {"strategy": Strategy.uniform.name},
             {
                 **default_expected_command,
@@ -132,16 +126,6 @@ default_expected_command = {
             },
             "Strategy changed to uniform.",
             None,
-        ),
-        (
-            {"strategy": Strategy.smooth.name},
-            {
-                **default_expected_command,
-                "strategy": Strategy.smooth.name,
-                "weight_list": [1 / 4, 1 / 4, 2 / 4],
-            },
-            None,
-            "Strategy changed to",
         ),
         (
             {"strategy": Strategy.round_robin.name},
@@ -184,6 +168,37 @@ def test_update(
 
     for key in expected_command:
         assert updated_command[key] == expected_command[key]
+
+
+@pytest.mark.parametrize(
+    "input_data",
+    [
+        {},
+        {"label": default_expected_command["label"]},
+        {"description": default_expected_command["description"]},
+        {"pick_list": default_expected_command["pick_list"]},
+        {"add_to_pick_list": []},
+        {"remove_from_pick_list": []},
+        {"self_exclude": default_expected_command["self_exclude"]},
+        {"only_active_users": default_expected_command["only_active_users"]},
+        {"strategy": default_expected_command["strategy"]},
+    ],
+)
+def test_update_without_changes(input_data, client):
+    Command.create(**default_expected_command)
+    response = update_command_processor(
+        user_id=user_id,
+        team_id=team_id,
+        channel_id=channel_id,
+        command_to_update=command_name,
+        **input_data,
+    )
+
+    message = response.get("message")
+
+    assert f"Nothing to update for command *{command_name}*." in message.content
+    assert message.status == MessageStatus.ERROR
+    assert message.visibility == MessageVisibility.HIDDEN
 
 
 def test_update_fail_if_command_does_not_exist(client):
