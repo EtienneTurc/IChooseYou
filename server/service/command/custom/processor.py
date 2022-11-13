@@ -1,8 +1,6 @@
 from server.orm.command import Command
-from server.service.command.custom.helper import (assert_selected_items,
-                                                  create_custom_command_label)
+from server.service.command.custom.helper import create_custom_command_label
 from server.service.command.custom.schema import CustomCommandProcessorSchema
-from server.service.selection.selection import clean_and_select_from_pick_list
 from server.service.slack.message import Message, MessageVisibility
 from server.service.slack.message_formatting import (extract_label_from_pick_list,
                                                      format_custom_command_message)
@@ -20,28 +18,24 @@ def custom_command_processor(
     command_name: str,
     additional_text: str = "",
     number_of_items_to_select: int = 1,
-    should_update_weight_list: bool = False,
+    should_update_command: bool = False,
     with_wheel: bool = False,
 ) -> dict[str, any]:
     command = Command.find_one_by_name_and_chanel(command_name, channel_id)
-    pick_list = command.pick_list[:]
-    weight_list = command.weight_list[:]
-
-    (
-        selected_items,
-        cleaned_pick_list,
-        cleaned_weight_list,
-    ) = clean_and_select_from_pick_list(
-        pick_list=pick_list,
-        weight_list=weight_list,
-        user_id=user_id,
-        strategy_name=command.strategy,
-        number_of_items_to_select=number_of_items_to_select,
-        team_id=team_id,
-        only_active_users=command.only_active_users,
-        self_exclude=command.self_exclude,
+    strategy = get_strategy(
+        command.strategy,
+        pick_list=command.pick_list,
+        weight_list=command.weight_list,
     )
-    assert_selected_items(selected_items, command.only_active_users, command_name)
+
+    selected_items = strategy.select(
+        number_of_items_to_select=number_of_items_to_select,
+        self_exclude=command.self_exclude,
+        user_id=user_id,
+        only_active_users=command.only_active_users,
+        team_id=team_id,
+    )
+    cleaned_pick_list, cleaned_weight_list = strategy.get_clean_lists()
 
     gif_frames = None
     if with_wheel:
@@ -53,8 +47,8 @@ def custom_command_processor(
         )
     label = create_custom_command_label(command.label, additional_text)
 
-    if should_update_weight_list:
-        update_weight_list(command, selected_items)
+    if should_update_command:
+        update_command(command, selected_items)
 
     return {
         "message": Message(
@@ -70,8 +64,10 @@ def custom_command_processor(
     }
 
 
-def update_weight_list(command: Command, selected_items: list[str]) -> None:
-    strategy = get_strategy(command.strategy, command.weight_list)
+def update_command(command: Command, selected_items: list[str]) -> None:
+    strategy = get_strategy(
+        command.strategy, pick_list=command.pick_list, weight_list=command.weight_list
+    )
     strategy.update(
         indices_selected=[
             command.pick_list.index(selected_item) for selected_item in selected_items
@@ -81,5 +77,5 @@ def update_weight_list(command: Command, selected_items: list[str]) -> None:
         command.name,
         command.channel_id,
         command.updated_by_user_id,
-        {"weight_list": strategy.weight_list},
+        {"pick_list": strategy.pick_list, "weight_list": strategy.weight_list},
     )

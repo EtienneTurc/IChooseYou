@@ -21,7 +21,7 @@ def format_event_basic_payload(payload: dict[str, any]) -> dict[str, any]:
     return {
         "user_id": user_id,
         "team_id": get_by_path(payload, "team_id"),
-        "response_url": "",  # TODO ?
+        "response_url": "",
     }
 
 

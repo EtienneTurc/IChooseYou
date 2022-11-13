@@ -1,7 +1,6 @@
 import pytest
 from marshmallow import ValidationError
 
-import server.service.slack.tests.monkey_patch as monkey_patch_request  # noqa: F401, E501
 from server.service.command.instant.processor import instant_command_processor
 from server.service.error.type.missing_element_error import MissingElementError
 from server.service.slack.message import MessageVisibility
@@ -101,7 +100,7 @@ def test_custom_command_with_wheel():
 
 
 def test_custom_only_active_users_error():
-    error_message = "No active users to select found."
+    error_message = "All users in the pick list are inactive."
     with pytest.raises(MissingElementError, match=error_message):
         instant_command_processor(
             user_id=user_id,

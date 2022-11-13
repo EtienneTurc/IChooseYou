@@ -31,6 +31,18 @@ def basic_command(client):
 
 
 @pytest.fixture
+def command_with_round_robin_strategy(client):
+    input = {
+        **default_command,
+        "strategy": Strategy.round_robin.name,
+        "weight_list": [0, 1, 0],
+    }
+    command = create_and_return_command(**input)
+    yield command
+    Command.delete_command(command)
+
+
+@pytest.fixture
 def command_with_duplicates_in_pick_list(client):
     input = {**default_command, "pick_list": ["1", "2", "2"]}
     command = create_and_return_command(**input)
