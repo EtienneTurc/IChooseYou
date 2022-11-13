@@ -52,7 +52,7 @@ default_expected_command = {
                 "pick_list": ["1", "2"],
                 "weight_list": [1 / 2, 1 / 2],
             },
-            "Items in the pick list are: 1 and 2.",
+            "\nItems in the pick list are: 1 and 2.",
         ),
         (
             {"pick_list": [PickListSpecialArg.ALL_MEMBERS.value]},
@@ -60,7 +60,7 @@ default_expected_command = {
                 **default_expected_command,
                 "pick_list": ["<@1234>", "<@2345>", "<@3456>"],
             },
-            "Items in the pick list are: <@1234>, <@2345> and <@3456>.",
+            "\nItems in the pick list are: <@1234>, <@2345> and <@3456>.",
         ),
         (
             {"self_exclude": True},

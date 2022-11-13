@@ -27,7 +27,9 @@ def assert_weight_list_must_sum_up_to_1(weight_list) -> None:
 def assert_pick_list_valid_after_self_exclusion(pick_list: list[str]) -> None:
     if not len(pick_list):
         message = "Pick list contains only the user using the command."
-        message += " But the flag self-exclude is enabled."
+        message += (
+            " And the option to exclude the current user from the pick is enabled."
+        )
         message += " Thus no item can be picked from the pick list."
         raise MissingElementError(message)
 
@@ -35,6 +37,6 @@ def assert_pick_list_valid_after_self_exclusion(pick_list: list[str]) -> None:
 def assert_pick_list_valid_after_filtering_inactive_users(pick_list: list[str]) -> None:
     if not len(pick_list):
         message = "All users in the pick list are inactive."
-        message += " But the flag only-active-users is enabled."
+        message += " And the option to exclude inactive users is enabled."
         message += " Thus no item can be picked from the pick list."
         raise MissingElementError(message)

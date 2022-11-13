@@ -39,7 +39,7 @@ def format_new_command_message(
     if command_description:
         message += f"\n{command_description}"
 
-    message += "Items in the pick list are: "
+    message += "\nItems in the pick list are: "
 
     message += format_pick_list(pick_list, team_id) + "."
     return message
@@ -71,7 +71,11 @@ def format_updated_fields_mesage(
         ),
         (
             "description",
-            (lambda description: f"Command description changed to: {description}."),
+            (
+                lambda description: f"Command description changed to: {description}."
+                if description
+                else "Command description removed."
+            ),
         ),
         (
             "label",

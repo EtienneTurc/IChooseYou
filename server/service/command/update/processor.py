@@ -53,6 +53,16 @@ def update_command_processor(
     )
 
     fields_updated = compute_fields_updated(command, updated_command)
+    no_changes_made = not bool(fields_updated)
+    if no_changes_made:
+        return {
+            "message": Message(
+                content=f"Nothing to update for command *{updated_command.name}*.",
+                status=MessageStatus.ERROR,
+                visibility=MessageVisibility.HIDDEN,
+            )
+        }
+
     message_content = format_updated_fields_mesage(
         command_name=updated_command.name,
         team_id=team_id,
@@ -98,7 +108,7 @@ def compute_new_values_for_simple_fields(
 ) -> dict[str, any]:
     new_values = {}
     for field in fields_to_look_for_update:
-        if payload[field] or payload[field] is False:
+        if payload[field] is not None:
             new_values[field] = payload[field]
     return new_values
 
