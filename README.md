@@ -12,7 +12,7 @@ The core features of *I choose you* are:
 - Multiple random strategies
 - Integration with slack workflows
 
-So hope on and [get started](#getting-started) !
+So hop on and [get started](#getting-started) !
 
 ## Contents
 
