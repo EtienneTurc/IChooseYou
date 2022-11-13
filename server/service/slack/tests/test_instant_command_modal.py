@@ -2,11 +2,11 @@ import json
 
 import pytest
 
-import server.service.slack.tests.monkey_patch as monkey_patch  # noqa: F401
 from server.service.slack.modal.instant_command_modal import (
     SlackInstantCommandModalActionId, SlackInstantCommandModalBlockId,
     build_instant_command_modal)
 from server.service.slack.tests.helper import assert_modal_has_expected_block
+from server.service.slack.tests.monkey_patch import *  # noqa: F401, F403
 from server.tests.helper import match_object
 
 default_instant_input_data = {

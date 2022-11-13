@@ -1,12 +1,12 @@
 import pytest
 from marshmallow import ValidationError
 
-import server.service.slack.tests.monkey_patch as monkey_patch_request  # noqa: F401, E501
 from server.blueprint.slash_command.action import KNOWN_SLASH_COMMANDS_ACTIONS
 from server.orm.command import Command
 from server.service.command.update.processor import update_command_processor
 from server.service.error.type.missing_element_error import MissingElementError
 from server.service.slack.message import MessageStatus, MessageVisibility
+from server.service.slack.tests.monkey_patch import *  # noqa: F401, F403
 from server.service.strategy.enum import Strategy
 from server.tests.test_app import *  # noqa: F401, F403
 

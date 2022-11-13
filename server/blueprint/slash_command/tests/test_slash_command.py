@@ -3,8 +3,8 @@ from contextlib import redirect_stdout
 
 import pytest
 
-import server.service.slack.tests.monkey_patch as monkey_patch  # noqa: F401
 from server.orm.command import Command
+from server.service.slack.tests.monkey_patch import *  # noqa: F401, F403
 from server.service.strategy.enum import Strategy
 from server.tests.test_app import *  # noqa: F401, F403
 

@@ -2,12 +2,12 @@ import json
 
 from flask import current_app
 
-import server.service.slack.tests.monkey_patch as monkey_patch  # noqa: F401
 from server.blueprint.event.tests.conftest import *  # noqa: F401, F403
 from server.blueprint.interactivity.action import BlueprintInteractivityAction
 from server.blueprint.interactivity.tests.helper import call_webhook
 from server.service.slack.modal.enum import (SlackMainModalOverflowActionId,
                                              SlackModalSubmitAction)
+from server.service.slack.tests.monkey_patch import *  # noqa: F401, F403
 from server.tests.test_app import *  # noqa: F401, F403
 
 

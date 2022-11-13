@@ -2,11 +2,11 @@ import json
 
 import pytest
 
-import server.service.slack.tests.monkey_patch as monkey_patch  # noqa: F401
 from server.service.slack.modal.upsert_command_modal import (
     SlackUpsertCommandModalActionId, SlackUpsertCommandModalBlockId,
     build_upsert_command_modal)
 from server.service.slack.tests.helper import assert_modal_has_expected_block
+from server.service.slack.tests.monkey_patch import *  # noqa: F401, F403
 from server.service.strategy.enum import Strategy
 from server.tests.helper import match_object
 
