@@ -8,12 +8,12 @@ from server.config import CONFIG
 def create_app(config_name="prod"):
     app = Flask(__name__)
 
-    logging.basicConfig(
-        format="%(asctime)s - [%(levelname)8s] %(message)s",
-    )
-
     # Configure app
     app.config.from_object(CONFIG[config_name]())
+
+    logging.basicConfig(
+        format="%(asctime)s - [%(levelname)8s] %(message)s", level=logging.ERROR
+    )
 
     # Connect to DB
     from pymodm import connect
