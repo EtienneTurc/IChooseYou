@@ -6,6 +6,8 @@ class BlueprintSlashCommandAction(Enum):
     UPDATE = "update"
     DELETE = "delete"
     RANDOMNESS = "randomness"
+    XMAS_CELEBRATION = "xmas_celebration"
+    XMAS = "xmas"
     INSTANT = "instant"
     CUSTOM = "custom"
     OPEN_MAIN_MODAl = "open_main_modal"
@@ -24,4 +26,11 @@ KNOWN_SLASH_COMMANDS_ACTIONS = [
         BlueprintSlashCommandAction.INSTANT,
         BlueprintSlashCommandAction.CLEAN_DELETED_USERS,
     ]
+]
+
+XMAS_SLASH_COMMANDS = [
+    action.value
+    for action in BlueprintSlashCommandAction
+    if action
+    in [BlueprintSlashCommandAction.XMAS_CELEBRATION, BlueprintSlashCommandAction.XMAS]
 ]

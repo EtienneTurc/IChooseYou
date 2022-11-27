@@ -209,7 +209,7 @@ def format_main_modal_base_payload(payload: dict[str, any]) -> dict[str, any]:
     }
 
 
-def fomat_main_modal_clean_deleted_users_payload(
+def format_main_modal_clean_deleted_users_payload(
     payload: dict[str, any]
 ) -> dict[str, any]:
     return {

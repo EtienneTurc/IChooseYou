@@ -90,6 +90,26 @@ def build_clean_deleted_users_section(cleaned: bool):
     }
 
 
+def build_xmas_celebration_section():
+    return {
+        "type": "section",
+        "text": {
+            "type": "mrkdwn",
+            "text": ":christmas_tree: *Celebrate Christmas*",
+        },
+        "accessory": {
+            "type": "button",
+            "text": {
+                "type": "plain_text",
+                "text": "Celebrate :gift:",
+                "emoji": True,
+            },
+            "style": "primary",
+            "action_id": SlackMainModalActionId.XMAS_CELEBRATION.value,
+        },
+    }
+
+
 def build_command_section(command: Command) -> list[dict[str, any]]:
     return [
         {"type": "divider"},
@@ -166,6 +186,7 @@ def build_main_modal(
         build_create_command_section(),
         build_run_instant_command_section(),
         build_clean_deleted_users_section(cleaned),
+        build_xmas_celebration_section(),
         *flatten([build_command_section(command) for command in commands]),
     ]
 

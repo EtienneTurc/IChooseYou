@@ -11,6 +11,7 @@ class SlackModalSubmitAction(Enum):
 class SlackMainModalActionId(Enum):
     CREATE_NEW_COMMAND = "main_modal_create_new_command"
     RUN_INSTANT_COMMAND = "main_modal_run_instant_command"
+    XMAS_CELEBRATION = "main_modal_xmas_celebration"
     CLEAN_DELETED_USERS = "main_modal_clean_deleted_users"
     SELECT_COMMAND = "main_modal_select_command"
     MANAGE_COMMAND = "main_modal_manage_command"

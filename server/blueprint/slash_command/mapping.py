@@ -33,6 +33,8 @@ from server.service.command.update.command_line_args import \
 from server.service.command.update.command_line_args import \
     POSITIONAL_ARG as UPDATE_POSITIONAL_ARGS
 from server.service.command.update.processor import update_command_processor
+from server.service.command.xmas.processor import (xmas_celebration_processor,
+                                                   xmas_processor)
 from server.service.error.handler.generic import on_error_handled_send_message
 from server.service.formatter.slash_command import (format_slash_command_basic_payload,
                                                     format_slash_command_payload)
@@ -81,6 +83,22 @@ BLUEPRINT_SLASH_COMMAND_ACTION_TO_DATA_FLOW = {
             expected_named_args=RANDOMNESS_NAMED_ARGS,
         ),
         processor=randomness_command_processor,
+        responder=send_message_to_channel,
+        error_handler=on_error_handled_send_message,
+    ),
+    BlueprintSlashCommandAction.XMAS_CELEBRATION.value: DataFlow(
+        formatter=format_slash_command_basic_payload,
+        processor=xmas_celebration_processor,
+        responder=send_message_and_gif_to_channel,
+        error_handler=on_error_handled_send_message,
+    ),
+    BlueprintSlashCommandAction.XMAS.value: DataFlow(
+        formatter=functools.partial(
+            format_slash_command_payload,
+            expected_positional_args=[],
+            expected_named_args=[],
+        ),
+        processor=xmas_processor,
         responder=send_message_to_channel,
         error_handler=on_error_handled_send_message,
     ),
