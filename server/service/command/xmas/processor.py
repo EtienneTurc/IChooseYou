@@ -25,6 +25,7 @@ CHARACTER_NAMES = XMAS_CHARACTERS.keys()
 def xmas_celebration_processor(
     *, user_id: str, team_id: str, **kwargs
 ) -> dict[str, any]:
+    print(f"{format_mention_user(user_id)} found xmas celebration command")
     message = f":santa: Ho ho ho ! {format_mention_user(user_id)} did you really think"
     message += " that finding the Christmas easter egg would be that simple ?!"
     message += "\nFortunately for you, the Christmas spirit is all about:"
@@ -57,7 +58,8 @@ def xmas_celebration_processor(
 
 
 @validate_schema(XmasProcessorSchema)
-def xmas_processor(*, additional_text: str, **kwargs) -> dict[str, any]:
+def xmas_processor(*, additional_text: str, user_id: str, **kwargs) -> dict[str, any]:
+    print(f"{format_mention_user(user_id)} found xmas command")
     character = additional_text
 
     if not character:
@@ -77,11 +79,12 @@ def xmas_processor(*, additional_text: str, **kwargs) -> dict[str, any]:
             )
         }
 
+    print(f"{format_mention_user(user_id)} found all of xmas 1st part content")
     character_pronoun = "He" if XMAS_CHARACTERS[character]["male"] else "She"
 
     message = "Well done ! You successfully unraveled the mystery around the first part of the christmas easter egg."  # noqa E501
     message += f" Unfortunately {character} can't answer your call right now."
-    message += f" {character_pronoun} will return on the 10th of December."
+    message += f" {character_pronoun} will return on the 12th of December."
 
     return {
         "message": Message(

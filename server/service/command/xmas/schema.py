@@ -14,3 +14,4 @@ class XmasProcessorSchema(Schema):
         unknown = EXCLUDE
 
     additional_text = fields.Str(required=True)
+    user_id = fields.Str(required=True)

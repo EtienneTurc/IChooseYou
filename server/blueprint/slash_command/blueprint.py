@@ -1,10 +1,8 @@
 from flask import Blueprint, make_response, request
 
-from server.blueprint.slash_command.action import (
-    KNOWN_SLASH_COMMANDS_ACTIONS,
-    XMAS_SLASH_COMMANDS,
-    BlueprintSlashCommandAction,
-)
+from server.blueprint.slash_command.action import (KNOWN_SLASH_COMMANDS_ACTIONS,
+                                                   XMAS_SLASH_COMMANDS,
+                                                   BlueprintSlashCommandAction)
 from server.service.formatter.slash_command import extract_command_from_text
 from server.service.slack.decorator import validate_signature
 from server.service.tpr.main import transform_process_respond
