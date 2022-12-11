@@ -1,18 +1,25 @@
 import logging
 
 from server.orm.channel import Channel
-from server.service.command.xmas.dialogues import (xmas_alice_message,
-                                                   xmas_christian_message,
-                                                   xmas_henry_message, xmas_irene_message,
-                                                   xmas_marie_message,
-                                                   xmas_solenne_message,
-                                                   xmas_ulysse_message,
-                                                   xmas_xavier_message)
-from server.service.command.xmas.schema import (XmasCelebrationProcessorSchema,
-                                                XmasProcessorSchema)
+from server.service.command.xmas.dialogues import (
+    xmas_alice_message,
+    xmas_christian_message,
+    xmas_henry_message,
+    xmas_irene_message,
+    xmas_marie_message,
+    xmas_solenne_message,
+    xmas_ulysse_message,
+    xmas_xavier_message,
+)
+from server.service.command.xmas.schema import (
+    XmasCelebrationProcessorSchema,
+    XmasProcessorSchema,
+)
 from server.service.slack.message import Message, MessageStatus, MessageVisibility
-from server.service.slack.message_formatting import (extract_label_from_pick_list,
-                                                     format_mention_user)
+from server.service.slack.message_formatting import (
+    extract_label_from_pick_list,
+    format_mention_user,
+)
 from server.service.validator.decorator import validate_schema
 from server.service.wheel.builder import build_wheel
 
@@ -35,7 +42,7 @@ CHARACTER_NAMES = XMAS_CHARACTERS.keys()
 def xmas_celebration_processor(
     *, user_id: str, team_id: str, **kwargs
 ) -> dict[str, any]:
-    print(f"{format_mention_user(user_id)} found xmas celebration command")
+    logging.info(f"{format_mention_user(user_id)} found xmas celebration command")
     message = f":santa: Ho ho ho ! {format_mention_user(user_id)} did you really think"
     message += " that finding the Christmas easter egg would be that simple ?!"
     message += "\nFortunately for you, the Christmas spirit is all about:"
@@ -71,16 +78,13 @@ def xmas_celebration_processor(
 def xmas_processor(
     *, additional_text: str, user_id: str, channel_id: str, **kwargs
 ) -> dict[str, any]:
-    logging.info(f"{format_mention_user(user_id)} found xmas command")
-    logging.info(additional_text)
-    logging.info("yo")
+    print(f"{format_mention_user(user_id)} found xmas command")
     character = additional_text.split(" ")[0]
-    logging.info(additional_text)
 
     if not character:
         return {
             "message": Message(
-                content="Slash command expect extra text.",
+                content="Slash command expects extra text.",
                 visibility=MessageVisibility.HIDDEN,
                 status=MessageStatus.ERROR,
             )
@@ -115,6 +119,7 @@ def xmas_processor(
                 )
             }
         else:
+            print(f"{format_mention_user(user_id)} found easter egg.")
             Channel.upsert(channel_id=channel_id, found_xmas_easter_egg=True)
 
     message = XMAS_CHARACTERS[character]["message"]
