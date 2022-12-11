@@ -1,3 +1,4 @@
+from server.orm.channel import Channel
 from server.orm.command import Command
 from server.service.command.custom.helper import create_custom_command_label
 from server.service.command.custom.schema import CustomCommandProcessorSchema
@@ -50,9 +51,15 @@ def custom_command_processor(
     if should_update_command:
         update_command(command, selected_items)
 
+    use_santa_in_message = Channel.find_one_by_channel_id(
+        channel_id
+    ).found_xmas_easter_egg
+
     return {
         "message": Message(
-            content=format_custom_command_message(user_id, selected_items, label),
+            content=format_custom_command_message(
+                user_id, selected_items, label, use_santa_in_message
+            ),
             visibility=MessageVisibility.NORMAL,
             as_attachment=False,
         ),

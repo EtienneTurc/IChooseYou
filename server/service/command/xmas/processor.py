@@ -1,3 +1,13 @@
+import logging
+
+from server.orm.channel import Channel
+from server.service.command.xmas.dialogues import (xmas_alice_message,
+                                                   xmas_christian_message,
+                                                   xmas_henry_message, xmas_irene_message,
+                                                   xmas_marie_message,
+                                                   xmas_solenne_message,
+                                                   xmas_ulysse_message,
+                                                   xmas_xavier_message)
 from server.service.command.xmas.schema import (XmasCelebrationProcessorSchema,
                                                 XmasProcessorSchema)
 from server.service.slack.message import Message, MessageStatus, MessageVisibility
@@ -7,14 +17,14 @@ from server.service.validator.decorator import validate_schema
 from server.service.wheel.builder import build_wheel
 
 XMAS_CHARACTERS = {
-    "Irene": {"male": False},
-    "Christian": {"male": True},
-    "Henry": {"male": True},
-    "Ulysse": {"male": True},
-    "Xavier": {"male": True},
-    "Marie": {"male": False},
-    "Alice": {"male": False},
-    "Solenne": {"male": False},
+    "Irene": {"male": False, "message": xmas_irene_message()},
+    "Christian": {"male": True, "message": xmas_christian_message()},
+    "Henry": {"male": True, "message": xmas_henry_message()},
+    "Ulysse": {"male": True, "message": xmas_ulysse_message()},
+    "Xavier": {"male": True, "message": xmas_xavier_message()},
+    "Marie": {"male": False, "message": xmas_marie_message()},
+    "Alice": {"male": False, "message": xmas_alice_message()},
+    "Solenne": {"male": False, "message": xmas_solenne_message()},
 }
 
 
@@ -58,9 +68,14 @@ def xmas_celebration_processor(
 
 
 @validate_schema(XmasProcessorSchema)
-def xmas_processor(*, additional_text: str, user_id: str, **kwargs) -> dict[str, any]:
-    print(f"{format_mention_user(user_id)} found xmas command")
-    character = additional_text
+def xmas_processor(
+    *, additional_text: str, user_id: str, channel_id: str, **kwargs
+) -> dict[str, any]:
+    logging.info(f"{format_mention_user(user_id)} found xmas command")
+    logging.info(additional_text)
+    logging.info("yo")
+    character = additional_text.split(" ")[0]
+    logging.info(additional_text)
 
     if not character:
         return {
@@ -76,19 +91,36 @@ def xmas_processor(*, additional_text: str, user_id: str, **kwargs) -> dict[str,
             "message": Message(
                 content=f"Character {character} does not exist.",
                 visibility=MessageVisibility.HIDDEN,
+                status=MessageStatus.ERROR,
             )
         }
 
-    print(f"{format_mention_user(user_id)} found all of xmas 1st part content")
-    character_pronoun = "He" if XMAS_CHARACTERS[character]["male"] else "She"
+    if character == "Solenne":
+        extra_text = additional_text.split(" ")[1]
+        if not extra_text:
+            return {
+                "message": Message(
+                    content="To chat with Solenne, you will need to pass a key, exemple: `/ichu xmas Solenne 123456789`",  # noqa E501
+                    visibility=MessageVisibility.HIDDEN,
+                    status=MessageStatus.ERROR,
+                )
+            }
 
-    message = "Well done ! You successfully unraveled the mystery around the first part of the christmas easter egg."  # noqa E501
-    message += f" Unfortunately {character} can't answer your call right now."
-    message += f" {character_pronoun} will return on the 12th of December."
+        if extra_text != "2614214250078801614":
+            return {
+                "message": Message(
+                    content="To chat with Solenne, you will need to enter the correct code.",  # noqa E501
+                    visibility=MessageVisibility.HIDDEN,
+                    status=MessageStatus.ERROR,
+                )
+            }
+        else:
+            Channel.upsert(channel_id=channel_id, found_xmas_easter_egg=True)
+
+    message = XMAS_CHARACTERS[character]["message"]
 
     return {
         "message": Message(
-            content=message,
-            visibility=MessageVisibility.HIDDEN,
+            content=message, visibility=MessageVisibility.NORMAL, as_attachment=False
         )
     }

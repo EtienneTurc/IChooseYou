@@ -15,3 +15,4 @@ class XmasProcessorSchema(Schema):
 
     additional_text = fields.Str(required=True)
     user_id = fields.Str(required=True)
+    channel_id = fields.Str(required=True)

@@ -1,3 +1,4 @@
+from server.orm.channel import Channel
 from server.service.command.helper import format_pick_list
 from server.service.command.instant.schema import InstantCommandProcessorSchema
 from server.service.slack.message import Message, MessageVisibility
@@ -42,9 +43,15 @@ def instant_command_processor(
             labels[cleaned_pick_list.index(selected_items[0])],
         )
 
+    use_santa_in_message = Channel.find_one_by_channel_id(
+        channel_id
+    ).found_xmas_easter_egg
+
     return {
         "message": Message(
-            content=format_custom_command_message(user_id, selected_items, label),
+            content=format_custom_command_message(
+                user_id, selected_items, label, use_santa_in_message
+            ),
             visibility=MessageVisibility.NORMAL,
             as_attachment=False,
         ),

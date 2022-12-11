@@ -6,10 +6,11 @@ from server.service.slack.sdk_helper import get_user_info
 
 
 def format_custom_command_message(
-    user_id: str, selected_items: list[str], label: str
+    user_id: str, selected_items: list[str], label: str, use_santa: bool = False
 ) -> str:
     selected_items_msg = format_list_to_string(selected_items)
-    return f"Hey ! {format_mention_user(user_id)} choose {selected_items_msg} {label}"
+    start_message = "Hey !" if not use_santa else ":santa: Ho ho ho !"
+    return f"{start_message} {format_mention_user(user_id)} choose {selected_items_msg} {label}"  # noqa E501
 
 
 def format_mention_user(user_id: str) -> str:
