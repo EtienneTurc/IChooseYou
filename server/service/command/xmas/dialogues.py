@@ -9,18 +9,18 @@ def xmas_alice_message():
 # 26
 def xmas_irene_message():
     message = "*Irene*: Hi folks. I just realized that we completely missed out on our annual medical check up."  # noqa E501
-    message += " The problem is that Dr Santa only has 4 hours from 8am to 12am to get us back on track,"  # noqa E501
+    message += " The problem is that Dr Santa only has 4 hours from 8:00 to 12:00 to get us back on track,"  # noqa E501
     message += " and the time required to do the check up may vary from person to person as well as our schedules :grimacing:."  # noqa E501
     message += "\nOf course, each check up has a different level of importance."
     message += " Can you help me find the highest level of importance achievable with those constraints:"  # noqa E501
-    message += "\n- Alice only needs a 30min consultation which has an importance of 3 but she is not available between 9am and 10am."  # noqa E501
-    message += "\n- Christian needs to do a fully detailed check up that takes 2 hours but it has an importance of 12. However he is only available between 10am and 12am."  # noqa E501
-    message += "\n- Henry needs a faster check up of 45min with an impact of 3. He is available from 8am to 10:30pm."  # noqa E501
-    message += "\n- Mine has an importance of 8 for only 1 hour but I am only available from 10pm to 12pm."  # noqa E501
+    message += "\n- Alice only needs a 30min consultation which has an importance of 3 but she is not available between 9:00 and 10:00."  # noqa E501
+    message += "\n- Christian needs to do a fully detailed check up that takes 2 hours but it has an importance of 12. However he is only available between 10:00 and 12:00."  # noqa E501
+    message += "\n- Henry needs a faster check up of 45min with an impact of 3. He is available from 8:00 to 10:30."  # noqa E501
+    message += "\n- Mine has an importance of 8 for only 1 hour but I am only available from 10:00 to 12:00."  # noqa E501
     message += "\n- Marie is totally free that morning but the check up will take 1h30 for an importance of 10."  # noqa E501
     message += "\n- Solenne is following the same schedule as mine but she only needs a 15min checkup for an importance of 1."  # noqa E501
     message += "\n- Ulysse is very busy thus he only has the first hour of day available and its check up takes 45min for an importance of 4."  # noqa E501
-    message += "\n- Xavier really needs one. His has an importance of 10 for a duration of 1h15 but he is only available from 9pm to 11pm."  # noqa E501
+    message += "\n- Xavier really needs one. His has an importance of 10 for a duration of 1h15 but he is only available from 9:00 to 11:00."  # noqa E501
     return message
 
 
@@ -38,7 +38,7 @@ def xmas_christian_message():
 def xmas_henry_message():
     message = "*Henry*: Hi guys ! I love to deep dive in any historical content. I found it so fascinating."  # noqa E501
     message += " But I have the tendency to only trust those who share the same interest as me."  # noqa E501
-    message += " So can I trust you ? If so, how many days did it take to create the first ever functional prototype of <@U01PE23RA6A> ?"  # noqa E501
+    message += " So can I trust you ? If so, how many days did it take to create the first ever functional prototype of <@U01SAB7R5HQ> ?"  # noqa E501
     return message
 
 
@@ -61,7 +61,7 @@ def xmas_solenne_message():
     message += " Unfortunately for you, there is none..."  # noqa E501
     message += "\nJust kidding :trollface:. First of all, everyone will acknowledge your team on <@C02HVA2D8H1> for being able to find this easter egg."  # noqa E501
     message += " Secondly, until the end of December every one of your picks will be made by santa claus instead of a neutral `Hey !`."  # noqa E501
-    message += "\nMoreover, the <@U01PE23RA6A> team put a lot of work to make this easter egg a reality. So I hope you really liked it. On this note, merry christmas :christmas_tree: !"  # noqa E501
+    message += "\nMoreover, the <@U01SAB7R5HQ> team put a lot of work to make this easter egg a reality. So I hope you really liked it. On this note, merry christmas :christmas_tree: !"  # noqa E501
     return message
 
 
