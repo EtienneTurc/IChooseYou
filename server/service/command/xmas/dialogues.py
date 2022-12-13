@@ -6,7 +6,7 @@ def xmas_alice_message():
     return message
 
 
-# 26
+# 29
 def xmas_irene_message():
     message = "*Irene*: Hi folks. I just realized that we completely missed out on our annual medical check up."  # noqa E501
     message += " The problem is that Dr Santa only has 4 hours from 8:00 to 12:00 to get us back on track,"  # noqa E501
@@ -59,7 +59,7 @@ def xmas_solenne_message():
     message = "*Solenne*: Well done ! I could have make a truly moving speech, saying that it is not about the destination, it's the travel that matters."  # noqa E501
     message += " That it was all about a team effort but let's face it, if you came this far, it is for the reward."  # noqa E501
     message += " Unfortunately for you, there is none..."  # noqa E501
-    message += "\nJust kidding :trollface:. First of all, everyone will acknowledge your team on <@C02HVA2D8H1> for being able to find this easter egg."  # noqa E501
+    message += "\nJust kidding :trollface:. First of all, everyone will acknowledge your team on #ichu-news for being able to find this easter egg."  # noqa E501
     message += " Secondly, until the end of December every one of your picks will be made by santa claus instead of a neutral `Hey !`."  # noqa E501
     message += "\nMoreover, the <@U01SAB7R5HQ> team put a lot of work to make this easter egg a reality. So I hope you really liked it. On this note, merry christmas :christmas_tree: !"  # noqa E501
     return message

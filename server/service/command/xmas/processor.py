@@ -110,7 +110,7 @@ def xmas_processor(
                 )
             }
 
-        if extra_text != "2614214250078801614":
+        if extra_text != "2914214250078801614":
             return {
                 "message": Message(
                     content="To chat with Solenne, you will need to enter the correct code.",  # noqa E501
