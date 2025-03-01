@@ -5,10 +5,12 @@ import time
 from server.service.helper.dict_helper import get_by_path
 from server.service.slack.message import Message, MessageStatus, MessageVisibility
 from server.service.slack.responder.enum import SlackResubmitButtonsActionId
-from server.service.slack.response.api_response import (complete_workflow,
-                                                        send_built_message_to_channel,
-                                                        send_file_to_channel,
-                                                        send_message_to_channel)
+from server.service.slack.response.api_response import (
+    complete_workflow,
+    send_built_message_to_channel,
+    send_file_to_channel,
+    send_message_to_channel,
+)
 from server.service.wheel.image_helper import save_gif
 
 
@@ -95,7 +97,7 @@ def send_gif_to_channel(
                 team_id=team_id,
             )
             print(message_response)
-            file_id = str(get_by_path(message_response.data, f"file.id"))
+            file_id = str(get_by_path(message_response.data, "file.id"))
             print(file_id)
             wait_for_wheel_to_finish()
 

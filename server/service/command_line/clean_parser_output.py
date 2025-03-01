@@ -5,7 +5,7 @@ import re
 def get_as_string(value) -> str:
     if not value:
         return ""
-    if type(value) == list:
+    if type(value) is list:
         return (" ").join(value)
     return value
 
