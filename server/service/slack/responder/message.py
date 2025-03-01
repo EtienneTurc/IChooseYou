@@ -1,4 +1,5 @@
 import json
+import sys
 import time
 
 from server.service.helper.dict_helper import get_by_path
@@ -23,6 +24,46 @@ def wait_for_wheel_to_finish():
     time.sleep(5)
 
 
+# def send_gif_to_channel(
+#     *,
+#     channel_id: str,
+#     team_id: str,
+#     user_id: str,
+#     gif_frames: list[any],s
+#     with_wheel: bool,
+#     with_ephemeral: bool = True,
+#     **kwargs,
+# ):
+#     wheel_ts = None
+#     if with_wheel:
+#         if with_ephemeral:
+#             send_message_to_channel(
+#                 message=Message(
+#                     content="Spin that wheel :ferris_wheel:",
+#                     visibility=MessageVisibility.HIDDEN,
+#                 ),
+#                 channel_id=channel_id,
+#                 user_id=user_id,
+#                 team_id=team_id,
+#             )
+#         with open("wheel.gif", "wb") as file_pointer:
+#             save_gif(file_pointer, gif_frames)
+#             message_response = send_file_to_channel(
+#                 channel_id=channel_id,
+#                 file_pointer_name=file_pointer.name,
+#                 team_id=team_id,
+#             )
+#             wheel_ts = (
+#                 get_by_path(message_response.data, f"file.shares.public.{channel_id}")
+#                 or get_by_path(
+#                     message_response.data, f"file.shares.private.{channel_id}"
+#                 )
+#             )[0]["ts"]
+#             wait_for_wheel_to_finish()
+
+#     return wheel_ts
+
+
 def send_gif_to_channel(
     *,
     channel_id: str,
@@ -33,7 +74,7 @@ def send_gif_to_channel(
     with_ephemeral: bool = True,
     **kwargs,
 ):
-    wheel_ts = None
+    file_id = None
     if with_wheel:
         if with_ephemeral:
             send_message_to_channel(
@@ -49,18 +90,16 @@ def send_gif_to_channel(
             save_gif(file_pointer, gif_frames)
             message_response = send_file_to_channel(
                 channel_id=channel_id,
-                file_pointer_name=file_pointer.name,
+                filename=file_pointer.name,
+                file_size=sys.getsizeof(file_pointer),
                 team_id=team_id,
             )
-            wheel_ts = (
-                get_by_path(message_response.data, f"file.shares.public.{channel_id}")
-                or get_by_path(
-                    message_response.data, f"file.shares.private.{channel_id}"
-                )
-            )[0]["ts"]
+            print(message_response)
+            file_id = str(get_by_path(message_response.data, f"file.id"))
+            print(file_id)
             wait_for_wheel_to_finish()
 
-    return wheel_ts
+    return file_id
 
 
 def send_message_and_gif_to_channel(with_ephemeral: bool = True, **kwargs):
@@ -72,8 +111,8 @@ def send_message_and_gif_to_channel_with_resubmit_button(
     with_ephemeral: bool = True,
     **kwargs,
 ):
-    wheel_ts = send_gif_to_channel(with_ephemeral=with_ephemeral, **kwargs)
-    kwargs["wheel_ts"] = wheel_ts  # overwrite wheel_ts
+    file_id = send_gif_to_channel(with_ephemeral=with_ephemeral, **kwargs)
+    kwargs["file_id"] = file_id  # overwrite sfile_id
     if with_ephemeral:
         send_message_to_channel_with_resubmit_button(**kwargs)
     else:
@@ -90,7 +129,7 @@ def send_message_to_channel_with_resubmit_button(
     additional_text: str,
     number_of_items_to_select: int,
     with_wheel: bool,
-    wheel_ts: str,
+    file_id: str,
     **kwargs,
 ):
     message_response = send_message_to_channel(
@@ -105,7 +144,7 @@ def send_message_to_channel_with_resubmit_button(
         with_wheel=with_wheel,
         message_text=message.content,
         ts=message_response.data.get("ts"),
-        wheel_ts=wheel_ts,
+        file_id=file_id,
     )
     send_built_message_to_channel(
         payload=resubmit_payload,
@@ -124,7 +163,7 @@ def build_resubmit_payload_payload(
     with_wheel: bool,
     message_text: str,
     ts: str,
-    wheel_ts: str,
+    file_id: str,
 ):
     button_value = {
         "command_name": command_name,
@@ -170,7 +209,7 @@ def build_resubmit_payload_payload(
                             **button_value,
                             "message_text": message_text,
                             "ts": ts,
-                            "wheel_ts": wheel_ts,
+                            "file_id": file_id,
                         }
                     ),
                 },

@@ -1,7 +1,8 @@
 from server.service.command.custom.processor import custom_command_processor
 from server.service.slack.interactivity.helper import assert_message_can_be_delete
 from server.service.slack.interactivity.schema import DeleteMessageProcessorSchema
-from server.service.slack.response.api_response import delete_message_in_channel
+from server.service.slack.response.api_response import (delete_file_message,
+                                                        delete_message_in_channel)
 from server.service.validator.decorator import validate_schema
 
 
@@ -17,10 +18,10 @@ def delete_message_processor(
 
 
 def resubmit_command_and_delete_message_processor(
-    wheel_ts: str = None, *, ts: str, **kwargs
+    file_id: str = None, *, ts: str, **kwargs
 ) -> dict[str, any]:
     delete_message_processor(ts=ts, **kwargs)
-    if wheel_ts:
-        delete_message_processor(ts=wheel_ts, **kwargs)
+    if file_id:
+        delete_file_message(file_id=file_id, **kwargs)
 
     return custom_command_processor(**kwargs, should_update_command=True)

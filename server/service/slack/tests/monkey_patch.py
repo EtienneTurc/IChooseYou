@@ -73,8 +73,8 @@ def monkey_patch_workflows_stepFailed(
     print(error)
 
 
-def monkey_patch_files_upload(self, *, file: str, channels, **kwargs):
-    print(f"File {file} uploaded")
+def monkey_patch_files_upload_v2(self, *, filename: str, **kwargs):
+    print(f"File {filename} uploaded")
 
     from dataclasses import dataclass
 
@@ -82,7 +82,7 @@ def monkey_patch_files_upload(self, *, file: str, channels, **kwargs):
     class Data:
         data: any
 
-    return Data(data={"file": {"shares": {"public": {channels: [{"ts": "1234"}]}}}})
+    return Data(data={"file": {"id": {"F1234"}}})
 
 
 def monkey_patch_views_push(self, *, view: str, **kwargs):
@@ -117,7 +117,7 @@ WebClient.workflows_stepCompleted.__code__ = (
     monkey_patch_workflows_stepCompleted.__code__
 )
 WebClient.workflows_stepFailed.__code__ = monkey_patch_workflows_stepFailed.__code__
-WebClient.files_upload.__code__ = monkey_patch_files_upload.__code__
+WebClient.files_upload_v2.__code__ = monkey_patch_files_upload_v2.__code__
 WebClient.views_push.__code__ = monkey_patch_views_push.__code__
 WebClient.views_update.__code__ = monkey_patch_views_update.__code__
 
