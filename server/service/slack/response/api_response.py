@@ -16,7 +16,7 @@ def send_message_to_channel(
     user_id: str = None,
     thread_ts: str = None,
     team_id: str,
-    **kwargs
+    **kwargs,
 ) -> None:
     payload = build_message_payload(message)
     client_func = (
@@ -37,7 +37,7 @@ def send_built_message_to_channel(
     user_id: str = None,
     thread_ts: str = None,
     team_id: str,
-    **kwargs
+    **kwargs,
 ) -> None:
     client_func = (
         client.chat_postEphemeral
@@ -52,13 +52,15 @@ def send_file_to_channel(
     client: WebhookClient,
     *,
     channel_id: str,
-    file_pointer_name: str,
+    filename: str,
+    file_size: int,
     team_id: str,
-    **kwargs
+    **kwargs,
 ) -> None:
-    return client.files_upload(
-        channels=channel_id,
-        file=file_pointer_name,
+    return client.files_upload_v2(
+        channel=channel_id,
+        filename=filename,
+        file=f"./{filename}",
     )
 
 
@@ -67,6 +69,13 @@ def delete_message_in_channel(
     client: WebClient, *, channel_id: str, ts: str, team_id: str, **kwargs
 ) -> None:
     client.chat_delete(channel=channel_id, ts=ts)
+
+
+@create_slack_sdk_web_client
+def delete_file_message(
+    client: WebClient, *, file_id: str, channel_id: str, team_id: str, **kwargs
+) -> None:
+    client.files_delete(file=file_id)
 
 
 @create_slack_sdk_webhook_client
@@ -110,7 +119,7 @@ def save_workflow(
     outputs: list[dict],
     workflow_step_edit_id: str,
     team_id: str,
-    **kwargs
+    **kwargs,
 ) -> None:
     client.workflows_updateStep(
         workflow_step_edit_id=workflow_step_edit_id, inputs=inputs, outputs=outputs
@@ -124,7 +133,7 @@ def complete_workflow(
     workflow_step_execute_id: str,
     outputs: dict,
     team_id: str,
-    **kwargs
+    **kwargs,
 ):
     client.workflows_stepCompleted(
         workflow_step_execute_id=workflow_step_execute_id, outputs=outputs
@@ -138,7 +147,7 @@ def failed_worklow(
     message: str,
     workflow_step_execute_id: str,
     team_id: str,
-    **kwargs
+    **kwargs,
 ):
     error = {"message": message}
     client.workflows_stepFailed(

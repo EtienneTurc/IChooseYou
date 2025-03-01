@@ -151,7 +151,7 @@ def test_slash_command_update(text, expected, client):
 
     for key in expected:
         func_to_apply = lambda x: x  # noqa: E731
-        if type(expected[key]) == list:
+        if type(expected[key]) is list:
             func_to_apply = sorted
         assert func_to_apply(updated_command[key]) == func_to_apply(expected[key])
 
